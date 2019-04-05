@@ -1,0 +1,16 @@
+{
+  "name": "@timhall/toml",
+  "version": "0.0.0",
+  "author": "Tim Hall <tim.hall.engr@gmail.com>",
+  "license": "MIT",
+  "description": "TODO",
+  "keywords": ["toml"],
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100
+  }
+}
