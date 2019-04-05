@@ -12,6 +12,7 @@ export interface Table extends Node {
 export interface TableKey extends Node {
   type: 'tablekey';
   value: Key;
+  comment: Comment | null;
 }
 
 export interface TableArray extends Node {
@@ -23,23 +24,25 @@ export interface TableArray extends Node {
 export interface TableArrayKey extends Node {
   type: 'tablearraykey';
   value: Key;
+  comment: Comment | null;
 }
 
 export interface KeyValue extends Node {
   type: 'keyvalue';
   key: Key;
-  equals: Equals;
   value: Value;
+
+  // Column index (0-based on equals sign)
+  equals: number;
+
+  // Note: Use array to handle multiple comments in multiline arrays
+  comments: Comment[] | null;
 }
 
 export interface Key extends Node {
   type: 'key';
   raw: string;
   value: string;
-}
-
-export interface Equals extends Node {
-  type: 'equals';
 }
 
 export type Value<TInlineArrayItem = unknown> =
@@ -71,8 +74,7 @@ export interface Float extends Node {
 
 export interface Boolean extends Node {
   type: 'boolean';
-  raw: string;
-  value: number;
+  value: boolean;
 }
 
 export interface DateTime extends Node {

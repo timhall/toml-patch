@@ -1,5 +1,9 @@
-import { AST } from './ast';
+import { Document } from './ast';
 
-export default function parseTOML(value: string): AST {
-  return;
+export default function parseTOML(value: string): Document {
+  return {
+    type: 'document',
+    loc: null,
+    body: []
+  };
 }

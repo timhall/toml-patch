@@ -1,5 +1,9 @@
-import { AST } from './ast';
+import { Document } from './ast';
 
-export default function parseJSON<TValue>(value: TValue): AST {
-  return;
+export default function parseJSON<TValue>(value: TValue): Document {
+  return {
+    type: 'document',
+    loc: null,
+    body: []
+  };
 }

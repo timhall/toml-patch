@@ -1,5 +1,5 @@
-import { AST } from './ast';
+import { Document } from './ast';
 
-export default function toTOML(ast: AST): string {
+export default function toTOML(document: Document): string {
   return '';
 }

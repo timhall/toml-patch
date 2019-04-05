@@ -1,5 +1,5 @@
-import { AST } from './ast';
+import { Document } from './ast';
 
-export default function toJSON(ast: AST): string {
+export default function toJSON(document: Document): string {
   return '';
 }
