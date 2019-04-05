@@ -4,13 +4,27 @@
   "author": "Tim Hall <tim.hall.engr@gmail.com>",
   "license": "MIT",
   "description": "TODO",
-  "keywords": ["toml"],
-  "main": "lib/index.js",
+  "keywords": [
+    "toml"
+  ],
+  "main": "lib/toml.cjs.js",
+  "module": "lib/toml.es.js",
+  "browser": "lib/toml.umd.min.js",
   "scripts": {
-    "test": "exit 0"
+    "test": "exit 0",
+    "build": "rollup -c"
   },
   "prettier": {
     "singleQuote": true,
     "printWidth": 100
+  },
+  "devDependencies": {
+    "rollup": "^1.9.0",
+    "rollup-plugin-dts": "^0.14.0",
+    "rollup-plugin-filesize": "^6.0.1",
+    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^1.9.3",
+    "typescript": "^3.4.1"
   }
 }
