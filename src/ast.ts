@@ -1,7 +1,27 @@
 import { Token, Location } from './tokenizer';
 
+export enum NodeType {
+  Document = 'Document',
+  Table = 'Table',
+  TableKey = 'TableKey',
+  TableArray = 'TableArray',
+  TableArrayKey = 'TableArrayKey',
+  KeyValue = 'KeyValue',
+  Key = 'Key',
+  String = 'String',
+  Integer = 'Integer',
+  Float = 'Float',
+  Boolean = 'Boolean',
+  DateTime = 'DateTime',
+  InlineArray = 'InlineArray',
+  InlineArrayItem = 'InlineArrayItem',
+  InlineTable = 'InlineTable',
+  InlineTableItem = 'InlineTableItem',
+  Comment = 'Comment'
+}
+
 export interface Document extends Node {
-  type: 'document';
+  type: NodeType.Document;
   body: Array<KeyValue | Table | TableArray | Comment>;
 }
 
@@ -16,9 +36,9 @@ export interface Document extends Node {
 // # excluded from table (included in parent)
 // [another]
 export interface Table extends Node {
-  type: 'table';
+  type: NodeType.Table;
   key: TableKey;
-  items: Array<KeyValue | Table | TableArray | Comment>;
+  items: Array<KeyValue | Comment>;
 }
 
 // loc includes brackets
@@ -26,9 +46,8 @@ export interface Table extends Node {
 // [  key  ]
 // ^-------^
 export interface TableKey extends Node {
-  type: 'table-key';
+  type: NodeType.TableKey;
   value: Key;
-  comment: Comment | null;
 }
 
 // comments are included in loc
@@ -41,9 +60,9 @@ export interface TableKey extends Node {
 // # details
 //         ^ end
 export interface TableArray extends Node {
-  type: 'table-array';
+  type: NodeType.TableArray;
   key: TableArrayKey;
-  items: Array<KeyValue | Table | TableArray | Comment>;
+  items: Array<KeyValue | Comment>;
 }
 
 // loc includes brackets
@@ -51,9 +70,8 @@ export interface TableArray extends Node {
 // [[  key  ]]
 // ^---------^
 export interface TableArrayKey extends Node {
-  type: 'table-array-key';
+  type: NodeType.TableArrayKey;
   value: Key;
-  comment: Comment | null;
 }
 
 // comments are included for loc
@@ -61,7 +79,7 @@ export interface TableArrayKey extends Node {
 // key="value" # note
 // ^----------------^
 export interface KeyValue extends Node {
-  type: 'key-value';
+  type: NodeType.KeyValue;
   key: Key;
   value: Value;
 
@@ -73,7 +91,7 @@ export interface KeyValue extends Node {
 }
 
 export interface Key extends Node {
-  type: 'key';
+  type: NodeType.Key;
   raw: string;
 
   // Note: Array for keys with dots
@@ -95,38 +113,38 @@ export type Value<TInlineArrayItem = unknown> =
 // a = "string"
 //     ^------^
 export interface String extends Node {
-  type: 'string';
+  type: NodeType.String;
   raw: string;
   value: string;
 }
 
 export interface Integer extends Node {
-  type: 'integer';
+  type: NodeType.Integer;
   raw: string;
   value: number;
 }
 
 export interface Float extends Node {
-  type: 'float';
+  type: NodeType.Float;
   raw: string;
   value: number;
 }
 
 export interface Boolean extends Node {
-  type: 'boolean';
+  type: NodeType.Boolean;
 
   // Only `true` and `false` are permitted -> don't need separate raw and value
   value: boolean;
 }
 
 export interface DateTime extends Node {
-  type: 'date-time';
+  type: NodeType.DateTime;
   raw: string;
   value: Date;
 }
 
 export interface InlineArray<TItem = unknown> extends Node {
-  type: 'inline-array';
+  type: NodeType.InlineArray;
   items: InlineArrayItem<TItem>[];
 }
 
@@ -137,13 +155,13 @@ export interface InlineArray<TItem = unknown> extends Node {
 //   ^---^ ^-^  ^-^
 //
 export interface InlineArrayItem<TItem = unknown> extends Node {
-  type: 'inline-array-item';
+  type: NodeType.InlineArrayItem;
   item: TItem;
   comma: boolean;
 }
 
 export interface InlineTable extends Node {
-  type: 'inline-table';
+  type: NodeType.InlineTable;
   items: InlineTableItem;
 }
 
@@ -153,19 +171,19 @@ export interface InlineTable extends Node {
 //   ^------^     ^--------^
 //
 export interface InlineTableItem extends Node {
-  type: 'inline-table-item';
+  type: NodeType.InlineTableItem;
   item: KeyValue;
   comma: boolean;
 }
 
 // loc starts at "#" and goes to end of comment (trailing whitespace ignored)
 export interface Comment extends Node {
-  type: 'comment';
+  type: NodeType.Comment;
   raw: string;
 }
 
 // Use structural sharing with token to avoid extra allocations
-export type Node = Token & {
-  token_type: Token['token_type'] | null;
-  type: string;
+export type Node = Partial<Token> & {
+  loc: Location;
+  type: NodeType;
 };

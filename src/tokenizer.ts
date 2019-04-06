@@ -1,6 +1,16 @@
+export enum TokenType {
+  Bracket = 'Bracket',
+  Curly = 'Curly',
+  Equal = 'Equal',
+  Comma = 'Comma',
+  Comment = 'Comment',
+  String = 'String'
+}
+
 export interface Token {
-  token_type: 'bracket' | 'curly' | 'equal' | 'comma' | 'comment' | 'quoted' | 'bare';
+  token_type: TokenType;
   raw: string;
+  parts?: string[];
   loc: Location;
 }
 
@@ -47,7 +57,7 @@ export function tokenize(input: string): Token[] {
       current += step;
       char = input[current];
     };
-    const special = (token_type: Token['token_type']) => {
+    const special = (token_type: TokenType) => {
       tokens.push({ token_type, raw: char, loc: location(current, current + 1) });
       current++;
     };
@@ -59,19 +69,19 @@ export function tokenize(input: string): Token[] {
 
     // Handle special characters: [, ], {, }, =, comma
     if (char === '[' || char === ']') {
-      special('bracket');
+      special(TokenType.Bracket);
       continue;
     }
     if (char === '{' || char === '}') {
-      special('curly');
+      special(TokenType.Curly);
       continue;
     }
     if (char === '=') {
-      special('equal');
+      special(TokenType.Equal);
       continue;
     }
     if (char === ',') {
-      special('comma');
+      special(TokenType.Comma);
       continue;
     }
 
@@ -85,7 +95,7 @@ export function tokenize(input: string): Token[] {
       }
 
       tokens.push({
-        token_type: 'comment',
+        token_type: TokenType.Comment,
         raw,
         loc: location(start, current)
       });
@@ -107,7 +117,7 @@ export function tokenize(input: string): Token[] {
       current += 3;
 
       tokens.push({
-        token_type: 'quoted',
+        token_type: TokenType.String,
         raw,
         loc: location(start, current + 1)
       });
@@ -131,7 +141,7 @@ export function tokenize(input: string): Token[] {
       current += 3;
 
       tokens.push({
-        token_type: 'quoted',
+        token_type: TokenType.String,
         raw,
         loc: location(start, current + 1)
       });
@@ -169,12 +179,12 @@ export function tokenize(input: string): Token[] {
     let raw = '';
     let double_quoted = false;
     let single_quoted = false;
-    let dotted = false;
+    let parts = [];
 
     while (current < input.length) {
       raw += char;
 
-      if (char === DOT && !(double_quoted || single_quoted)) dotted = true;
+      if (char === DOT && !(double_quoted || single_quoted)) parts.push(raw);
       if (char === DOUBLE_QUOTE) double_quoted = !double_quoted;
       if (char === SINGLE_QUOTE) single_quoted = !single_quoted;
 
@@ -213,12 +223,10 @@ export function tokenize(input: string): Token[] {
       throw new Error(`Un-closed string literal found starting at ${start} (${raw})`);
     }
 
-    const token_type =
-      (raw[0] === DOUBLE_QUOTE || raw[0] === SINGLE_QUOTE) && !dotted ? 'quoted' : 'bare';
-
     tokens.push({
-      token_type,
+      token_type: TokenType.String,
       raw,
+      parts,
       loc: location(start, current)
     });
   }
@@ -230,7 +238,7 @@ function checkThree(input: string, current: number, check: string) {
   return input[current] === check && input[current + 1] === check && input[current + 2] === check;
 }
 
-function findLines(input: string): number[] {
+export function findLines(input: string): number[] {
   // exec is stateful, so create new regexp each time
   const BY_NEW_LINE = /[\r\n|\n]/g;
   const indexes: number[] = [];
@@ -255,7 +263,7 @@ function findLines(input: string): number[] {
 // e = 5: 1 -> 2, 5 - (3 + 1 || 0) = 1
 // g = 8: 2 -> 3, 8 - (7 + 1 || 0) = 0
 
-function findPosition(lines: number[], index: number): Position {
+export function findPosition(lines: number[], index: number): Position {
   const line = lines.findIndex(line_index => line_index >= index) + 1;
   const column = index - (lines[line - 2] + 1 || 0);
 
