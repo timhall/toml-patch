@@ -1,3 +1,5 @@
+import { Token, Location } from './tokenizer';
+
 export interface Document extends Node {
   type: 'document';
   body: Array<KeyValue | Table | TableArray | Comment>;
@@ -24,7 +26,7 @@ export interface Table extends Node {
 // [  key  ]
 // ^-------^
 export interface TableKey extends Node {
-  type: 'tablekey';
+  type: 'table-key';
   value: Key;
   comment: Comment | null;
 }
@@ -39,7 +41,7 @@ export interface TableKey extends Node {
 // # details
 //         ^ end
 export interface TableArray extends Node {
-  type: 'tablearray';
+  type: 'table-array';
   key: TableArrayKey;
   items: Array<KeyValue | Table | TableArray | Comment>;
 }
@@ -49,7 +51,7 @@ export interface TableArray extends Node {
 // [[  key  ]]
 // ^---------^
 export interface TableArrayKey extends Node {
-  type: 'tablearraykey';
+  type: 'table-array-key';
   value: Key;
   comment: Comment | null;
 }
@@ -59,7 +61,7 @@ export interface TableArrayKey extends Node {
 // key="value" # note
 // ^----------------^
 export interface KeyValue extends Node {
-  type: 'keyvalue';
+  type: 'key-value';
   key: Key;
   value: Value;
 
@@ -118,13 +120,13 @@ export interface Boolean extends Node {
 }
 
 export interface DateTime extends Node {
-  type: 'datetime';
+  type: 'date-time';
   raw: string;
   value: Date;
 }
 
 export interface InlineArray<TItem = unknown> extends Node {
-  type: 'inlinearray';
+  type: 'inline-array';
   items: InlineArrayItem<TItem>[];
 }
 
@@ -135,13 +137,13 @@ export interface InlineArray<TItem = unknown> extends Node {
 //   ^---^ ^-^  ^-^
 //
 export interface InlineArrayItem<TItem = unknown> extends Node {
-  type: 'inlinearrayitem';
+  type: 'inline-array-item';
   item: TItem;
   comma: boolean;
 }
 
 export interface InlineTable extends Node {
-  type: 'inlinetable';
+  type: 'inline-table';
   items: InlineTableItem;
 }
 
@@ -151,7 +153,7 @@ export interface InlineTable extends Node {
 //   ^------^     ^--------^
 //
 export interface InlineTableItem extends Node {
-  type: 'inlinetableitem';
+  type: 'inline-table-item';
   item: KeyValue;
   comma: boolean;
 }
@@ -162,18 +164,8 @@ export interface Comment extends Node {
   raw: string;
 }
 
-export interface Node {
+// Use structural sharing with token to avoid extra allocations
+export type Node = Token & {
+  token_type: Token['token_type'] | null;
   type: string;
-  loc: SourceLocation | null;
-}
-
-export interface SourceLocation {
-  start: Position;
-  end: Position;
-}
-
-export interface Position {
-  // Note: line is 1-indexed while column is 0-indexed
-  line: number;
-  column: number;
-}
+};
