@@ -25,16 +25,13 @@ export interface Document extends Node {
   body: Array<KeyValue | Table | TableArray | Comment>;
 }
 
-// comments are included in loc when "internal" to table
-//
-// v start
-// [table]
-// a="b"
-// # included in table
-// c="d"
-//     ^ end
-// # excluded from table (included in parent)
-// [another]
+// v-------|
+// [table] |
+// b = "c" |
+//         |
+// # note  |
+//      ^--|
+// [b]
 export interface Table extends Node {
   type: NodeType.Table;
   key: TableKey;
@@ -50,15 +47,13 @@ export interface TableKey extends Node {
   value: Key;
 }
 
-// comments are included in loc
-// (as opposed to excluded from loc in KeyValue)
-//
+// v---------|
+// [[array]] |
+// a="b"     |
+//           |
+// # details |
+//         ^-|
 // [[array]]
-// ^ start
-// a="b"
-//
-// # details
-//         ^ end
 export interface TableArray extends Node {
   type: NodeType.TableArray;
   key: TableArrayKey;
@@ -74,10 +69,8 @@ export interface TableArrayKey extends Node {
   value: Key;
 }
 
-// comments are included for loc
-//
 // key="value" # note
-// ^----------------^
+// ^---------^
 export interface KeyValue extends Node {
   type: NodeType.KeyValue;
   key: Key;
@@ -85,9 +78,6 @@ export interface KeyValue extends Node {
 
   // Column index (0-based) of equals sign
   equals: number;
-
-  // Note: Use array to handle multiple comments in multiline arrays
-  comments: Comment[] | null;
 }
 
 export interface Key extends Node {
@@ -133,7 +123,8 @@ export interface Float extends Node {
 export interface Boolean extends Node {
   type: NodeType.Boolean;
 
-  // Only `true` and `false` are permitted -> don't need separate raw and value
+  // Only `true` and `false` are permitted
+  // -> don't need separate raw and value
   value: boolean;
 }
 
@@ -153,7 +144,6 @@ export interface InlineArray<TItem = unknown> extends Node {
 //
 // [ "a"  ,"b", "c"  ]
 //   ^---^ ^-^  ^-^
-//
 export interface InlineArrayItem<TItem = unknown> extends Node {
   type: NodeType.InlineArrayItem;
   item: TItem;
@@ -169,7 +159,6 @@ export interface InlineTable extends Node {
 //
 // { a="b"   ,    c =    "d"   }
 //   ^------^     ^--------^
-//
 export interface InlineTableItem extends Node {
   type: NodeType.InlineTableItem;
   item: KeyValue;
@@ -177,6 +166,9 @@ export interface InlineTableItem extends Node {
 }
 
 // loc starts at "#" and goes to end of comment (trailing whitespace ignored)
+//
+// # comment here
+// ^------------^
 export interface Comment extends Node {
   type: NodeType.Comment;
   raw: string;

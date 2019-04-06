@@ -10,7 +10,6 @@ export enum TokenType {
 export interface Token {
   token_type: TokenType;
   raw: string;
-  parts?: string[];
   loc: Location;
 }
 
@@ -27,12 +26,9 @@ export interface Position {
 
 const IS_WHITESPACE = /\s/;
 const IS_NEW_LINE = /(\r\n|\n)/;
-const TRIPLE_SINGLE_QUOTE = `'''`;
-const TRIPLE_DOUBLE_QUOTE = `"""`;
 const IS_VALID_LEADING_CHARACTER = /[\w,\d,\",\',\+,\-,\_]/;
 const DOUBLE_QUOTE = `"`;
 const SINGLE_QUOTE = `'`;
-const DOT = '.';
 const SPACE = ' ';
 const ESCAPE = '\\';
 const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
@@ -102,42 +98,19 @@ export function tokenize(input: string): Token[] {
       continue;
     }
 
-    // Multi-line literal strings = no escaping
-    if (checkThree(input, current, SINGLE_QUOTE)) {
+    // Multi-line literals or strings = no escaping
+    const multiline_char = checkThree(input, current, SINGLE_QUOTE);
+    if (multiline_char) {
       const start = current;
-      let raw = TRIPLE_SINGLE_QUOTE;
+      let raw = multiline_char + multiline_char + multiline_char;
       next(3);
 
-      while (!checkThree(input, current, SINGLE_QUOTE) && current < input.length) {
+      while (!checkThree(input, current, multiline_char) && current < input.length) {
         raw += char;
         next();
       }
 
-      raw += TRIPLE_SINGLE_QUOTE;
-      current += 3;
-
-      tokens.push({
-        token_type: TokenType.String,
-        raw,
-        loc: location(start, current + 1)
-      });
-
-      current++;
-      continue;
-    }
-
-    // Multi-line string = escaping supported, but not relevant here
-    if (checkThree(input, current, DOUBLE_QUOTE)) {
-      const start = current;
-      let raw = TRIPLE_DOUBLE_QUOTE;
-      next(3);
-
-      while (!checkThree(input, current, DOUBLE_QUOTE) && current < input.length) {
-        raw += char;
-        next();
-      }
-
-      raw += TRIPLE_DOUBLE_QUOTE;
+      raw += multiline_char + multiline_char + multiline_char;
       current += 3;
 
       tokens.push({
@@ -179,15 +152,12 @@ export function tokenize(input: string): Token[] {
     let raw = '';
     let double_quoted = false;
     let single_quoted = false;
-    let parts = [];
 
     while (current < input.length) {
-      raw += char;
-
-      if (char === DOT && !(double_quoted || single_quoted)) parts.push(raw);
       if (char === DOUBLE_QUOTE) double_quoted = !double_quoted;
       if (char === SINGLE_QUOTE) single_quoted = !single_quoted;
 
+      raw += char;
       next();
 
       // If next character is escape and currently double-quoted,
@@ -226,7 +196,6 @@ export function tokenize(input: string): Token[] {
     tokens.push({
       token_type: TokenType.String,
       raw,
-      parts,
       loc: location(start, current)
     });
   }
@@ -234,8 +203,13 @@ export function tokenize(input: string): Token[] {
   return tokens;
 }
 
-function checkThree(input: string, current: number, check: string) {
-  return input[current] === check && input[current + 1] === check && input[current + 2] === check;
+function checkThree(input: string, current: number, check: string): false | string {
+  return (
+    input[current] === check &&
+    input[current + 1] === check &&
+    input[current + 2] === check &&
+    check
+  );
 }
 
 export function findLines(input: string): number[] {

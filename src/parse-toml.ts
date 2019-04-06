@@ -35,17 +35,6 @@ export default function parseTOML(input: string): Document {
     };
     const step = () => current++;
 
-    const isTrailingComment = () => {
-      if (token.token_type !== TokenType.Comment) return false;
-
-      let skip = 1;
-      while (peek(skip).token_type === TokenType.Comment) {
-        skip++;
-      }
-
-      return peek(skip).token_type === TokenType.Bracket;
-    };
-
     if (token.token_type === TokenType.Comment) {
       // 1. Comment
       //
@@ -61,8 +50,12 @@ export default function parseTOML(input: string): Document {
 
       step();
       return comment;
-    } else if (token.token_type === TokenType.Bracket && peek().token_type === TokenType.Bracket) {
-      // 2. TableArray
+    } else if (token.token_type === TokenType.Bracket) {
+      // 2. Table or TableArray
+      //
+      // [ key ]
+      // ^-----^
+      //   ^-^
       //
       // [[ key ]]
       // ^ ------^  TableArrayKey
@@ -73,17 +66,27 @@ export default function parseTOML(input: string): Document {
       // d = "f"  <
       //
       // ...
-      if (token.raw !== '[' || peek().raw !== '[') {
+      const type = peek().token_type === TokenType.Bracket ? NodeType.TableArray : NodeType.Table;
+      const is_table = type === NodeType.Table;
+
+      if (is_table && token.raw !== '[') {
+        throw new Error(`Expected table opening "[", found ${token}`);
+      }
+      if (!is_table && (token.raw !== '[' || peek().raw !== '[')) {
         throw new Error(`Expected array of tables opening "[[", found ${token} and ${peek()}`);
       }
 
       // Set start location from opening tag
-      const key: TableArrayKey = convert(token, node => {
-        node.type = NodeType.TableArrayKey;
-      });
+      const key = is_table
+        ? (convert(token, node => {
+            node.type = NodeType.TableKey;
+          }) as TableKey)
+        : (convert(token, node => {
+            node.type = NodeType.TableArrayKey;
+          }) as TableArrayKey);
 
       // Skip to token for key value
-      token = next(2);
+      token = type === NodeType.TableArray ? next() : next(2);
 
       key.value = convert(token, node => {
         node.type = NodeType.Key;
@@ -92,106 +95,36 @@ export default function parseTOML(input: string): Document {
 
       token = next();
 
-      if (token.raw !== ']' || peek().raw !== ']') {
+      if (is_table && token.raw !== ']') {
+        throw new Error(`Expected table closing "]", found ${token}`);
+      }
+      if (!is_table && (token.raw !== ']' || peek().raw !== ']')) {
         throw new Error(`Expected array of tables closing "]]", found ${token} and ${peek()}`);
       }
 
       // Set end location from closing tag
-      token = next();
+      if (!is_table) token = next();
       key.loc.end = token.loc.end;
 
       // Add child items
-      //
-      // Note: semantically, parser considers trailing comment lines
-      // to be part of next block or at least detached
-      //
-      // ```toml
-      // [a]
-      // # note about name
-      // name = "Tim"
-      //
-      // # note about b
-      // [b]
-      // ```
-      //
-      // "# note about b" is likely "attached" to table b, not table a
-      // For flexibility, parser considers it separate block
       const items: Array<KeyValue | Comment> = [];
-      while (token.token_type !== TokenType.Bracket && !isTrailingComment()) {
+      while (token.token_type !== TokenType.Bracket) {
         items.push(walkBlock() as (KeyValue | Comment));
         token = tokens[current];
       }
 
-      // (no step(), already check next token in items loop above)
-
+      // (no step(), already stepped to next token in items loop above)
       return {
-        type: NodeType.TableArray,
+        type: is_table ? NodeType.Table : NodeType.TableArray,
         loc: {
           start: key.loc.start,
           end: items.length ? items[items.length - 1].loc.end : key.loc.end
         },
         key,
         items
-      };
-    } else if (token.token_type === TokenType.Bracket) {
-      // 3. Table
-      //
-      // [ key ]
-      // ^-----^   TableKey
-      //   ^-^     Key
-      //
-      // a = "b" < Items
-      // # c     |
-      // d = "f" <
-      //
-      // ...
-      if (token.raw !== '[') {
-        throw new Error(`Expected table opening "[", found ${token}`);
-      }
-
-      // Set start location from opening tag
-      const key: TableKey = convert(token, node => {
-        node.type = NodeType.TableKey;
-      });
-
-      // Skip to token for key value
-      token = next();
-
-      key.value = convert(token, node => {
-        node.type = NodeType.Key;
-        node.value = parseKey(token.raw);
-      });
-
-      token = next();
-
-      if (token.raw !== ']') {
-        throw new Error(`Expected table closing "]", found ${token}`);
-      }
-
-      // Set end location from closing tag
-      key.loc.end = token.loc.end;
-
-      // Add child items
-      // (see TableArray for details)
-      const items: Array<KeyValue | Comment> = [];
-      while (token.token_type !== TokenType.Bracket && !isTrailingComment()) {
-        items.push(walkBlock() as (KeyValue | Comment));
-        token = tokens[current];
-      }
-
-      // (no step(), already check next token in items loop above)
-
-      return {
-        type: NodeType.Table,
-        loc: {
-          start: key.loc.start,
-          end: items.length ? items[items.length - 1].loc.end : key.loc.end
-        },
-        key,
-        items
-      };
+      } as Table | TableArray;
     } else if (token.token_type === TokenType.String) {
-      // 4. KeyValue
+      // 3. KeyValue
       if (peek().token_type !== TokenType.Equal) {
         throw new Error(`Expected key = value, found ${token} and ${peek()}`);
       }
@@ -204,8 +137,7 @@ export default function parseTOML(input: string): Document {
       next();
       const equals = token.loc.start.column;
 
-      const [value, comments] = walkValue();
-      const last_comment = comments[comments.length - 1];
+      const value = walkValue();
 
       step();
       return {
@@ -214,20 +146,16 @@ export default function parseTOML(input: string): Document {
         value,
         loc: {
           start: key.loc.start,
-          end:
-            last_comment && last_comment.loc.end.line === value.loc.end.line
-              ? last_comment.loc.end
-              : value.loc.end
+          end: value.loc.end
         },
-        equals,
-        comments
+        equals
       };
     } else {
       throw new Error(`Unexpected token ${token}`);
     }
   }
 
-  function walkValue(): [Value, Comment[]] {
+  function walkValue(): Value {
     // TODO
     const value = {
       type: NodeType.Integer,
@@ -235,9 +163,8 @@ export default function parseTOML(input: string): Document {
       raw: '0',
       value: 0
     } as Integer;
-    const comments: Comment[] = [];
 
-    return [value, comments];
+    return value;
   }
 
   let document: Document = {
