@@ -1,5 +1,5 @@
 export interface Token {
-  type: 'bracket' | 'equal' | 'comment' | 'quoted' | 'bare';
+  type: 'bracket' | 'curly' | 'equal' | 'comma' | 'comment' | 'quoted' | 'bare';
   value: string;
   start: number;
   end: number;
@@ -7,13 +7,16 @@ export interface Token {
 
 const WHITESPACE = /\s/;
 const NEW_LINE = /\n/;
-const DOUBLE_QUOTE = `"`;
-const TRIPLE_DOUBLE_QUOTE = `"""`;
-const SINGLE_QUOTE = `'`;
 const TRIPLE_SINGLE_QUOTE = `'''`;
+const TRIPLE_DOUBLE_QUOTE = `"""`;
+const VALID_CHARACTERS = /[\w,\d,\",\',\+,\-,\_]/;
+const DOUBLE_QUOTE = `"`;
+const SINGLE_QUOTE = `'`;
+const DOT = '.';
+const SPACE = ' ';
 const ESCAPE = '\\';
 const FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
-const FULL_TIME = /(\d{2})-(\d{2})-(\d{2})/;
+const FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 
 export function tokenize(input: string): Token[] {
   let current = 0;
@@ -22,53 +25,53 @@ export function tokenize(input: string): Token[] {
   while (current < input.length) {
     let char = input[current];
 
+    const next = (step: number = 1) => {
+      current += step;
+      char = input[current];
+    };
+    const special = (type: Token['type']) => {
+      tokens.push({ type, value: char, start: current, end: current + 1 });
+      current++;
+    };
+
     if (WHITESPACE.test(char)) {
       current++;
       continue;
     }
 
-    // 1. Bracket (open or closing, single or double)
+    // Handle special characters: [, ], {, }, =, comma
     if (char === '[' || char === ']') {
-      tokens.push({
-        type: 'bracket',
-        value: char,
-        start: current,
-        end: current + 1
-      });
-
-      current++;
+      special('bracket');
       continue;
     }
-
-    // 2. Equal sign
+    if (char === '{' || char === '}') {
+      special('curly');
+      continue;
+    }
     if (char === '=') {
-      tokens.push({
-        type: 'equal',
-        value: char,
-        start: current,
-        end: current + 1
-      });
-
-      current++;
+      special('equal');
+      continue;
+    }
+    if (char === ',') {
+      special('comma');
       continue;
     }
 
-    // 3. Comment
+    // Handle comments = # -> EOL
     if (char === '#') {
       const start = current;
       let value = '';
       while (!NEW_LINE.test(char) && current < input.length) {
         value += char;
-        char = input[++current];
+        next();
       }
 
       tokens.push({
         type: 'comment',
         value,
         start,
-        end: current - 1
+        end: current
       });
-
       continue;
     }
 
@@ -76,11 +79,11 @@ export function tokenize(input: string): Token[] {
     if (checkThree(input, current, SINGLE_QUOTE)) {
       const start = current;
       let value = TRIPLE_SINGLE_QUOTE;
-      current += 3;
+      next(3);
 
       while (!checkThree(input, current, SINGLE_QUOTE) && current < input.length) {
         value += char;
-        char = input[++current];
+        next();
       }
 
       value += TRIPLE_SINGLE_QUOTE;
@@ -90,20 +93,22 @@ export function tokenize(input: string): Token[] {
         type: 'quoted',
         value,
         start,
-        end: current
+        end: current + 1
       });
+
+      current++;
+      continue;
     }
 
-    // Multi-line string
-    // Note: While escaping is supported, there is no way for """ to match escaped portion
+    // Multi-line string = escaping supported, but not relevant here
     if (checkThree(input, current, DOUBLE_QUOTE)) {
       const start = current;
       let value = TRIPLE_DOUBLE_QUOTE;
-      current += 3;
+      next(3);
 
       while (!checkThree(input, current, DOUBLE_QUOTE) && current < input.length) {
         value += char;
-        char = input[++current];
+        next();
       }
 
       value += TRIPLE_DOUBLE_QUOTE;
@@ -113,62 +118,22 @@ export function tokenize(input: string): Token[] {
         type: 'quoted',
         value,
         start,
-        end: current
+        end: current + 1
       });
+
+      current++;
+      continue;
     }
 
-    // Literal string = no escaping
-    if (char === SINGLE_QUOTE) {
-      const start = current;
-      let value = char;
-      current++;
-
-      while (char !== SINGLE_QUOTE && current < input.length) {
-        value += char;
-        char = input[++current];
-      }
-
-      value += SINGLE_QUOTE;
-      current++;
-
-      tokens.push({
-        type: 'quoted',
-        value,
-        start,
-        end: current
-      });
-    }
-    if (char === DOUBLE_QUOTE) {
-      const start = current;
-      let value = char;
-      current++;
-
-      while (char !== DOUBLE_QUOTE && current < input.length) {
-        value += char;
-        char = input[++current];
-
-        // For escape character, skip to next to avoid \" check
-        if (char === ESCAPE) {
-          value += char;
-          char = input[++current];
-        }
-      }
-
-      value += DOUBLE_QUOTE;
-      current++;
-
-      tokens.push({
-        type: 'quoted',
-        value,
-        start,
-        end: current
-      });
-    }
-
-    // bare = key, integer, float, boolean, datetime
+    // Remaining possibilities: keys, strings, literals, integer, float, boolean
     //
-    // For the most part, just look for next whitespace
-    // BUT See https://github.com/toml-lang/toml#offset-date-time
+    // Special cases:
+    // "..." -> quoted
+    // '...' -> quoted
+    // "...".'...' -> bare
+    // 0000-00-00 00:00:00 -> bare
+    //
+    // See https://github.com/toml-lang/toml#offset-date-time
     //
     // | For the sake of readability, you may replace the T delimiter between date and time with a space (as permitted by RFC 3339 section 5.6).
     // | `odt4 = 1979-05-27 07:32:00Z`
@@ -180,31 +145,65 @@ export function tokenize(input: string): Token[] {
     // | readability, to specify a full-date and full-time separated by
     // | (say) a space character.
 
+    // First, check for invalid characters
+    if (!VALID_CHARACTERS.test(char)) {
+      throw new Error(`Unsupported character "${char}" found at ${current}`);
+    }
+
     const start = current;
     let value = '';
+    let double_quoted = false;
+    let single_quoted = false;
+    let dotted = false;
 
-    while (!WHITESPACE.test(char) && current < input.length) {
+    while (current < input.length) {
       value += char;
-      char = input[++current];
 
-      if (WHITESPACE.test(char) && FULL_DATE.test(value)) {
-        // 1. Check if value is full date (above)
-        // 2. Check if following value is full time
-        const possibly_time = input.substr(current + 1, 8);
-        if (FULL_TIME.test(possibly_time)) {
-          char = input[++current];
+      if (char === DOT && !(double_quoted || single_quoted)) dotted = true;
+      if (char === DOUBLE_QUOTE) double_quoted = !double_quoted;
+      if (char === SINGLE_QUOTE) single_quoted = !single_quoted;
+
+      next();
+
+      // If next character is escape and currently double-quoted,
+      // check for escaped quote
+      if (double_quoted && char === ESCAPE) {
+        if (input[current + 1] === DOUBLE_QUOTE) {
+          value += ESCAPE + DOUBLE_QUOTE;
+          next(2);
         }
       }
+
+      // If next character is whitespace,
+      // check if value is full date and following is full time
+      if (char === SPACE && FULL_DATE.test(value)) {
+        const possibly_time = input.substr(current + 1, 8);
+        if (FULL_TIME.test(possibly_time)) {
+          value += SPACE;
+          next();
+        }
+      }
+
+      if (
+        !(double_quoted || single_quoted) &&
+        (WHITESPACE.test(char) || char === ',' || char === ']')
+      )
+        break;
+    }
+
+    if (double_quoted) {
+      throw new Error(`Un-closed string found starting at ${start} (${value})`);
+    }
+    if (single_quoted) {
+      throw new Error(`Un-closed string literal found starting at ${start} (${value})`);
     }
 
     tokens.push({
-      type: 'bare',
+      type: (value[0] === DOUBLE_QUOTE || value[0] === SINGLE_QUOTE) && !dotted ? 'quoted' : 'bare',
       value,
       start,
-      end: current - 1
+      end: current
     });
-
-    current++;
   }
 
   return tokens;

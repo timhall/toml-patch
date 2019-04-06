@@ -11,20 +11,27 @@
   "module": "lib/toml.es.js",
   "browser": "lib/toml.umd.min.js",
   "scripts": {
-    "test": "exit 0",
+    "test": "jest",
     "build": "rollup -c"
   },
-  "prettier": {
-    "singleQuote": true,
-    "printWidth": 100
-  },
   "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "jest": "^24.7.1",
     "rollup": "^1.9.0",
     "rollup-plugin-dts": "^0.14.0",
     "rollup-plugin-filesize": "^6.0.1",
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript": "^1.0.1",
+    "ts-jest": "^24.0.2",
     "tslib": "^1.9.3",
     "typescript": "^3.4.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "preset": "ts-jest"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100
   }
 }
