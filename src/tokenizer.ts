@@ -24,15 +24,16 @@ export interface Position {
   column: number;
 }
 
-const IS_WHITESPACE = /\s/;
-const IS_NEW_LINE = /(\r\n|\n)/;
+export const IS_WHITESPACE = /\s/;
+export const IS_NEW_LINE = /(\r\n|\n)/;
+export const DOUBLE_QUOTE = `"`;
+export const SINGLE_QUOTE = `'`;
+export const SPACE = ' ';
+export const ESCAPE = '\\';
+export const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
+export const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
+
 const IS_VALID_LEADING_CHARACTER = /[\w,\d,\",\',\+,\-,\_]/;
-const DOUBLE_QUOTE = `"`;
-const SINGLE_QUOTE = `'`;
-const SPACE = ' ';
-const ESCAPE = '\\';
-const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
-const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 
 export function tokenize(input: string): Token[] {
   let current = 0;

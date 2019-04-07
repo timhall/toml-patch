@@ -1,9 +1,8 @@
-const DOUBLE_QUOTE = `"`;
-const SINGLE_QUOTE = `'`;
+import { DOUBLE_QUOTE, SINGLE_QUOTE, ESCAPE } from './tokenizer';
+
 const TRIPLE_DOUBLE_QUOTE = `"""`;
 const TRIPLE_SINGLE_QUOTE = `'''`;
 const DOT = `.`;
-const ESCAPE = '\\';
 const LF = '\\n';
 const CRLF = '\\r\\n';
 const IS_CRLF = /\r\n/g;

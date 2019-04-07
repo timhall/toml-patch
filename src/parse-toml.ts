@@ -18,7 +18,21 @@ import {
   InlineArray,
   Comment
 } from './ast';
-import { Token, TokenType, tokenize, findPosition, findLines } from './tokenizer';
+import {
+  Token,
+  TokenType,
+  tokenize,
+  findPosition,
+  findLines,
+  DOUBLE_QUOTE,
+  SINGLE_QUOTE,
+  IS_FULL_DATE,
+  IS_FULL_TIME
+} from './tokenizer';
+import { parseString, parseKey } from './parse-string';
+
+const TRUE = 'true';
+const FALSE = 'false';
 
 export default function parseTOML(input: string): Document {
   const lines = findLines(input);
@@ -26,14 +40,14 @@ export default function parseTOML(input: string): Document {
 
   let current = 0;
   const peek = (skip: number = 1) => tokens[current + skip];
+  const step = () => current++;
 
   function walkBlock(): KeyValue | Table | TableArray | Comment {
-    let token: Token = tokens[current];
+    let token = tokens[current];
     const next = (skip: number = 1) => {
       current += skip;
       return tokens[current];
     };
-    const step = () => current++;
 
     if (token.token_type === TokenType.Comment) {
       // 1. Comment
@@ -158,6 +172,75 @@ export default function parseTOML(input: string): Document {
   }
 
   function walkValue(): Value {
+    let token = tokens[current];
+
+    if (token.token_type === TokenType.String) {
+      // 1. String
+      if (token.raw[0] === DOUBLE_QUOTE || token.raw[0] === SINGLE_QUOTE) {
+        const value: String = convert(token, node => {
+          node.type = NodeType.String;
+          node.value = parseString(token.raw);
+        });
+
+        step();
+        return value;
+      }
+
+      // 2. Boolean
+      if (token.raw === TRUE || token.raw === FALSE) {
+        const value: Boolean = convert(token, node => {
+          node.type = NodeType.Boolean;
+          node.value = token.raw === TRUE;
+        });
+
+        step();
+        return value;
+      }
+
+      // 3. DateTime
+      if (IS_FULL_DATE.test(token.raw) || IS_FULL_TIME.test(token.raw)) {
+        const value: DateTime = convert(token, node => {
+          node.type = NodeType.DateTime;
+
+          // Possible values:
+          //
+          // Offset Date-Time
+          // | odt1 = 1979-05-27T07:32:00Z
+          // | odt2 = 1979-05-27T00:32:00-07:00
+          // | odt3 = 1979-05-27T00:32:00.999999-07:00
+          // | odt4 = 1979-05-27 07:32:00Z
+          //
+          // Local Date-Time
+          // | ldt1 = 1979-05-27T07:32:00
+          // | ldt2 = 1979-05-27T00:32:00.999999
+          //
+          // Local Date
+          // | ld1 = 1979-05-27
+          //
+          // Local Time
+          // | lt1 = 07:32:00
+          // | lt2 = 00:32:00.999999
+
+          // TODO verify possible types
+          node.value = new Date(token.raw);
+        });
+
+        step();
+        return value;
+      }
+
+      // 4. Float
+      // 5. Integer
+    }
+
+    if (token.token_type === TokenType.Curly) {
+      // 6. InlineTable
+    }
+
+    if (token.token_type === TokenType.Bracket) {
+      // 7. InlineArray
+    }
+
     // TODO
     const value = {
       type: NodeType.Integer,
@@ -191,5 +274,3 @@ export function convert<TInput, TOutput>(
 
   return output as TOutput;
 }
-
-export function parseKey(raw: string): string[] {}
