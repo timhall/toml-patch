@@ -4,6 +4,22 @@ test('should tokenize simple input', () => {
   expect(tokenize(`a = "b"`)).toMatchSnapshot();
 });
 
+test('should tokenize multiline strings', () => {
+  expect(
+    tokenize(`
+    a = "b"
+    c = 'd'
+    e = """
+      f
+    """
+    g = '''
+      h
+    '''
+    "i".'j'.k = "l"
+  `)
+  ).toMatchSnapshot();
+});
+
 const complex = `# This is a TOML document.
 
 title = "TOML Example"

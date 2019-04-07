@@ -99,7 +99,8 @@ export function tokenize(input: string): Token[] {
     }
 
     // Multi-line literals or strings = no escaping
-    const multiline_char = checkThree(input, current, SINGLE_QUOTE);
+    const multiline_char =
+      checkThree(input, current, SINGLE_QUOTE) || checkThree(input, current, DOUBLE_QUOTE);
     if (multiline_char) {
       const start = current;
       let raw = multiline_char + multiline_char + multiline_char;
@@ -116,7 +117,7 @@ export function tokenize(input: string): Token[] {
       tokens.push({
         token_type: TokenType.String,
         raw,
-        loc: location(start, current + 1)
+        loc: location(start, current)
       });
 
       current++;

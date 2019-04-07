@@ -40,10 +40,6 @@ export default function parseTOML(input: string): Document {
       //
       // # line comment
       // ^------------^ Comment
-      //
-      // Note: trailing comments are not parsed as blocks
-      // and instead are part of keys and key-values
-
       const comment: Comment = convert(token, node => {
         node.type = NodeType.Comment;
       });
@@ -54,8 +50,8 @@ export default function parseTOML(input: string): Document {
       // 2. Table or TableArray
       //
       // [ key ]
-      // ^-----^
-      //   ^-^
+      // ^-----^    TableKey
+      //   ^-^      Key
       //
       // [[ key ]]
       // ^ ------^  TableArrayKey
@@ -125,6 +121,11 @@ export default function parseTOML(input: string): Document {
       } as Table | TableArray;
     } else if (token.token_type === TokenType.String) {
       // 3. KeyValue
+      //
+      // key = value
+      // ^-^          key
+      //     ^        equals
+      //       ^---^  value
       if (peek().token_type !== TokenType.Equal) {
         throw new Error(`Expected key = value, found ${token} and ${peek()}`);
       }
@@ -134,9 +135,10 @@ export default function parseTOML(input: string): Document {
         node.value = parseKey(token.raw);
       });
 
-      next();
+      token = next();
       const equals = token.loc.start.column;
 
+      token = next();
       const value = walkValue();
 
       step();
@@ -190,7 +192,4 @@ export function convert<TInput, TOutput>(
   return output as TOutput;
 }
 
-export function parseKey(raw: string): string[] {
-  // TODO
-  return [raw];
-}
+export function parseKey(raw: string): string[] {}

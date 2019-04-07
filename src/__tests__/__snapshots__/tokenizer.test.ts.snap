@@ -1251,6 +1251,225 @@ Array [
 ]
 `;
 
+exports[`should tokenize multiline strings 1`] = `
+Array [
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 2,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 2,
+      },
+    },
+    "raw": "a",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 2,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 2,
+      },
+    },
+    "raw": "=",
+    "token_type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 11,
+        "line": 2,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 2,
+      },
+    },
+    "raw": "\\"b\\"",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 3,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 3,
+      },
+    },
+    "raw": "c",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 3,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 3,
+      },
+    },
+    "raw": "=",
+    "token_type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 11,
+        "line": 3,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 3,
+      },
+    },
+    "raw": "'d'",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 4,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 4,
+      },
+    },
+    "raw": "e",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 4,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 4,
+      },
+    },
+    "raw": "=",
+    "token_type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 6,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 4,
+      },
+    },
+    "raw": "\\"\\"\\"
+      f
+    \\"\\"\\"",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 7,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 7,
+      },
+    },
+    "raw": "g",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 7,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 7,
+      },
+    },
+    "raw": "=",
+    "token_type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 9,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 7,
+      },
+    },
+    "raw": "'''
+      h
+    '''",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 13,
+        "line": 10,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 10,
+      },
+    },
+    "raw": "\\"i\\".'j'.k",
+    "token_type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 15,
+        "line": 10,
+      },
+      "start": Object {
+        "column": 14,
+        "line": 10,
+      },
+    },
+    "raw": "=",
+    "token_type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 19,
+        "line": 10,
+      },
+      "start": Object {
+        "column": 16,
+        "line": 10,
+      },
+    },
+    "raw": "\\"l\\"",
+    "token_type": "String",
+  },
+]
+`;
+
 exports[`should tokenize simple input 1`] = `
 Array [
   Object {
