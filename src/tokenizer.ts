@@ -12,7 +12,7 @@ export enum TokenType {
 }
 
 export interface Token {
-  token_type: TokenType;
+  type: TokenType;
   raw: string;
   loc: Location;
 }
@@ -58,8 +58,8 @@ export function tokenize(input: string): Token[] {
       current += step;
       char = input[current];
     };
-    const special = (token_type: TokenType) => {
-      tokens.push({ token_type, raw: char, loc: location(current, current + 1) });
+    const special = (type: TokenType) => {
+      tokens.push({ type, raw: char, loc: location(current, current + 1) });
       current++;
     };
 
@@ -96,7 +96,7 @@ export function tokenize(input: string): Token[] {
       }
 
       tokens.push({
-        token_type: TokenType.Comment,
+        type: TokenType.Comment,
         raw,
         loc: location(start, current)
       });
@@ -120,7 +120,7 @@ export function tokenize(input: string): Token[] {
       current += 3;
 
       tokens.push({
-        token_type: TokenType.String,
+        type: TokenType.String,
         raw,
         loc: location(start, current)
       });
@@ -200,7 +200,7 @@ export function tokenize(input: string): Token[] {
     }
 
     tokens.push({
-      token_type: TokenType.String,
+      type: TokenType.String,
       raw,
       loc: location(start, current)
     });

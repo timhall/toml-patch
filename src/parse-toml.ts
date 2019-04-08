@@ -57,18 +57,20 @@ export default function parseTOML(input: string): Document {
       return tokens[current];
     };
 
-    if (token.token_type === TokenType.Comment) {
+    if (token.type === TokenType.Comment) {
       // 1. Comment
       //
       // # line comment
       // ^------------^ Comment
-      const comment: Comment = convert(token, node => {
-        node.type = NodeType.Comment;
-      });
+      const comment: Comment = {
+        type: NodeType.Comment,
+        loc: token.loc,
+        raw: token.raw
+      };
 
       step();
       return comment;
-    } else if (token.token_type === TokenType.Bracket) {
+    } else if (token.type === TokenType.Bracket) {
       // 2. Table or TableArray
       //
       // [ key ]
@@ -84,7 +86,7 @@ export default function parseTOML(input: string): Document {
       // d = "f"  <
       //
       // ...
-      const type = peek().token_type === TokenType.Bracket ? NodeType.TableArray : NodeType.Table;
+      const type = peek().type === TokenType.Bracket ? NodeType.TableArray : NodeType.Table;
       const is_table = type === NodeType.Table;
 
       if (is_table && token.raw !== '[') {
@@ -100,20 +102,24 @@ export default function parseTOML(input: string): Document {
 
       // Set start location from opening tag
       const key = is_table
-        ? (convert(token, node => {
-            node.type = NodeType.TableKey;
-          }) as TableKey)
-        : (convert(token, node => {
-            node.type = NodeType.TableArrayKey;
-          }) as TableArrayKey);
+        ? ({
+            type: NodeType.TableKey,
+            loc: token.loc
+          } as Partial<TableKey>)
+        : ({
+            type: NodeType.TableArrayKey,
+            loc: token.loc
+          } as Partial<TableArrayKey>);
 
       // Skip to token for key value
       token = type === NodeType.TableArray ? next(2) : next();
 
-      key.value = convert(token, node => {
-        node.type = NodeType.Key;
-        node.value = parseKey(token.raw);
-      });
+      key.value = {
+        type: NodeType.Key,
+        loc: token.loc,
+        raw: token.raw,
+        value: parseKey(token.raw)
+      };
 
       token = next();
 
@@ -130,13 +136,13 @@ export default function parseTOML(input: string): Document {
 
       // Set end location from closing tag
       if (!is_table) token = next();
-      key.loc.end = token.loc.end;
+      key.loc!.end = token.loc.end;
 
       token = next();
 
       // Add child items
       const items: Array<KeyValue | Comment> = [];
-      while (token && token.token_type !== TokenType.Bracket) {
+      while (token && token.type !== TokenType.Bracket) {
         items.push(walkBlock() as (KeyValue | Comment));
         token = tokens[current];
       }
@@ -145,29 +151,31 @@ export default function parseTOML(input: string): Document {
       return {
         type: is_table ? NodeType.Table : NodeType.TableArray,
         loc: {
-          start: key.loc.start,
-          end: items.length ? items[items.length - 1].loc.end : key.loc.end
+          start: key.loc!.start,
+          end: items.length ? items[items.length - 1].loc.end : key.loc!.end
         },
-        key,
+        key: key as TableKey | TableArrayKey,
         items
       } as Table | TableArray;
-    } else if (token.token_type === TokenType.String) {
+    } else if (token.type === TokenType.String) {
       // 3. KeyValue
       //
       // key = value
       // ^-^          key
       //     ^        equals
       //       ^---^  value
-      if (peek().token_type !== TokenType.Equal) {
+      if (peek().type !== TokenType.Equal) {
         throw new Error(
           `Expected key = value, found ${JSON.stringify(token)} and ${JSON.stringify(peek())}`
         );
       }
 
-      const key: Key = convert(token, node => {
-        node.type = NodeType.Key;
-        node.value = parseKey(token.raw);
-      });
+      const key: Key = {
+        type: NodeType.Key,
+        loc: token.loc,
+        raw: token.raw,
+        value: parseKey(token.raw)
+      };
 
       token = next();
       const equals = token.loc.start.column;
@@ -197,13 +205,15 @@ export default function parseTOML(input: string): Document {
       return tokens[current];
     };
 
-    if (token.token_type === TokenType.String) {
+    if (token.type === TokenType.String) {
       // 1. String
       if (token.raw[0] === DOUBLE_QUOTE || token.raw[0] === SINGLE_QUOTE) {
-        const value: String = convert(token, node => {
-          node.type = NodeType.String;
-          node.value = parseString(token.raw);
-        });
+        const value: String = {
+          type: NodeType.String,
+          loc: token.loc,
+          raw: token.raw,
+          value: parseString(token.raw)
+        };
 
         step();
         return value;
@@ -211,10 +221,11 @@ export default function parseTOML(input: string): Document {
 
       // 2. Boolean
       if (token.raw === TRUE || token.raw === FALSE) {
-        const value: Boolean = convert(token, node => {
-          node.type = NodeType.Boolean;
-          node.value = token.raw === TRUE;
-        });
+        const value: Boolean = {
+          type: NodeType.Boolean,
+          loc: token.loc,
+          value: token.raw === TRUE
+        };
 
         step();
         return value;
@@ -222,36 +233,39 @@ export default function parseTOML(input: string): Document {
 
       // 3. DateTime
       if (IS_FULL_DATE.test(token.raw) || IS_FULL_TIME.test(token.raw)) {
-        const value: DateTime = convert(token, node => {
-          node.type = NodeType.DateTime;
+        // Possible values:
+        //
+        // Offset Date-Time
+        // | odt1 = 1979-05-27T07:32:00Z
+        // | odt2 = 1979-05-27T00:32:00-07:00
+        // | odt3 = 1979-05-27T00:32:00.999999-07:00
+        // | odt4 = 1979-05-27 07:32:00Z
+        //
+        // Local Date-Time
+        // | ldt1 = 1979-05-27T07:32:00
+        // | ldt2 = 1979-05-27T00:32:00.999999
+        //
+        // Local Date
+        // | ld1 = 1979-05-27
+        //
+        // Local Time
+        // | lt1 = 07:32:00
+        // | lt2 = 00:32:00.999999
+        let date: Date;
+        if (!IS_FULL_DATE.test(token.raw)) {
+          // For local time, use local ISO date
+          const [local_date] = new Date().toISOString().split('T');
+          date = new Date(`${local_date}T${token.raw}`);
+        } else {
+          date = new Date(token.raw.replace(' ', 'T'));
+        }
 
-          // Possible values:
-          //
-          // Offset Date-Time
-          // | odt1 = 1979-05-27T07:32:00Z
-          // | odt2 = 1979-05-27T00:32:00-07:00
-          // | odt3 = 1979-05-27T00:32:00.999999-07:00
-          // | odt4 = 1979-05-27 07:32:00Z
-          //
-          // Local Date-Time
-          // | ldt1 = 1979-05-27T07:32:00
-          // | ldt2 = 1979-05-27T00:32:00.999999
-          //
-          // Local Date
-          // | ld1 = 1979-05-27
-          //
-          // Local Time
-          // | lt1 = 07:32:00
-          // | lt2 = 00:32:00.999999
-
-          if (!IS_FULL_DATE.test(token.raw)) {
-            // For local time, use local ISO date
-            const [local_date] = new Date().toISOString().split('T');
-            node.value = new Date(`${local_date}T${token.raw}`);
-          } else {
-            node.value = new Date(token.raw.replace(' ', 'T'));
-          }
-        });
+        const value: DateTime = {
+          type: NodeType.DateTime,
+          loc: token.loc,
+          raw: token.raw,
+          value: date
+        };
 
         step();
         return value;
@@ -264,63 +278,71 @@ export default function parseTOML(input: string): Document {
         IS_NAN.test(token.raw) ||
         (HAS_E.test(token.raw) && !IS_HEX.test(token.raw))
       ) {
-        const value: Float = convert(token, node => {
-          node.type = NodeType.Float;
+        let float;
+        if (IS_INF.test(token.raw)) {
+          float = token.raw === '-inf' ? -Infinity : Infinity;
+        } else if (IS_NAN.test(token.raw)) {
+          float = token.raw === '-nan' ? -NaN : NaN;
+        } else {
+          float = Number(token.raw.replace(IS_DIVIDER, ''));
+        }
 
-          if (IS_INF.test(token.raw)) {
-            node.value = token.raw === '-inf' ? -Infinity : Infinity;
-          } else if (IS_NAN.test(token.raw)) {
-            node.value = token.raw === '-nan' ? -NaN : NaN;
-          } else {
-            node.value = Number(token.raw.replace(IS_DIVIDER, ''));
-          }
-        });
+        const value: Float = {
+          type: NodeType.Float,
+          loc: token.loc,
+          raw: token.raw,
+          value: float
+        };
 
         step();
         return value;
       }
 
       // 5. Integer
-      const value: Integer = convert(token, node => {
-        node.type = NodeType.Integer;
+      let radix = 10;
+      if (IS_HEX.test(token.raw)) {
+        radix = 16;
+      } else if (IS_OCTAL.test(token.raw)) {
+        radix = 8;
+      } else if (IS_BINARY.test(token.raw)) {
+        radix = 2;
+      }
 
-        let radix = 10;
-        if (IS_HEX.test(token.raw)) {
-          radix = 16;
-        } else if (IS_OCTAL.test(token.raw)) {
-          radix = 8;
-        } else if (IS_BINARY.test(token.raw)) {
-          radix = 2;
-        }
+      const int = parseInt(
+        token.raw
+          .replace(IS_DIVIDER, '')
+          .replace(IS_OCTAL, '')
+          .replace(IS_BINARY, ''),
+        radix
+      );
 
-        node.value = parseInt(
-          token.raw
-            .replace(IS_DIVIDER, '')
-            .replace(IS_OCTAL, '')
-            .replace(IS_BINARY, ''),
-          radix
-        );
-      });
+      const value: Integer = {
+        type: NodeType.Integer,
+        loc: token.loc,
+        raw: token.raw,
+        value: int
+      };
 
       step();
       return value;
     }
 
-    if (token.token_type === TokenType.Curly) {
+    if (token.type === TokenType.Curly) {
       if (token.raw !== '{') {
         throw new Error(`Expected opening brace for inline table, found ${JSON.stringify(token)}`);
       }
 
       // 6. InlineTable
-      const value: InlineTable = convert(token, node => {
-        node.type = NodeType.InlineTable;
-        node.items = [];
-      });
+      const value: InlineTable = {
+        type: NodeType.InlineTable,
+        loc: token.loc,
+        items: []
+      };
 
       token = next();
 
-      while (!(token.token_type === TokenType.Curly && token.raw === '}')) {
-        if (token.token_type === TokenType.Comma) {
+      while (!(token.type === TokenType.Curly && token.raw === '}')) {
+        if (token.type === TokenType.Comma) {
           const previous = value.items[value.items.length - 1];
           if (!previous) {
             throw new Error('Found "," without previous value');
@@ -351,7 +373,7 @@ export default function parseTOML(input: string): Document {
         token = tokens[current];
       }
 
-      if (token.token_type !== TokenType.Curly || token.raw !== '}') {
+      if (token.type !== TokenType.Curly || token.raw !== '}') {
         throw new Error(`Expected closing brace "}", found ${JSON.stringify(token)}`);
       }
 
@@ -361,7 +383,7 @@ export default function parseTOML(input: string): Document {
       return value;
     }
 
-    if (token.token_type !== TokenType.Bracket) {
+    if (token.type !== TokenType.Bracket) {
       throw new Error(`Unrecognized token for value: ${JSON.stringify(token)}`);
     }
     if (token.raw !== '[') {
@@ -369,15 +391,16 @@ export default function parseTOML(input: string): Document {
     }
 
     // 7. InlineArray
-    const value: InlineArray = convert(token, node => {
-      node.type = NodeType.InlineArray;
-      node.items = [];
-    });
+    const value: InlineArray = {
+      type: NodeType.InlineArray,
+      loc: token.loc,
+      items: []
+    };
 
     token = next();
 
-    while (!(token.token_type === TokenType.Bracket && token.raw === ']')) {
-      if (token.token_type === TokenType.Comma) {
+    while (!(token.type === TokenType.Bracket && token.raw === ']')) {
+      if (token.type === TokenType.Comma) {
         const previous = value.items[value.items.length - 1];
         if (!previous) {
           throw new Error('Found "," without previous value');
@@ -389,7 +412,7 @@ export default function parseTOML(input: string): Document {
         token = next();
         continue;
       }
-      if (token.token_type === TokenType.Comment) {
+      if (token.type === TokenType.Comment) {
         // TODO
         token = next();
         continue;
@@ -407,7 +430,7 @@ export default function parseTOML(input: string): Document {
       token = tokens[current];
     }
 
-    if (token.token_type !== TokenType.Bracket || token.raw !== ']') {
+    if (token.type !== TokenType.Bracket || token.raw !== ']') {
       throw new Error(`Expected closing bracket "]", found ${JSON.stringify(token)}`);
     }
 
@@ -428,14 +451,4 @@ export default function parseTOML(input: string): Document {
   }
 
   return document;
-}
-
-export function convert<TInput, TOutput>(
-  value: TInput,
-  conversion: (value: Partial<TOutput>) => void
-): TOutput {
-  const output: Partial<TOutput> = value;
-  conversion(output);
-
-  return output as TOutput;
 }

@@ -1,4 +1,4 @@
-import { Token, Location } from './tokenizer';
+import { Location } from './tokenizer';
 
 export enum NodeType {
   Document = 'Document',
@@ -174,8 +174,7 @@ export interface Comment extends Node {
   raw: string;
 }
 
-// Use structural sharing with token to avoid extra allocations
-export type Node = Partial<Token> & {
-  loc: Location;
+export type Node = {
   type: NodeType;
+  loc: Location;
 };
