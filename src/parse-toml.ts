@@ -49,388 +49,6 @@ export default function parseTOML(input: string): Document {
   const tokens = tokenize(input);
   const cursor = new Cursor(tokens);
 
-  function walkBlock(): KeyValue | Table | TableArray | Comment {
-    if (cursor.item!.type === TokenType.Comment) {
-      // 1. Comment
-      //
-      // # line comment
-      // ^------------^ Comment
-      const comment: Comment = {
-        type: NodeType.Comment,
-        loc: cursor.item!.loc,
-        raw: cursor.item!.raw
-      };
-
-      cursor.step();
-      return comment;
-    } else if (cursor.item!.type === TokenType.Bracket) {
-      // 2. Table or TableArray
-      //
-      // [ key ]
-      // ^-----^    TableKey
-      //   ^-^      Key
-      //
-      // [[ key ]]
-      // ^ ------^  TableArrayKey
-      //    ^-^     Key
-      //
-      // a = "b"  < Items
-      // # c      |
-      // d = "f"  <
-      //
-      // ...
-      const type = cursor.peek()!.type === TokenType.Bracket ? NodeType.TableArray : NodeType.Table;
-      const is_table = type === NodeType.Table;
-
-      if (is_table && cursor.item!.raw !== '[') {
-        throw new Error(`Expected table opening "[", found ${JSON.stringify(cursor.item!)}`);
-      }
-      if (!is_table && (cursor.item!.raw !== '[' || cursor.peek()!.raw !== '[')) {
-        throw new Error(
-          `Expected array of tables opening "[[", found ${JSON.stringify(
-            cursor.item!
-          )} and ${JSON.stringify(cursor.peek()!)}`
-        );
-      }
-
-      // Set start location from opening tag
-      const key = is_table
-        ? ({
-            type: NodeType.TableKey,
-            loc: cursor.item!.loc
-          } as Partial<TableKey>)
-        : ({
-            type: NodeType.TableArrayKey,
-            loc: cursor.item!.loc
-          } as Partial<TableArrayKey>);
-
-      // Skip to cursor.item! for key value
-      cursor.step(type === NodeType.TableArray ? 2 : 1);
-
-      key.value = {
-        type: NodeType.Key,
-        loc: cursor.item!.loc,
-        raw: cursor.item!.raw,
-        value: parseKey(cursor.item!.raw)
-      };
-
-      cursor.step();
-
-      if (is_table && cursor.item!.raw !== ']') {
-        throw new Error(`Expected table closing "]", found ${JSON.stringify(cursor.item!)}`);
-      }
-      if (!is_table && (cursor.item!.raw !== ']' || cursor.peek()!.raw !== ']')) {
-        throw new Error(
-          `Expected array of tables closing "]]", found ${JSON.stringify(
-            cursor.item!
-          )} and ${JSON.stringify(cursor.peek()!)}`
-        );
-      }
-
-      // Set end location from closing tag
-      if (!is_table) cursor.step();
-      key.loc!.end = cursor.item!.loc.end;
-
-      cursor.step();
-
-      // Add child items
-      const items: Array<KeyValue | Comment> = [];
-      while (cursor.item! && cursor.item!.type !== TokenType.Bracket) {
-        items.push(walkBlock() as (KeyValue | Comment));
-      }
-
-      // (no cursor.step(), already stepped to next cursor.item! in items loop above)
-      return {
-        type: is_table ? NodeType.Table : NodeType.TableArray,
-        loc: {
-          start: key.loc!.start,
-          end: items.length ? items[items.length - 1].loc.end : key.loc!.end
-        },
-        key: key as TableKey | TableArrayKey,
-        items
-      } as Table | TableArray;
-    } else if (cursor.item!.type === TokenType.String) {
-      // 3. KeyValue
-      //
-      // key = value
-      // ^-^          key
-      //     ^        equals
-      //       ^---^  value
-      if (cursor.peek()!.type !== TokenType.Equal) {
-        throw new Error(
-          `Expected key = value, found ${JSON.stringify(cursor.item!)} and ${JSON.stringify(
-            cursor.peek()!
-          )}`
-        );
-      }
-
-      const key: Key = {
-        type: NodeType.Key,
-        loc: cursor.item!.loc,
-        raw: cursor.item!.raw,
-        value: parseKey(cursor.item!.raw)
-      };
-
-      cursor.step();
-      const equals = cursor.item!.loc.start.column;
-
-      cursor.step();
-      const value = walkValue();
-
-      return {
-        type: NodeType.KeyValue,
-        key,
-        value,
-        loc: {
-          start: key.loc.start,
-          end: value.loc.end
-        },
-        equals
-      };
-    } else {
-      throw new Error(`Unexpected cursor.item! ${JSON.stringify(cursor.item!)}`);
-    }
-  }
-
-  function walkValue(): Value {
-    if (cursor.item!.type === TokenType.String) {
-      // 1. String
-      if (cursor.item!.raw[0] === DOUBLE_QUOTE || cursor.item!.raw[0] === SINGLE_QUOTE) {
-        const value: String = {
-          type: NodeType.String,
-          loc: cursor.item!.loc,
-          raw: cursor.item!.raw,
-          value: parseString(cursor.item!.raw)
-        };
-
-        cursor.step();
-        return value;
-      }
-
-      // 2. Boolean
-      if (cursor.item!.raw === TRUE || cursor.item!.raw === FALSE) {
-        const value: Boolean = {
-          type: NodeType.Boolean,
-          loc: cursor.item!.loc,
-          value: cursor.item!.raw === TRUE
-        };
-
-        cursor.step();
-        return value;
-      }
-
-      // 3. DateTime
-      if (IS_FULL_DATE.test(cursor.item!.raw) || IS_FULL_TIME.test(cursor.item!.raw)) {
-        // Possible values:
-        //
-        // Offset Date-Time
-        // | odt1 = 1979-05-27T07:32:00Z
-        // | odt2 = 1979-05-27T00:32:00-07:00
-        // | odt3 = 1979-05-27T00:32:00.999999-07:00
-        // | odt4 = 1979-05-27 07:32:00Z
-        //
-        // Local Date-Time
-        // | ldt1 = 1979-05-27T07:32:00
-        // | ldt2 = 1979-05-27T00:32:00.999999
-        //
-        // Local Date
-        // | ld1 = 1979-05-27
-        //
-        // Local Time
-        // | lt1 = 07:32:00
-        // | lt2 = 00:32:00.999999
-        let date: Date;
-        if (!IS_FULL_DATE.test(cursor.item!.raw)) {
-          // For local time, use local ISO date
-          const [local_date] = new Date().toISOString().split('T');
-          date = new Date(`${local_date}T${cursor.item!.raw}`);
-        } else {
-          date = new Date(cursor.item!.raw.replace(' ', 'T'));
-        }
-
-        const value: DateTime = {
-          type: NodeType.DateTime,
-          loc: cursor.item!.loc,
-          raw: cursor.item!.raw,
-          value: date
-        };
-
-        cursor.step();
-        return value;
-      }
-
-      // 4. Float
-      if (
-        HAS_DOT.test(cursor.item!.raw) ||
-        IS_INF.test(cursor.item!.raw) ||
-        IS_NAN.test(cursor.item!.raw) ||
-        (HAS_E.test(cursor.item!.raw) && !IS_HEX.test(cursor.item!.raw))
-      ) {
-        let float;
-        if (IS_INF.test(cursor.item!.raw)) {
-          float = cursor.item!.raw === '-inf' ? -Infinity : Infinity;
-        } else if (IS_NAN.test(cursor.item!.raw)) {
-          float = cursor.item!.raw === '-nan' ? -NaN : NaN;
-        } else {
-          float = Number(cursor.item!.raw.replace(IS_DIVIDER, ''));
-        }
-
-        const value: Float = {
-          type: NodeType.Float,
-          loc: cursor.item!.loc,
-          raw: cursor.item!.raw,
-          value: float
-        };
-
-        cursor.step();
-        return value;
-      }
-
-      // 5. Integer
-      let radix = 10;
-      if (IS_HEX.test(cursor.item!.raw)) {
-        radix = 16;
-      } else if (IS_OCTAL.test(cursor.item!.raw)) {
-        radix = 8;
-      } else if (IS_BINARY.test(cursor.item!.raw)) {
-        radix = 2;
-      }
-
-      const int = parseInt(
-        cursor
-          .item!.raw.replace(IS_DIVIDER, '')
-          .replace(IS_OCTAL, '')
-          .replace(IS_BINARY, ''),
-        radix
-      );
-
-      const value: Integer = {
-        type: NodeType.Integer,
-        loc: cursor.item!.loc,
-        raw: cursor.item!.raw,
-        value: int
-      };
-
-      cursor.step();
-      return value;
-    }
-
-    if (cursor.item!.type === TokenType.Curly) {
-      if (cursor.item!.raw !== '{') {
-        throw new Error(
-          `Expected opening brace for inline table, found ${JSON.stringify(cursor.item!)}`
-        );
-      }
-
-      // 6. InlineTable
-      const value: InlineTable = {
-        type: NodeType.InlineTable,
-        loc: cursor.item!.loc,
-        items: []
-      };
-
-      cursor.step();
-
-      while (!(cursor.item!.type === TokenType.Curly && (cursor.item! as Token).raw === '}')) {
-        if ((cursor.item! as Token).type === TokenType.Comma) {
-          const previous = value.items[value.items.length - 1];
-          if (!previous) {
-            throw new Error('Found "," without previous value');
-          }
-
-          previous.comma = true;
-          previous.loc.end = cursor.item!.loc.start;
-
-          cursor.step();
-          continue;
-        }
-
-        const item = walkBlock();
-        if (item.type !== NodeType.KeyValue) {
-          throw new Error(
-            `Only key-values are supported in inline tables, found ${JSON.stringify(item)}`
-          );
-        }
-
-        const inline_item: InlineTableItem = {
-          type: NodeType.InlineTableItem,
-          loc: { start: item.loc.start, end: item.loc.end },
-          item,
-          comma: false
-        };
-
-        value.items.push(inline_item);
-      }
-
-      if (cursor.item!.type !== TokenType.Curly || (cursor.item! as Token).raw !== '}') {
-        throw new Error(`Expected closing brace "}", found ${JSON.stringify(cursor.item!)}`);
-      }
-
-      value.loc.end = cursor.item!.loc.end;
-
-      cursor.step();
-      return value;
-    }
-
-    if (cursor.item!.type !== TokenType.Bracket) {
-      throw new Error(`Unrecognized cursor.item! for value: ${JSON.stringify(cursor.item!)}`);
-    }
-    if (cursor.item!.raw !== '[') {
-      throw new Error(
-        `Expected opening brace for inline array, found ${JSON.stringify(cursor.item!)}`
-      );
-    }
-
-    // 7. InlineArray
-    const value: InlineArray = {
-      type: NodeType.InlineArray,
-      loc: cursor.item!.loc,
-      items: []
-    };
-
-    cursor.step();
-
-    while (!(cursor.item!.type === TokenType.Bracket && (cursor.item! as Token).raw === ']')) {
-      if ((cursor.item! as Token).type === TokenType.Comma) {
-        const previous = value.items[value.items.length - 1];
-        if (!previous) {
-          throw new Error('Found "," without previous value');
-        }
-
-        previous.comma = true;
-        previous.loc.end = cursor.item!.loc.start;
-
-        cursor.step();
-        continue;
-      }
-
-      if ((cursor.item! as Token).type === TokenType.Comment) {
-        // TODO
-        cursor.step();
-        continue;
-      }
-
-      const item = walkValue();
-      const inline_item: InlineArrayItem = {
-        type: NodeType.InlineArrayItem,
-        loc: { start: item.loc.start, end: item.loc.end },
-        item,
-        comma: false
-      };
-
-      value.items.push(inline_item);
-    }
-
-    if (cursor.item!.type !== TokenType.Bracket || (cursor.item! as Token).raw !== ']') {
-      throw new Error(`Expected closing bracket "]", found ${JSON.stringify(cursor.item!)}`);
-    }
-
-    value.loc.end = cursor.item!.loc.end;
-
-    cursor.step();
-    return value;
-  }
-
   let document: Document = {
     type: NodeType.Document,
     loc: { start: { line: 1, column: 0 }, end: findPosition(lines, input.length) },
@@ -438,8 +56,397 @@ export default function parseTOML(input: string): Document {
   };
 
   while (!cursor.done) {
-    document.body.push(walkBlock());
+    document.body.push(walkBlock(cursor));
+    cursor.step();
   }
 
   return document;
+}
+
+function walkBlock(cursor: Cursor<Token>): KeyValue | Table | TableArray | Comment {
+  if (cursor.item!.type === TokenType.Comment) {
+    return comment(cursor);
+  } else if (cursor.item!.type === TokenType.Bracket) {
+    return table(cursor);
+  } else if (cursor.item!.type === TokenType.String) {
+    return keyValue(cursor);
+  } else {
+    throw new Error(`Unexpected token ${JSON.stringify(cursor.item!)}`);
+  }
+}
+
+function walkValue(cursor: Cursor<Token>): Value {
+  if (cursor.item!.type === TokenType.String) {
+    if (cursor.item!.raw[0] === DOUBLE_QUOTE || cursor.item!.raw[0] === SINGLE_QUOTE) {
+      return string(cursor);
+    } else if (cursor.item!.raw === TRUE || cursor.item!.raw === FALSE) {
+      return boolean(cursor);
+    } else if (IS_FULL_DATE.test(cursor.item!.raw) || IS_FULL_TIME.test(cursor.item!.raw)) {
+      return datetime(cursor);
+    } else if (
+      HAS_DOT.test(cursor.item!.raw) ||
+      IS_INF.test(cursor.item!.raw) ||
+      IS_NAN.test(cursor.item!.raw) ||
+      (HAS_E.test(cursor.item!.raw) && !IS_HEX.test(cursor.item!.raw))
+    ) {
+      return float(cursor);
+    } else {
+      return integer(cursor);
+    }
+  } else if (cursor.item!.type === TokenType.Curly) {
+    return inlineTable(cursor);
+  } else {
+    if (cursor.item!.type !== TokenType.Bracket) {
+      throw new Error(`Unrecognized token for value: ${JSON.stringify(cursor.item!)}`);
+    }
+
+    return inlineArray(cursor);
+  }
+}
+
+function comment(cursor: Cursor<Token>): Comment {
+  // # line comment
+  // ^------------^ Comment
+  return {
+    type: NodeType.Comment,
+    loc: cursor.item!.loc,
+    raw: cursor.item!.raw
+  };
+}
+
+function table(cursor: Cursor<Token>): Table | TableArray {
+  // Table or TableArray
+  //
+  // [ key ]
+  // ^-----^    TableKey
+  //   ^-^      Key
+  //
+  // [[ key ]]
+  // ^ ------^  TableArrayKey
+  //    ^-^     Key
+  //
+  // a = "b"  < Items
+  // # c      |
+  // d = "f"  <
+  //
+  // ...
+  const type = cursor.peek()!.type === TokenType.Bracket ? NodeType.TableArray : NodeType.Table;
+  const is_table = type === NodeType.Table;
+
+  if (is_table && cursor.item!.raw !== '[') {
+    throw new Error(`Expected table opening "[", found ${JSON.stringify(cursor.item!)}`);
+  }
+  if (!is_table && (cursor.item!.raw !== '[' || cursor.peek()!.raw !== '[')) {
+    throw new Error(
+      `Expected array of tables opening "[[", found ${JSON.stringify(
+        cursor.item!
+      )} and ${JSON.stringify(cursor.peek()!)}`
+    );
+  }
+
+  // Set start location from opening tag
+  const key = is_table
+    ? ({
+        type: NodeType.TableKey,
+        loc: cursor.item!.loc
+      } as Partial<TableKey>)
+    : ({
+        type: NodeType.TableArrayKey,
+        loc: cursor.item!.loc
+      } as Partial<TableArrayKey>);
+
+  // Skip to cursor.item! for key value
+  cursor.step(type === NodeType.TableArray ? 2 : 1);
+
+  key.value = {
+    type: NodeType.Key,
+    loc: cursor.item!.loc,
+    raw: cursor.item!.raw,
+    value: parseKey(cursor.item!.raw)
+  };
+
+  cursor.step();
+
+  if (is_table && cursor.item!.raw !== ']') {
+    throw new Error(`Expected table closing "]", found ${JSON.stringify(cursor.item!)}`);
+  }
+  if (!is_table && (cursor.item!.raw !== ']' || cursor.peek()!.raw !== ']')) {
+    throw new Error(
+      `Expected array of tables closing "]]", found ${JSON.stringify(
+        cursor.item!
+      )} and ${JSON.stringify(cursor.peek()!)}`
+    );
+  }
+
+  // Set end location from closing tag
+  if (!is_table) cursor.step();
+  key.loc!.end = cursor.item!.loc.end;
+
+  // Add child items
+  const items: Array<KeyValue | Comment> = [];
+  while (!cursor.peekDone() && cursor.peek()!.type !== TokenType.Bracket) {
+    cursor.step();
+    items.push(walkBlock(cursor) as (KeyValue | Comment));
+  }
+
+  return {
+    type: is_table ? NodeType.Table : NodeType.TableArray,
+    loc: {
+      start: key.loc!.start,
+      end: items.length ? items[items.length - 1].loc.end : key.loc!.end
+    },
+    key: key as TableKey | TableArrayKey,
+    items
+  } as Table | TableArray;
+}
+
+function keyValue(cursor: Cursor<Token>): KeyValue {
+  // 3. KeyValue
+  //
+  // key = value
+  // ^-^          key
+  //     ^        equals
+  //       ^---^  value
+  if (cursor.peek()!.type !== TokenType.Equal) {
+    throw new Error(
+      `Expected key = value, found ${JSON.stringify(cursor.item!)} and ${JSON.stringify(
+        cursor.peek()!
+      )}`
+    );
+  }
+
+  const key: Key = {
+    type: NodeType.Key,
+    loc: cursor.item!.loc,
+    raw: cursor.item!.raw,
+    value: parseKey(cursor.item!.raw)
+  };
+
+  cursor.step();
+  const equals = cursor.item!.loc.start.column;
+
+  cursor.step();
+  const value = walkValue(cursor);
+
+  return {
+    type: NodeType.KeyValue,
+    key,
+    value,
+    loc: {
+      start: key.loc.start,
+      end: value.loc.end
+    },
+    equals
+  };
+}
+
+function string(cursor: Cursor<Token>): String {
+  return {
+    type: NodeType.String,
+    loc: cursor.item!.loc,
+    raw: cursor.item!.raw,
+    value: parseString(cursor.item!.raw)
+  };
+}
+
+function boolean(cursor: Cursor<Token>): Boolean {
+  return {
+    type: NodeType.Boolean,
+    loc: cursor.item!.loc,
+    value: cursor.item!.raw === TRUE
+  };
+}
+
+function datetime(cursor: Cursor<Token>): DateTime {
+  // Possible values:
+  //
+  // Offset Date-Time
+  // | odt1 = 1979-05-27T07:32:00Z
+  // | odt2 = 1979-05-27T00:32:00-07:00
+  // | odt3 = 1979-05-27T00:32:00.999999-07:00
+  // | odt4 = 1979-05-27 07:32:00Z
+  //
+  // Local Date-Time
+  // | ldt1 = 1979-05-27T07:32:00
+  // | ldt2 = 1979-05-27T00:32:00.999999
+  //
+  // Local Date
+  // | ld1 = 1979-05-27
+  //
+  // Local Time
+  // | lt1 = 07:32:00
+  // | lt2 = 00:32:00.999999
+  let value: Date;
+  if (!IS_FULL_DATE.test(cursor.item!.raw)) {
+    // For local time, use local ISO date
+    const [local_date] = new Date().toISOString().split('T');
+    value = new Date(`${local_date}T${cursor.item!.raw}`);
+  } else {
+    value = new Date(cursor.item!.raw.replace(' ', 'T'));
+  }
+
+  return {
+    type: NodeType.DateTime,
+    loc: cursor.item!.loc,
+    raw: cursor.item!.raw,
+    value
+  };
+}
+
+function float(cursor: Cursor<Token>): Float {
+  let value;
+  if (IS_INF.test(cursor.item!.raw)) {
+    value = cursor.item!.raw === '-inf' ? -Infinity : Infinity;
+  } else if (IS_NAN.test(cursor.item!.raw)) {
+    value = cursor.item!.raw === '-nan' ? -NaN : NaN;
+  } else {
+    value = Number(cursor.item!.raw.replace(IS_DIVIDER, ''));
+  }
+
+  return {
+    type: NodeType.Float,
+    loc: cursor.item!.loc,
+    raw: cursor.item!.raw,
+    value
+  };
+}
+
+function integer(cursor: Cursor<Token>): Integer {
+  let radix = 10;
+  if (IS_HEX.test(cursor.item!.raw)) {
+    radix = 16;
+  } else if (IS_OCTAL.test(cursor.item!.raw)) {
+    radix = 8;
+  } else if (IS_BINARY.test(cursor.item!.raw)) {
+    radix = 2;
+  }
+
+  const value = parseInt(
+    cursor
+      .item!.raw.replace(IS_DIVIDER, '')
+      .replace(IS_OCTAL, '')
+      .replace(IS_BINARY, ''),
+    radix
+  );
+
+  return {
+    type: NodeType.Integer,
+    loc: cursor.item!.loc,
+    raw: cursor.item!.raw,
+    value
+  };
+}
+
+function inlineTable(cursor: Cursor<Token>): InlineTable {
+  if (cursor.item!.raw !== '{') {
+    throw new Error(
+      `Expected opening brace for inline table, found ${JSON.stringify(cursor.item!)}`
+    );
+  }
+
+  // 6. InlineTable
+  const value: InlineTable = {
+    type: NodeType.InlineTable,
+    loc: cursor.item!.loc,
+    items: []
+  };
+
+  cursor.step();
+
+  while (!(cursor.item!.type === TokenType.Curly && (cursor.item! as Token).raw === '}')) {
+    if ((cursor.item! as Token).type === TokenType.Comma) {
+      const previous = value.items[value.items.length - 1];
+      if (!previous) {
+        throw new Error('Found "," without previous value');
+      }
+
+      previous.comma = true;
+      previous.loc.end = cursor.item!.loc.start;
+
+      cursor.step();
+      continue;
+    }
+
+    const item = walkBlock(cursor);
+    if (item.type !== NodeType.KeyValue) {
+      throw new Error(
+        `Only key-values are supported in inline tables, found ${JSON.stringify(item)}`
+      );
+    }
+
+    const inline_item: InlineTableItem = {
+      type: NodeType.InlineTableItem,
+      loc: { start: item.loc.start, end: item.loc.end },
+      item,
+      comma: false
+    };
+
+    value.items.push(inline_item);
+    cursor.step();
+  }
+
+  if (cursor.item!.type !== TokenType.Curly || (cursor.item! as Token).raw !== '}') {
+    throw new Error(`Expected closing brace "}", found ${JSON.stringify(cursor.item!)}`);
+  }
+
+  value.loc.end = cursor.item!.loc.end;
+
+  return value;
+}
+
+function inlineArray(cursor: Cursor<Token>): InlineArray {
+  // 7. InlineArray
+  if (cursor.item!.raw !== '[') {
+    throw new Error(
+      `Expected opening brace for inline array, found ${JSON.stringify(cursor.item!)}`
+    );
+  }
+
+  const value: InlineArray = {
+    type: NodeType.InlineArray,
+    loc: cursor.item!.loc,
+    items: []
+  };
+
+  cursor.step();
+
+  while (!(cursor.item!.type === TokenType.Bracket && (cursor.item! as Token).raw === ']')) {
+    if ((cursor.item! as Token).type === TokenType.Comma) {
+      const previous = value.items[value.items.length - 1];
+      if (!previous) {
+        throw new Error('Found "," without previous value');
+      }
+
+      previous.comma = true;
+      previous.loc.end = cursor.item!.loc.start;
+
+      cursor.step();
+      continue;
+    }
+
+    if ((cursor.item! as Token).type === TokenType.Comment) {
+      // TODO
+      cursor.step();
+      continue;
+    }
+
+    const item = walkValue(cursor);
+    const inline_item: InlineArrayItem = {
+      type: NodeType.InlineArrayItem,
+      loc: { start: item.loc.start, end: item.loc.end },
+      item,
+      comma: false
+    };
+
+    value.items.push(inline_item);
+    cursor.step();
+  }
+
+  if (cursor.item!.type !== TokenType.Bracket || (cursor.item! as Token).raw !== ']') {
+    throw new Error(`Expected closing bracket "]", found ${JSON.stringify(cursor.item!)}`);
+  }
+
+  value.loc.end = cursor.item!.loc.end;
+
+  return value;
 }
