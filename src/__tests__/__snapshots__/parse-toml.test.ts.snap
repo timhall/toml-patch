@@ -1941,6 +1941,881 @@ Object {
 }
 `;
 
+exports[`it should parse hard document 1`] = `
+Object {
+  "body": Array [
+    Object {
+      "loc": Object {
+        "end": Object {
+          "column": 20,
+          "line": 2,
+        },
+        "start": Object {
+          "column": 0,
+          "line": 2,
+        },
+      },
+      "raw": "# Test file for TOML",
+      "type": "Comment",
+    },
+    Object {
+      "loc": Object {
+        "end": Object {
+          "column": 106,
+          "line": 3,
+        },
+        "start": Object {
+          "column": 0,
+          "line": 3,
+        },
+      },
+      "raw": "# Only this one tries to emulate a TOML file written by a user of the kind of parser writers probably hate",
+      "type": "Comment",
+    },
+    Object {
+      "loc": Object {
+        "end": Object {
+          "column": 30,
+          "line": 4,
+        },
+        "start": Object {
+          "column": 0,
+          "line": 4,
+        },
+      },
+      "raw": "# This part you'll really hate",
+      "type": "Comment",
+    },
+    Object {
+      "items": Array [
+        Object {
+          "equals": 12,
+          "key": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 11,
+                "line": 7,
+              },
+              "start": Object {
+                "column": 0,
+                "line": 7,
+              },
+            },
+            "raw": "test_string",
+            "type": "Key",
+            "value": Array [
+              "test_string",
+            ],
+          },
+          "loc": Object {
+            "end": Object {
+              "column": 45,
+              "line": 7,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 7,
+            },
+          },
+          "type": "KeyValue",
+          "value": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 45,
+                "line": 7,
+              },
+              "start": Object {
+                "column": 14,
+                "line": 7,
+              },
+            },
+            "raw": "\\"You'll hate me after this - #\\"",
+            "type": "String",
+            "value": "You'll hate me after this - #",
+          },
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 78,
+              "line": 7,
+            },
+            "start": Object {
+              "column": 55,
+              "line": 7,
+            },
+          },
+          "raw": "# \\" Annoying, isn't it?",
+          "type": "Comment",
+        },
+      ],
+      "key": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 5,
+            "line": 6,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 6,
+          },
+        },
+        "type": "TableKey",
+        "value": Object {
+          "loc": Object {
+            "end": Object {
+              "column": 4,
+              "line": 6,
+            },
+            "start": Object {
+              "column": 1,
+              "line": 6,
+            },
+          },
+          "raw": "the",
+          "type": "Key",
+          "value": Array [
+            "the",
+          ],
+        },
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 78,
+          "line": 7,
+        },
+        "start": Object {
+          "column": 0,
+          "line": 6,
+        },
+      },
+      "type": "Table",
+    },
+    Object {
+      "items": Array [
+        Object {
+          "equals": 15,
+          "key": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 14,
+                "line": 10,
+              },
+              "start": Object {
+                "column": 4,
+                "line": 10,
+              },
+            },
+            "raw": "test_array",
+            "type": "Key",
+            "value": Array [
+              "test_array",
+            ],
+          },
+          "loc": Object {
+            "end": Object {
+              "column": 31,
+              "line": 10,
+            },
+            "start": Object {
+              "column": 4,
+              "line": 10,
+            },
+          },
+          "type": "KeyValue",
+          "value": Object {
+            "items": Array [
+              Object {
+                "comma": true,
+                "item": Object {
+                  "loc": Object {
+                    "end": Object {
+                      "column": 23,
+                      "line": 10,
+                    },
+                    "start": Object {
+                      "column": 19,
+                      "line": 10,
+                    },
+                  },
+                  "raw": "\\"] \\"",
+                  "type": "String",
+                  "value": "] ",
+                },
+                "loc": Object {
+                  "end": Object {
+                    "column": 23,
+                    "line": 10,
+                  },
+                  "start": Object {
+                    "column": 19,
+                    "line": 10,
+                  },
+                },
+                "type": "InlineArrayItem",
+              },
+              Object {
+                "comma": false,
+                "item": Object {
+                  "loc": Object {
+                    "end": Object {
+                      "column": 30,
+                      "line": 10,
+                    },
+                    "start": Object {
+                      "column": 25,
+                      "line": 10,
+                    },
+                  },
+                  "raw": "\\" # \\"",
+                  "type": "String",
+                  "value": " # ",
+                },
+                "loc": Object {
+                  "end": Object {
+                    "column": 30,
+                    "line": 10,
+                  },
+                  "start": Object {
+                    "column": 25,
+                    "line": 10,
+                  },
+                },
+                "type": "InlineArrayItem",
+              },
+            ],
+            "loc": Object {
+              "end": Object {
+                "column": 31,
+                "line": 10,
+              },
+              "start": Object {
+                "column": 17,
+                "line": 10,
+              },
+            },
+            "type": "InlineArray",
+          },
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 66,
+              "line": 10,
+            },
+            "start": Object {
+              "column": 37,
+              "line": 10,
+            },
+          },
+          "raw": "# ] There you go, parse this!",
+          "type": "Comment",
+        },
+        Object {
+          "equals": 16,
+          "key": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 15,
+                "line": 11,
+              },
+              "start": Object {
+                "column": 4,
+                "line": 11,
+              },
+            },
+            "raw": "test_array2",
+            "type": "Key",
+            "value": Array [
+              "test_array2",
+            ],
+          },
+          "loc": Object {
+            "end": Object {
+              "column": 76,
+              "line": 11,
+            },
+            "start": Object {
+              "column": 4,
+              "line": 11,
+            },
+          },
+          "type": "KeyValue",
+          "value": Object {
+            "items": Array [
+              Object {
+                "comma": true,
+                "item": Object {
+                  "loc": Object {
+                    "end": Object {
+                      "column": 43,
+                      "line": 11,
+                    },
+                    "start": Object {
+                      "column": 20,
+                      "line": 11,
+                    },
+                  },
+                  "raw": "\\"Test #11 ]proved that\\"",
+                  "type": "String",
+                  "value": "Test #11 ]proved that",
+                },
+                "loc": Object {
+                  "end": Object {
+                    "column": 43,
+                    "line": 11,
+                  },
+                  "start": Object {
+                    "column": 20,
+                    "line": 11,
+                  },
+                },
+                "type": "InlineArrayItem",
+              },
+              Object {
+                "comma": false,
+                "item": Object {
+                  "loc": Object {
+                    "end": Object {
+                      "column": 74,
+                      "line": 11,
+                    },
+                    "start": Object {
+                      "column": 45,
+                      "line": 11,
+                    },
+                  },
+                  "raw": "\\"Experiment #9 was a success\\"",
+                  "type": "String",
+                  "value": "Experiment #9 was a success",
+                },
+                "loc": Object {
+                  "end": Object {
+                    "column": 74,
+                    "line": 11,
+                  },
+                  "start": Object {
+                    "column": 45,
+                    "line": 11,
+                  },
+                },
+                "type": "InlineArrayItem",
+              },
+            ],
+            "loc": Object {
+              "end": Object {
+                "column": 76,
+                "line": 11,
+              },
+              "start": Object {
+                "column": 18,
+                "line": 11,
+              },
+            },
+            "type": "InlineArray",
+          },
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 72,
+              "line": 12,
+            },
+            "start": Object {
+              "column": 4,
+              "line": 12,
+            },
+          },
+          "raw": "# You didn't think it'd as easy as chucking out the last #, did you?",
+          "type": "Comment",
+        },
+        Object {
+          "equals": 24,
+          "key": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 23,
+                "line": 13,
+              },
+              "start": Object {
+                "column": 4,
+                "line": 13,
+              },
+            },
+            "raw": "another_test_string",
+            "type": "Key",
+            "value": Array [
+              "another_test_string",
+            ],
+          },
+          "loc": Object {
+            "end": Object {
+              "column": 60,
+              "line": 13,
+            },
+            "start": Object {
+              "column": 4,
+              "line": 13,
+            },
+          },
+          "type": "KeyValue",
+          "value": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 60,
+                "line": 13,
+              },
+              "start": Object {
+                "column": 26,
+                "line": 13,
+              },
+            },
+            "raw": "\\" Same thing, but with a string #\\"",
+            "type": "String",
+            "value": " Same thing, but with a string #",
+          },
+        },
+        Object {
+          "equals": 23,
+          "key": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 22,
+                "line": 14,
+              },
+              "start": Object {
+                "column": 4,
+                "line": 14,
+              },
+            },
+            "raw": "harder_test_string",
+            "type": "Key",
+            "value": Array [
+              "harder_test_string",
+            ],
+          },
+          "loc": Object {
+            "end": Object {
+              "column": 76,
+              "line": 14,
+            },
+            "start": Object {
+              "column": 4,
+              "line": 14,
+            },
+          },
+          "type": "KeyValue",
+          "value": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 76,
+                "line": 14,
+              },
+              "start": Object {
+                "column": 25,
+                "line": 14,
+              },
+            },
+            "raw": "\\" And when \\\\\\"'s are in the string, along with # \\\\\\"\\"",
+            "type": "String",
+            "value": " And when \\"'s are in the string, along with # \\"",
+          },
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 109,
+              "line": 14,
+            },
+            "start": Object {
+              "column": 79,
+              "line": 14,
+            },
+          },
+          "raw": "# \\"and comments are there too\\"",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 28,
+              "line": 15,
+            },
+            "start": Object {
+              "column": 4,
+              "line": 15,
+            },
+          },
+          "raw": "# Things will get harder",
+          "type": "Comment",
+        },
+      ],
+      "key": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 14,
+            "line": 9,
+          },
+          "start": Object {
+            "column": 4,
+            "line": 9,
+          },
+        },
+        "type": "TableKey",
+        "value": Object {
+          "loc": Object {
+            "end": Object {
+              "column": 13,
+              "line": 9,
+            },
+            "start": Object {
+              "column": 5,
+              "line": 9,
+            },
+          },
+          "raw": "the.hard",
+          "type": "Key",
+          "value": Array [
+            "the",
+            "hard",
+          ],
+        },
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 28,
+          "line": 15,
+        },
+        "start": Object {
+          "column": 4,
+          "line": 9,
+        },
+      },
+      "type": "Table",
+    },
+    Object {
+      "items": Array [
+        Object {
+          "equals": 16,
+          "key": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 15,
+                "line": 18,
+              },
+              "start": Object {
+                "column": 8,
+                "line": 18,
+              },
+            },
+            "raw": "\\"what?\\"",
+            "type": "Key",
+            "value": Array [
+              "what?",
+            ],
+          },
+          "loc": Object {
+            "end": Object {
+              "column": 60,
+              "line": 18,
+            },
+            "start": Object {
+              "column": 8,
+              "line": 18,
+            },
+          },
+          "type": "KeyValue",
+          "value": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 60,
+                "line": 18,
+              },
+              "start": Object {
+                "column": 18,
+                "line": 18,
+              },
+            },
+            "raw": "\\"You don't think some user won't do that?\\"",
+            "type": "String",
+            "value": "You don't think some user won't do that?",
+          },
+        },
+        Object {
+          "equals": 25,
+          "key": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 24,
+                "line": 19,
+              },
+              "start": Object {
+                "column": 8,
+                "line": 19,
+              },
+            },
+            "raw": "multi_line_array",
+            "type": "Key",
+            "value": Array [
+              "multi_line_array",
+            ],
+          },
+          "loc": Object {
+            "end": Object {
+              "column": 13,
+              "line": 22,
+            },
+            "start": Object {
+              "column": 8,
+              "line": 19,
+            },
+          },
+          "type": "KeyValue",
+          "value": Object {
+            "items": Array [
+              Object {
+                "comma": true,
+                "item": Object {
+                  "loc": Object {
+                    "end": Object {
+                      "column": 15,
+                      "line": 20,
+                    },
+                    "start": Object {
+                      "column": 12,
+                      "line": 20,
+                    },
+                  },
+                  "raw": "\\"]\\"",
+                  "type": "String",
+                  "value": "]",
+                },
+                "loc": Object {
+                  "end": Object {
+                    "column": 15,
+                    "line": 20,
+                  },
+                  "start": Object {
+                    "column": 12,
+                    "line": 20,
+                  },
+                },
+                "type": "InlineArrayItem",
+              },
+            ],
+            "loc": Object {
+              "end": Object {
+                "column": 13,
+                "line": 22,
+              },
+              "start": Object {
+                "column": 27,
+                "line": 19,
+              },
+            },
+            "type": "InlineArray",
+          },
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 100,
+              "line": 24,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 24,
+            },
+          },
+          "raw": "# Each of the following keygroups/key value pairs should produce an error. Uncomment to them to test",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 58,
+              "line": 26,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 26,
+            },
+          },
+          "raw": "#[error]   if you didn't catch this, your parser is broken",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 160,
+              "line": 27,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 27,
+            },
+          },
+          "raw": "#string = \\"Anything other than tabs, spaces and newline after a keygroup or key value pair has ended should produce an error unless it is a comment\\"   like this",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 10,
+              "line": 28,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 28,
+            },
+          },
+          "raw": "#array = [",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 62,
+              "line": 29,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 29,
+            },
+          },
+          "raw": "#         \\"This might most likely happen in multiline arrays\\",",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 20,
+              "line": 30,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 30,
+            },
+          },
+          "raw": "#         Like here,",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 19,
+              "line": 31,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 31,
+            },
+          },
+          "raw": "#         \\"or here,",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 19,
+              "line": 32,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 32,
+            },
+          },
+          "raw": "#         and here\\"",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 50,
+              "line": 33,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 33,
+            },
+          },
+          "raw": "#         ]     End of array comment, forgot the #",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 42,
+              "line": 34,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 34,
+            },
+          },
+          "raw": "#number = 3.14  pi <--again forgot the #  ",
+          "type": "Comment",
+        },
+      ],
+      "key": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 25,
+            "line": 17,
+          },
+          "start": Object {
+            "column": 8,
+            "line": 17,
+          },
+        },
+        "type": "TableKey",
+        "value": Object {
+          "loc": Object {
+            "end": Object {
+              "column": 24,
+              "line": 17,
+            },
+            "start": Object {
+              "column": 9,
+              "line": 17,
+            },
+          },
+          "raw": "the.hard.\\"bit#\\"",
+          "type": "Key",
+          "value": Array [
+            "the",
+            "hard",
+            "bit#",
+          ],
+        },
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 42,
+          "line": 34,
+        },
+        "start": Object {
+          "column": 8,
+          "line": 17,
+        },
+      },
+      "type": "Table",
+    },
+  ],
+  "loc": Object {
+    "end": Object {
+      "column": 0,
+      "line": 35,
+    },
+    "start": Object {
+      "column": 0,
+      "line": 1,
+    },
+  },
+  "type": "Document",
+}
+`;
+
 exports[`it should parse simple document 1`] = `
 Object {
   "body": Array [

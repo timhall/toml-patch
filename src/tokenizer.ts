@@ -164,10 +164,11 @@ function string(cursor: Cursor<string>, location: Locator): Token {
   let raw = '';
   let double_quoted = false;
   let single_quoted = false;
+  let not_full_date = false;
 
   while (!cursor.done) {
     if (cursor.item! === DOUBLE_QUOTE) double_quoted = !double_quoted;
-    if (cursor.item! === SINGLE_QUOTE) single_quoted = !single_quoted;
+    if (cursor.item! === SINGLE_QUOTE && !double_quoted) single_quoted = !single_quoted;
 
     raw += cursor.item!;
     cursor.step();
@@ -183,11 +184,18 @@ function string(cursor: Cursor<string>, location: Locator): Token {
 
     // If next character is IS_WHITESPACE,
     // check if raw is full date and following is full time
-    if (cursor.item! === SPACE && IS_FULL_DATE.test(raw)) {
-      const possibly_time = (cursor.items as string).substr(cursor.index + 1, 8);
-      if (IS_FULL_TIME.test(possibly_time)) {
-        raw += SPACE;
-        cursor.step();
+    if (cursor.item! === SPACE && !not_full_date) {
+      const full_date = IS_FULL_DATE.test(raw);
+      if (full_date) {
+        const possibly_time = (cursor.items as string).substr(cursor.index + 1, 8);
+        if (IS_FULL_TIME.test(possibly_time)) {
+          raw += SPACE;
+          cursor.step();
+        }
+      } else {
+        // String can't be full date after adding more characters
+        // -> only check for full date once
+        not_full_date = true;
       }
     }
 
