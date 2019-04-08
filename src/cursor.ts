@@ -22,4 +22,10 @@ export default class Cursor<T> {
   step(count: number = 1) {
     this.index += count;
   }
+  peek(): T | undefined {
+    return this.items[this.index + 1];
+  }
+  peekDone(): boolean {
+    return this.index + 1 >= this.items.length;
+  }
 }
