@@ -30,6 +30,7 @@ import {
   IS_FULL_TIME
 } from './tokenizer';
 import { parseString, parseKey } from './parse-string';
+import Cursor from './cursor';
 
 const TRUE = 'true';
 const FALSE = 'false';
@@ -45,32 +46,23 @@ const IS_BINARY = /^0b/;
 export default function parseTOML(input: string): Document {
   const lines = findLines(input);
   const tokens = tokenize(input);
-
-  let current = 0;
-  const peek = (skip: number = 1) => tokens[current + skip];
-  const step = () => current++;
+  const cursor = new Cursor(tokens);
 
   function walkBlock(): KeyValue | Table | TableArray | Comment {
-    let token = tokens[current];
-    const next = (skip: number = 1) => {
-      current += skip;
-      return tokens[current];
-    };
-
-    if (token.type === TokenType.Comment) {
+    if (cursor.item!.type === TokenType.Comment) {
       // 1. Comment
       //
       // # line comment
       // ^------------^ Comment
       const comment: Comment = {
         type: NodeType.Comment,
-        loc: token.loc,
-        raw: token.raw
+        loc: cursor.item!.loc,
+        raw: cursor.item!.raw
       };
 
-      step();
+      cursor.step();
       return comment;
-    } else if (token.type === TokenType.Bracket) {
+    } else if (cursor.item!.type === TokenType.Bracket) {
       // 2. Table or TableArray
       //
       // [ key ]
@@ -86,17 +78,17 @@ export default function parseTOML(input: string): Document {
       // d = "f"  <
       //
       // ...
-      const type = peek().type === TokenType.Bracket ? NodeType.TableArray : NodeType.Table;
+      const type = cursor.peek()!.type === TokenType.Bracket ? NodeType.TableArray : NodeType.Table;
       const is_table = type === NodeType.Table;
 
-      if (is_table && token.raw !== '[') {
-        throw new Error(`Expected table opening "[", found ${JSON.stringify(token)}`);
+      if (is_table && cursor.item!.raw !== '[') {
+        throw new Error(`Expected table opening "[", found ${JSON.stringify(cursor.item!)}`);
       }
-      if (!is_table && (token.raw !== '[' || peek().raw !== '[')) {
+      if (!is_table && (cursor.item!.raw !== '[' || cursor.peek()!.raw !== '[')) {
         throw new Error(
           `Expected array of tables opening "[[", found ${JSON.stringify(
-            token
-          )} and ${JSON.stringify(peek())}`
+            cursor.item!
+          )} and ${JSON.stringify(cursor.peek()!)}`
         );
       }
 
@@ -104,50 +96,49 @@ export default function parseTOML(input: string): Document {
       const key = is_table
         ? ({
             type: NodeType.TableKey,
-            loc: token.loc
+            loc: cursor.item!.loc
           } as Partial<TableKey>)
         : ({
             type: NodeType.TableArrayKey,
-            loc: token.loc
+            loc: cursor.item!.loc
           } as Partial<TableArrayKey>);
 
-      // Skip to token for key value
-      token = type === NodeType.TableArray ? next(2) : next();
+      // Skip to cursor.item! for key value
+      cursor.step(type === NodeType.TableArray ? 2 : 1);
 
       key.value = {
         type: NodeType.Key,
-        loc: token.loc,
-        raw: token.raw,
-        value: parseKey(token.raw)
+        loc: cursor.item!.loc,
+        raw: cursor.item!.raw,
+        value: parseKey(cursor.item!.raw)
       };
 
-      token = next();
+      cursor.step();
 
-      if (is_table && token.raw !== ']') {
-        throw new Error(`Expected table closing "]", found ${JSON.stringify(token)}`);
+      if (is_table && cursor.item!.raw !== ']') {
+        throw new Error(`Expected table closing "]", found ${JSON.stringify(cursor.item!)}`);
       }
-      if (!is_table && (token.raw !== ']' || peek().raw !== ']')) {
+      if (!is_table && (cursor.item!.raw !== ']' || cursor.peek()!.raw !== ']')) {
         throw new Error(
           `Expected array of tables closing "]]", found ${JSON.stringify(
-            token
-          )} and ${JSON.stringify(peek())}`
+            cursor.item!
+          )} and ${JSON.stringify(cursor.peek()!)}`
         );
       }
 
       // Set end location from closing tag
-      if (!is_table) token = next();
-      key.loc!.end = token.loc.end;
+      if (!is_table) cursor.step();
+      key.loc!.end = cursor.item!.loc.end;
 
-      token = next();
+      cursor.step();
 
       // Add child items
       const items: Array<KeyValue | Comment> = [];
-      while (token && token.type !== TokenType.Bracket) {
+      while (cursor.item! && cursor.item!.type !== TokenType.Bracket) {
         items.push(walkBlock() as (KeyValue | Comment));
-        token = tokens[current];
       }
 
-      // (no step(), already stepped to next token in items loop above)
+      // (no cursor.step(), already stepped to next cursor.item! in items loop above)
       return {
         type: is_table ? NodeType.Table : NodeType.TableArray,
         loc: {
@@ -157,30 +148,32 @@ export default function parseTOML(input: string): Document {
         key: key as TableKey | TableArrayKey,
         items
       } as Table | TableArray;
-    } else if (token.type === TokenType.String) {
+    } else if (cursor.item!.type === TokenType.String) {
       // 3. KeyValue
       //
       // key = value
       // ^-^          key
       //     ^        equals
       //       ^---^  value
-      if (peek().type !== TokenType.Equal) {
+      if (cursor.peek()!.type !== TokenType.Equal) {
         throw new Error(
-          `Expected key = value, found ${JSON.stringify(token)} and ${JSON.stringify(peek())}`
+          `Expected key = value, found ${JSON.stringify(cursor.item!)} and ${JSON.stringify(
+            cursor.peek()!
+          )}`
         );
       }
 
       const key: Key = {
         type: NodeType.Key,
-        loc: token.loc,
-        raw: token.raw,
-        value: parseKey(token.raw)
+        loc: cursor.item!.loc,
+        raw: cursor.item!.raw,
+        value: parseKey(cursor.item!.raw)
       };
 
-      token = next();
-      const equals = token.loc.start.column;
+      cursor.step();
+      const equals = cursor.item!.loc.start.column;
 
-      token = next();
+      cursor.step();
       const value = walkValue();
 
       return {
@@ -194,45 +187,39 @@ export default function parseTOML(input: string): Document {
         equals
       };
     } else {
-      throw new Error(`Unexpected token ${JSON.stringify(token)}`);
+      throw new Error(`Unexpected cursor.item! ${JSON.stringify(cursor.item!)}`);
     }
   }
 
   function walkValue(): Value {
-    let token = tokens[current];
-    const next = (skip: number = 1) => {
-      current += skip;
-      return tokens[current];
-    };
-
-    if (token.type === TokenType.String) {
+    if (cursor.item!.type === TokenType.String) {
       // 1. String
-      if (token.raw[0] === DOUBLE_QUOTE || token.raw[0] === SINGLE_QUOTE) {
+      if (cursor.item!.raw[0] === DOUBLE_QUOTE || cursor.item!.raw[0] === SINGLE_QUOTE) {
         const value: String = {
           type: NodeType.String,
-          loc: token.loc,
-          raw: token.raw,
-          value: parseString(token.raw)
+          loc: cursor.item!.loc,
+          raw: cursor.item!.raw,
+          value: parseString(cursor.item!.raw)
         };
 
-        step();
+        cursor.step();
         return value;
       }
 
       // 2. Boolean
-      if (token.raw === TRUE || token.raw === FALSE) {
+      if (cursor.item!.raw === TRUE || cursor.item!.raw === FALSE) {
         const value: Boolean = {
           type: NodeType.Boolean,
-          loc: token.loc,
-          value: token.raw === TRUE
+          loc: cursor.item!.loc,
+          value: cursor.item!.raw === TRUE
         };
 
-        step();
+        cursor.step();
         return value;
       }
 
       // 3. DateTime
-      if (IS_FULL_DATE.test(token.raw) || IS_FULL_TIME.test(token.raw)) {
+      if (IS_FULL_DATE.test(cursor.item!.raw) || IS_FULL_TIME.test(cursor.item!.raw)) {
         // Possible values:
         //
         // Offset Date-Time
@@ -252,65 +239,65 @@ export default function parseTOML(input: string): Document {
         // | lt1 = 07:32:00
         // | lt2 = 00:32:00.999999
         let date: Date;
-        if (!IS_FULL_DATE.test(token.raw)) {
+        if (!IS_FULL_DATE.test(cursor.item!.raw)) {
           // For local time, use local ISO date
           const [local_date] = new Date().toISOString().split('T');
-          date = new Date(`${local_date}T${token.raw}`);
+          date = new Date(`${local_date}T${cursor.item!.raw}`);
         } else {
-          date = new Date(token.raw.replace(' ', 'T'));
+          date = new Date(cursor.item!.raw.replace(' ', 'T'));
         }
 
         const value: DateTime = {
           type: NodeType.DateTime,
-          loc: token.loc,
-          raw: token.raw,
+          loc: cursor.item!.loc,
+          raw: cursor.item!.raw,
           value: date
         };
 
-        step();
+        cursor.step();
         return value;
       }
 
       // 4. Float
       if (
-        HAS_DOT.test(token.raw) ||
-        IS_INF.test(token.raw) ||
-        IS_NAN.test(token.raw) ||
-        (HAS_E.test(token.raw) && !IS_HEX.test(token.raw))
+        HAS_DOT.test(cursor.item!.raw) ||
+        IS_INF.test(cursor.item!.raw) ||
+        IS_NAN.test(cursor.item!.raw) ||
+        (HAS_E.test(cursor.item!.raw) && !IS_HEX.test(cursor.item!.raw))
       ) {
         let float;
-        if (IS_INF.test(token.raw)) {
-          float = token.raw === '-inf' ? -Infinity : Infinity;
-        } else if (IS_NAN.test(token.raw)) {
-          float = token.raw === '-nan' ? -NaN : NaN;
+        if (IS_INF.test(cursor.item!.raw)) {
+          float = cursor.item!.raw === '-inf' ? -Infinity : Infinity;
+        } else if (IS_NAN.test(cursor.item!.raw)) {
+          float = cursor.item!.raw === '-nan' ? -NaN : NaN;
         } else {
-          float = Number(token.raw.replace(IS_DIVIDER, ''));
+          float = Number(cursor.item!.raw.replace(IS_DIVIDER, ''));
         }
 
         const value: Float = {
           type: NodeType.Float,
-          loc: token.loc,
-          raw: token.raw,
+          loc: cursor.item!.loc,
+          raw: cursor.item!.raw,
           value: float
         };
 
-        step();
+        cursor.step();
         return value;
       }
 
       // 5. Integer
       let radix = 10;
-      if (IS_HEX.test(token.raw)) {
+      if (IS_HEX.test(cursor.item!.raw)) {
         radix = 16;
-      } else if (IS_OCTAL.test(token.raw)) {
+      } else if (IS_OCTAL.test(cursor.item!.raw)) {
         radix = 8;
-      } else if (IS_BINARY.test(token.raw)) {
+      } else if (IS_BINARY.test(cursor.item!.raw)) {
         radix = 2;
       }
 
       const int = parseInt(
-        token.raw
-          .replace(IS_DIVIDER, '')
+        cursor
+          .item!.raw.replace(IS_DIVIDER, '')
           .replace(IS_OCTAL, '')
           .replace(IS_BINARY, ''),
         radix
@@ -318,40 +305,48 @@ export default function parseTOML(input: string): Document {
 
       const value: Integer = {
         type: NodeType.Integer,
-        loc: token.loc,
-        raw: token.raw,
+        loc: cursor.item!.loc,
+        raw: cursor.item!.raw,
         value: int
       };
 
-      step();
+      cursor.step();
       return value;
     }
 
-    if (token.type === TokenType.Curly) {
-      if (token.raw !== '{') {
-        throw new Error(`Expected opening brace for inline table, found ${JSON.stringify(token)}`);
+    if (cursor.item!.type === TokenType.Curly) {
+      if (cursor.item!.raw !== '{') {
+        throw new Error(
+          `Expected opening brace for inline table, found ${JSON.stringify(cursor.item!)}`
+        );
       }
 
       // 6. InlineTable
       const value: InlineTable = {
         type: NodeType.InlineTable,
-        loc: token.loc,
+        loc: cursor.item!.loc,
         items: []
       };
 
-      token = next();
+      cursor.step();
 
-      while (!(token.type === TokenType.Curly && token.raw === '}')) {
-        if (token.type === TokenType.Comma) {
+      // Note: the following ts-ignores are due to the raw check above
+      //       typescript seems to be getting confused that item is a static-ish value
+      //       and doesn't see it changing with cursor.step()
+
+      // @ts-ignore This condition will always return 'false' since the types '"{"' and '"}"' have no overlap
+      while (!(cursor.item!.type === TokenType.Curly && cursor.item!.raw === '}')) {
+        // @ts-ignore This condition will always return 'false' since the types 'TokenType.Curly' and 'TokenType.Comma' have no overlap.
+        if (cursor.item!.type === TokenType.Comma) {
           const previous = value.items[value.items.length - 1];
           if (!previous) {
             throw new Error('Found "," without previous value');
           }
 
           previous.comma = true;
-          previous.loc.end = token.loc.start;
+          previous.loc.end = cursor.item!.loc.start;
 
-          token = next();
+          cursor.step();
           continue;
         }
 
@@ -370,51 +365,57 @@ export default function parseTOML(input: string): Document {
         };
 
         value.items.push(inline_item);
-        token = tokens[current];
       }
 
-      if (token.type !== TokenType.Curly || token.raw !== '}') {
-        throw new Error(`Expected closing brace "}", found ${JSON.stringify(token)}`);
+      // @ts-ignore This condition will always return 'true' since the types '"{"' and '"}"' have no overlap.
+      if (cursor.item!.type !== TokenType.Curly || cursor.item!.raw !== '}') {
+        throw new Error(`Expected closing brace "}", found ${JSON.stringify(cursor.item!)}`);
       }
 
-      value.loc.end = token.loc.end;
+      value.loc.end = cursor.item!.loc.end;
 
-      step();
+      cursor.step();
       return value;
     }
 
-    if (token.type !== TokenType.Bracket) {
-      throw new Error(`Unrecognized token for value: ${JSON.stringify(token)}`);
+    if (cursor.item!.type !== TokenType.Bracket) {
+      throw new Error(`Unrecognized cursor.item! for value: ${JSON.stringify(cursor.item!)}`);
     }
-    if (token.raw !== '[') {
-      throw new Error(`Expected opening brace for inline array, found ${JSON.stringify(token)}`);
+    if (cursor.item!.raw !== '[') {
+      throw new Error(
+        `Expected opening brace for inline array, found ${JSON.stringify(cursor.item!)}`
+      );
     }
 
     // 7. InlineArray
     const value: InlineArray = {
       type: NodeType.InlineArray,
-      loc: token.loc,
+      loc: cursor.item!.loc,
       items: []
     };
 
-    token = next();
+    cursor.step();
 
-    while (!(token.type === TokenType.Bracket && token.raw === ']')) {
-      if (token.type === TokenType.Comma) {
+    // @ts-ignore This condition will always return 'false' since the types '"["' and '"]"' have no overlap.
+    while (!(cursor.item!.type === TokenType.Bracket && cursor.item!.raw === ']')) {
+      // @ts-ignore This condition will always return 'false' since the types 'TokenType.Bracket' and 'TokenType.Comma' have no overlap.
+      if (cursor.item!.type === TokenType.Comma) {
         const previous = value.items[value.items.length - 1];
         if (!previous) {
           throw new Error('Found "," without previous value');
         }
 
         previous.comma = true;
-        previous.loc.end = token.loc.start;
+        previous.loc.end = cursor.item!.loc.start;
 
-        token = next();
+        cursor.step();
         continue;
       }
-      if (token.type === TokenType.Comment) {
+
+      // @ts-ignore This condition will always return 'false' since the types 'TokenType.Bracket' and 'TokenType.Comment' have no overlap.
+      if (cursor.item!.type === TokenType.Comment) {
         // TODO
-        token = next();
+        cursor.step();
         continue;
       }
 
@@ -427,16 +428,16 @@ export default function parseTOML(input: string): Document {
       };
 
       value.items.push(inline_item);
-      token = tokens[current];
     }
 
-    if (token.type !== TokenType.Bracket || token.raw !== ']') {
-      throw new Error(`Expected closing bracket "]", found ${JSON.stringify(token)}`);
+    // @ts-ignore This condition will always return 'true' since the types '"["' and '"]"' have no overlap.
+    if (cursor.item!.type !== TokenType.Bracket || cursor.item!.raw !== ']') {
+      throw new Error(`Expected closing bracket "]", found ${JSON.stringify(cursor.item!)}`);
     }
 
-    value.loc.end = token.loc.end;
+    value.loc.end = cursor.item!.loc.end;
 
-    step();
+    cursor.step();
     return value;
   }
 
@@ -446,7 +447,7 @@ export default function parseTOML(input: string): Document {
     body: []
   };
 
-  while (current < tokens.length) {
+  while (!cursor.done) {
     document.body.push(walkBlock());
   }
 

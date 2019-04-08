@@ -204,7 +204,7 @@ function string(cursor: Cursor<string>, location: Locator): Token {
   }
 
   // Character loop has put cursor a step ahead, step back
-  cursor.index -= 1;
+  cursor.step(-1);
 
   return {
     type: TokenType.String,
