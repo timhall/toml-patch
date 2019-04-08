@@ -1,5 +1,4 @@
 import {
-  Node,
   NodeType,
   Document,
   KeyValue,
@@ -15,11 +14,12 @@ import {
   Boolean,
   DateTime,
   InlineTable,
+  InlineTableItem,
   InlineArray,
+  InlineArrayItem,
   Comment
 } from './ast';
 import {
-  Token,
   TokenType,
   tokenize,
   findPosition,
@@ -33,6 +33,14 @@ import { parseString, parseKey } from './parse-string';
 
 const TRUE = 'true';
 const FALSE = 'false';
+const HAS_DOT = /\./;
+const HAS_E = /e/i;
+const IS_DIVIDER = /\_/g;
+const IS_INF = /inf/;
+const IS_NAN = /nan/;
+const IS_HEX = /^0x/;
+const IS_OCTAL = /^0o/;
+const IS_BINARY = /^0b/;
 
 export default function parseTOML(input: string): Document {
   const lines = findLines(input);
@@ -80,10 +88,14 @@ export default function parseTOML(input: string): Document {
       const is_table = type === NodeType.Table;
 
       if (is_table && token.raw !== '[') {
-        throw new Error(`Expected table opening "[", found ${token}`);
+        throw new Error(`Expected table opening "[", found ${JSON.stringify(token)}`);
       }
       if (!is_table && (token.raw !== '[' || peek().raw !== '[')) {
-        throw new Error(`Expected array of tables opening "[[", found ${token} and ${peek()}`);
+        throw new Error(
+          `Expected array of tables opening "[[", found ${JSON.stringify(
+            token
+          )} and ${JSON.stringify(peek())}`
+        );
       }
 
       // Set start location from opening tag
@@ -96,7 +108,7 @@ export default function parseTOML(input: string): Document {
           }) as TableArrayKey);
 
       // Skip to token for key value
-      token = type === NodeType.TableArray ? next() : next(2);
+      token = type === NodeType.TableArray ? next(2) : next();
 
       key.value = convert(token, node => {
         node.type = NodeType.Key;
@@ -106,19 +118,25 @@ export default function parseTOML(input: string): Document {
       token = next();
 
       if (is_table && token.raw !== ']') {
-        throw new Error(`Expected table closing "]", found ${token}`);
+        throw new Error(`Expected table closing "]", found ${JSON.stringify(token)}`);
       }
       if (!is_table && (token.raw !== ']' || peek().raw !== ']')) {
-        throw new Error(`Expected array of tables closing "]]", found ${token} and ${peek()}`);
+        throw new Error(
+          `Expected array of tables closing "]]", found ${JSON.stringify(
+            token
+          )} and ${JSON.stringify(peek())}`
+        );
       }
 
       // Set end location from closing tag
       if (!is_table) token = next();
       key.loc.end = token.loc.end;
 
+      token = next();
+
       // Add child items
       const items: Array<KeyValue | Comment> = [];
-      while (token.token_type !== TokenType.Bracket) {
+      while (token && token.token_type !== TokenType.Bracket) {
         items.push(walkBlock() as (KeyValue | Comment));
         token = tokens[current];
       }
@@ -141,7 +159,9 @@ export default function parseTOML(input: string): Document {
       //     ^        equals
       //       ^---^  value
       if (peek().token_type !== TokenType.Equal) {
-        throw new Error(`Expected key = value, found ${token} and ${peek()}`);
+        throw new Error(
+          `Expected key = value, found ${JSON.stringify(token)} and ${JSON.stringify(peek())}`
+        );
       }
 
       const key: Key = convert(token, node => {
@@ -155,7 +175,6 @@ export default function parseTOML(input: string): Document {
       token = next();
       const value = walkValue();
 
-      step();
       return {
         type: NodeType.KeyValue,
         key,
@@ -167,12 +186,16 @@ export default function parseTOML(input: string): Document {
         equals
       };
     } else {
-      throw new Error(`Unexpected token ${token}`);
+      throw new Error(`Unexpected token ${JSON.stringify(token)}`);
     }
   }
 
   function walkValue(): Value {
     let token = tokens[current];
+    const next = (skip: number = 1) => {
+      current += skip;
+      return tokens[current];
+    };
 
     if (token.token_type === TokenType.String) {
       // 1. String
@@ -221,8 +244,13 @@ export default function parseTOML(input: string): Document {
           // | lt1 = 07:32:00
           // | lt2 = 00:32:00.999999
 
-          // TODO verify possible types
-          node.value = new Date(token.raw);
+          if (!IS_FULL_DATE.test(token.raw)) {
+            // For local time, use local ISO date
+            const [local_date] = new Date().toISOString().split('T');
+            node.value = new Date(`${local_date}T${token.raw}`);
+          } else {
+            node.value = new Date(token.raw.replace(' ', 'T'));
+          }
         });
 
         step();
@@ -230,25 +258,162 @@ export default function parseTOML(input: string): Document {
       }
 
       // 4. Float
+      if (
+        HAS_DOT.test(token.raw) ||
+        IS_INF.test(token.raw) ||
+        IS_NAN.test(token.raw) ||
+        (HAS_E.test(token.raw) && !IS_HEX.test(token.raw))
+      ) {
+        const value: Float = convert(token, node => {
+          node.type = NodeType.Float;
+
+          if (IS_INF.test(token.raw)) {
+            node.value = token.raw === '-inf' ? -Infinity : Infinity;
+          } else if (IS_NAN.test(token.raw)) {
+            node.value = token.raw === '-nan' ? -NaN : NaN;
+          } else {
+            node.value = Number(token.raw.replace(IS_DIVIDER, ''));
+          }
+        });
+
+        step();
+        return value;
+      }
+
       // 5. Integer
+      const value: Integer = convert(token, node => {
+        node.type = NodeType.Integer;
+
+        let radix = 10;
+        if (IS_HEX.test(token.raw)) {
+          radix = 16;
+        } else if (IS_OCTAL.test(token.raw)) {
+          radix = 8;
+        } else if (IS_BINARY.test(token.raw)) {
+          radix = 2;
+        }
+
+        node.value = parseInt(
+          token.raw
+            .replace(IS_DIVIDER, '')
+            .replace(IS_OCTAL, '')
+            .replace(IS_BINARY, ''),
+          radix
+        );
+      });
+
+      step();
+      return value;
     }
 
     if (token.token_type === TokenType.Curly) {
+      if (token.raw !== '{') {
+        throw new Error(`Expected opening brace for inline table, found ${JSON.stringify(token)}`);
+      }
+
       // 6. InlineTable
+      const value: InlineTable = convert(token, node => {
+        node.type = NodeType.InlineTable;
+        node.items = [];
+      });
+
+      token = next();
+
+      while (!(token.token_type === TokenType.Curly && token.raw === '}')) {
+        if (token.token_type === TokenType.Comma) {
+          const previous = value.items[value.items.length - 1];
+          if (!previous) {
+            throw new Error('Found "," without previous value');
+          }
+
+          previous.comma = true;
+          previous.loc.end = token.loc.start;
+
+          token = next();
+          continue;
+        }
+
+        const item = walkBlock();
+        if (item.type !== NodeType.KeyValue) {
+          throw new Error(
+            `Only key-values are supported in inline tables, found ${JSON.stringify(item)}`
+          );
+        }
+
+        const inline_item: InlineTableItem = {
+          type: NodeType.InlineTableItem,
+          loc: { start: item.loc.start, end: item.loc.end },
+          item,
+          comma: false
+        };
+
+        value.items.push(inline_item);
+        token = tokens[current];
+      }
+
+      if (token.token_type !== TokenType.Curly || token.raw !== '}') {
+        throw new Error(`Expected closing brace "}", found ${JSON.stringify(token)}`);
+      }
+
+      value.loc.end = token.loc.end;
+
+      step();
+      return value;
     }
 
-    if (token.token_type === TokenType.Bracket) {
-      // 7. InlineArray
+    if (token.token_type !== TokenType.Bracket) {
+      throw new Error(`Unrecognized token for value: ${JSON.stringify(token)}`);
+    }
+    if (token.raw !== '[') {
+      throw new Error(`Expected opening brace for inline array, found ${JSON.stringify(token)}`);
     }
 
-    // TODO
-    const value = {
-      type: NodeType.Integer,
-      loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 1 } },
-      raw: '0',
-      value: 0
-    } as Integer;
+    // 7. InlineArray
+    const value: InlineArray = convert(token, node => {
+      node.type = NodeType.InlineArray;
+      node.items = [];
+    });
 
+    token = next();
+
+    while (!(token.token_type === TokenType.Bracket && token.raw === ']')) {
+      if (token.token_type === TokenType.Comma) {
+        const previous = value.items[value.items.length - 1];
+        if (!previous) {
+          throw new Error('Found "," without previous value');
+        }
+
+        previous.comma = true;
+        previous.loc.end = token.loc.start;
+
+        token = next();
+        continue;
+      }
+      if (token.token_type === TokenType.Comment) {
+        // TODO
+        token = next();
+        continue;
+      }
+
+      const item = walkValue();
+      const inline_item: InlineArrayItem = {
+        type: NodeType.InlineArrayItem,
+        loc: { start: item.loc.start, end: item.loc.end },
+        item,
+        comma: false
+      };
+
+      value.items.push(inline_item);
+      token = tokens[current];
+    }
+
+    if (token.token_type !== TokenType.Bracket || token.raw !== ']') {
+      throw new Error(`Expected closing bracket "]", found ${JSON.stringify(token)}`);
+    }
+
+    value.loc.end = token.loc.end;
+
+    step();
     return value;
   }
 

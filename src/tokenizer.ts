@@ -1,3 +1,7 @@
+// TODO
+// - [ ] Whitespace around the key is ignored
+//       -> Likely need to move dots from String and into separate token
+
 export enum TokenType {
   Bracket = 'Bracket',
   Curly = 'Curly',

@@ -152,7 +152,7 @@ export interface InlineArrayItem<TItem = unknown> extends Node {
 
 export interface InlineTable extends Node {
   type: NodeType.InlineTable;
-  items: InlineTableItem;
+  items: InlineTableItem[];
 }
 
 // loc for InlineTableItem follows InlineArrayItem

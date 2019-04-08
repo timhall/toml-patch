@@ -114,7 +114,7 @@ export default {
               end: { line: 7, column: 31 }
             },
             raw: '1979-05-27T07:32:00-08:00',
-            value: 'TODO'
+            value: new Date('1979-05-27T07:32:00-08:00')
           },
           comments: [
             {
