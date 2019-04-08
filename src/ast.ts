@@ -89,7 +89,7 @@ export interface Key extends Node {
   value: string[];
 }
 
-export type Value<TInlineArrayItem = unknown> =
+export type Value<TInlineArrayItem = Node> =
   | String
   | Integer
   | Float
@@ -134,7 +134,7 @@ export interface DateTime extends Node {
   value: Date;
 }
 
-export interface InlineArray<TItem = unknown> extends Node {
+export interface InlineArray<TItem = Node> extends Node {
   type: NodeType.InlineArray;
   items: InlineArrayItem<TItem>[];
 }
@@ -144,7 +144,7 @@ export interface InlineArray<TItem = unknown> extends Node {
 //
 // [ "a"  ,"b", "c"  ]
 //   ^---^ ^-^  ^-^
-export interface InlineArrayItem<TItem = unknown> extends Node {
+export interface InlineArrayItem<TItem = Node> extends Node {
   type: NodeType.InlineArrayItem;
   item: TItem;
   comma: boolean;
