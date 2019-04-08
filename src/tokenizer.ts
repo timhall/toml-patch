@@ -9,6 +9,7 @@ export enum TokenType {
   Curly = 'Curly',
   Equal = 'Equal',
   Comma = 'Comma',
+  Dot = 'Dot',
   Comment = 'Comment',
   String = 'String'
 }
@@ -70,6 +71,8 @@ export function tokenize(input: string): Token[] {
       tokens.push(specialCharacter(cursor, location, TokenType.Equal));
     } else if (cursor.item! === ',') {
       tokens.push(specialCharacter(cursor, location, TokenType.Comma));
+    } else if (cursor.item! === '.') {
+      tokens.push(specialCharacter(cursor, location, TokenType.Dot));
     } else if (cursor.item! === '#') {
       // Handle comments = # -> EOL
       tokens.push(comment(cursor, location));
@@ -190,7 +193,10 @@ function string(cursor: Cursor<string>, location: Locator): Token {
 
     if (
       !(double_quoted || single_quoted) &&
-      (IS_WHITESPACE.test(cursor.item!) || cursor.item! === ',' || cursor.item! === ']')
+      (IS_WHITESPACE.test(cursor.item!) ||
+        cursor.item! === ',' ||
+        cursor.item! === '.' ||
+        cursor.item! === ']')
     ) {
       break;
     }

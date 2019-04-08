@@ -60,3 +60,7 @@ date_space = 2018-01-01 08:00:00`;
 test('should tokenize complex input', () => {
   expect(tokenize(complex)).toMatchSnapshot();
 });
+
+test('should tokenize dotted key with spaces', () => {
+  expect(tokenize(`[[ a . "b" . 'c' ]]`)).toMatchSnapshot();
+});

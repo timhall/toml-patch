@@ -30,7 +30,7 @@ import {
   IS_FULL_DATE,
   IS_FULL_TIME
 } from './tokenizer';
-import { parseString, parseKey } from './parse-string';
+import { parseString } from './parse-string';
 import Cursor from './cursor';
 
 const TRUE = 'true';
@@ -84,7 +84,7 @@ function walkValue(cursor: Cursor<Token>): Value {
     } else if (IS_FULL_DATE.test(cursor.item!.raw) || IS_FULL_TIME.test(cursor.item!.raw)) {
       return datetime(cursor);
     } else if (
-      HAS_DOT.test(cursor.item!.raw) ||
+      (!cursor.peekDone() && cursor.peek()!.type === TokenType.Dot) ||
       IS_INF.test(cursor.item!.raw) ||
       IS_NAN.test(cursor.item!.raw) ||
       (HAS_E.test(cursor.item!.raw) && !IS_HEX.test(cursor.item!.raw))
@@ -162,8 +162,16 @@ function table(cursor: Cursor<Token>): Table | TableArray {
     type: NodeType.Key,
     loc: cursor.item!.loc,
     raw: cursor.item!.raw,
-    value: parseKey(cursor.item!.raw)
+    value: [parseString(cursor.item!.raw)]
   };
+
+  while (cursor.peek()!.type === TokenType.Dot) {
+    cursor.step(2);
+
+    key.value.loc.end = cursor.item!.loc.end;
+    key.value.raw += `.${cursor.item!.raw}`;
+    key.value.value.push(parseString(cursor.item!.raw));
+  }
 
   cursor.step();
 
@@ -207,22 +215,27 @@ function keyValue(cursor: Cursor<Token>): KeyValue {
   // ^-^          key
   //     ^        equals
   //       ^---^  value
-  if (cursor.peek()!.type !== TokenType.Equal) {
-    throw new Error(
-      `Expected key = value, found ${JSON.stringify(cursor.item!)} and ${JSON.stringify(
-        cursor.peek()!
-      )}`
-    );
-  }
-
   const key: Key = {
     type: NodeType.Key,
     loc: cursor.item!.loc,
     raw: cursor.item!.raw,
-    value: parseKey(cursor.item!.raw)
+    value: [parseString(cursor.item!.raw)]
   };
 
+  while (cursor.peek()!.type === TokenType.Dot) {
+    cursor.step(2);
+
+    key.loc.end = cursor.item!.loc.end;
+    key.raw += `.${cursor.item!.raw}`;
+    key.value.push(parseString(cursor.item!.raw));
+  }
+
   cursor.step();
+
+  if (cursor.item!.type !== TokenType.Equal) {
+    throw new Error(`Expected "=" for key-value,  ${JSON.stringify(cursor.item!)}`);
+  }
+
   const equals = cursor.item!.loc.start.column;
 
   cursor.step();
@@ -276,39 +289,61 @@ function datetime(cursor: Cursor<Token>): DateTime {
   // Local Time
   // | lt1 = 07:32:00
   // | lt2 = 00:32:00.999999
+  let loc = cursor.item!.loc;
+  let raw = cursor.item!.raw;
   let value: Date;
-  if (!IS_FULL_DATE.test(cursor.item!.raw)) {
+
+  if (!cursor.peekDone() && cursor.peek()!.type === TokenType.Dot) {
+    const start = loc.start;
+
+    cursor.step(2);
+    loc = { start, end: cursor.item!.loc.end };
+    raw += `.${cursor.item!.raw}`;
+  }
+
+  if (!IS_FULL_DATE.test(raw)) {
     // For local time, use local ISO date
     const [local_date] = new Date().toISOString().split('T');
-    value = new Date(`${local_date}T${cursor.item!.raw}`);
+    value = new Date(`${local_date}T${raw}`);
   } else {
-    value = new Date(cursor.item!.raw.replace(' ', 'T'));
+    value = new Date(raw.replace(' ', 'T'));
   }
 
   return {
     type: NodeType.DateTime,
-    loc: cursor.item!.loc,
-    raw: cursor.item!.raw,
+    loc,
+    raw,
     value
   };
 }
 
 function float(cursor: Cursor<Token>): Float {
+  let loc = cursor.item!.loc;
+  let raw = cursor.item!.raw;
   let value;
-  if (IS_INF.test(cursor.item!.raw)) {
-    value = cursor.item!.raw === '-inf' ? -Infinity : Infinity;
-  } else if (IS_NAN.test(cursor.item!.raw)) {
-    value = cursor.item!.raw === '-nan' ? -NaN : NaN;
+
+  if (IS_INF.test(raw)) {
+    value = raw === '-inf' ? -Infinity : Infinity;
+  } else if (IS_NAN.test(raw)) {
+    value = raw === '-nan' ? -NaN : NaN;
+  } else if (!cursor.peekDone() && cursor.peek()!.type === TokenType.Dot) {
+    const start = loc.start;
+
+    // From spec:
+    // | A fractional part is a decimal point followed by one or more digits.
+    //
+    // -> Don't have to handle "4." (i.e. nothing behind decimal place)
+
+    cursor.step(2);
+
+    raw += `.${cursor.item!.raw}`;
+    loc = { start, end: cursor.item!.loc.end };
+    value = Number(raw.replace(IS_DIVIDER, ''));
   } else {
-    value = Number(cursor.item!.raw.replace(IS_DIVIDER, ''));
+    value = Number(raw.replace(IS_DIVIDER, ''));
   }
 
-  return {
-    type: NodeType.Float,
-    loc: cursor.item!.loc,
-    raw: cursor.item!.raw,
-    value
-  };
+  return { type: NodeType.Float, loc, raw, value };
 }
 
 function integer(cursor: Cursor<Token>): Integer {

@@ -1,8 +1,7 @@
-import { DOUBLE_QUOTE, SINGLE_QUOTE, ESCAPE } from './tokenizer';
+import { SINGLE_QUOTE, DOUBLE_QUOTE } from './tokenizer';
 
 const TRIPLE_DOUBLE_QUOTE = `"""`;
 const TRIPLE_SINGLE_QUOTE = `'''`;
-const DOT = `.`;
 const LF = '\\n';
 const CRLF = '\\r\\n';
 const IS_CRLF = /\r\n/g;
@@ -16,45 +15,11 @@ export function parseString(raw: string): string {
     return trim(raw, 1);
   } else if (raw.startsWith(TRIPLE_DOUBLE_QUOTE)) {
     return unescape(escapeNewLines(trimLeadingWhitespace(trim(raw, 3))));
-  } else {
+  } else if (raw.startsWith(DOUBLE_QUOTE)) {
     return unescape(trim(raw, 1));
+  } else {
+    return raw;
   }
-}
-
-export function parseKey(raw: string): string[] {
-  // "abc".'def'.hij
-  // ^---^ ^---^ ^-^
-  // 0    56    11
-
-  const parts = [];
-  let double_quoted = false;
-  let single_quoted = false;
-  let index = 0;
-  let current = 0;
-
-  while (current < raw.length) {
-    let char = raw[current];
-
-    if (char === DOT && !double_quoted && !single_quoted) {
-      parts.push(raw.substr(index, current - index));
-      index = current + 1;
-    } else if (char === DOUBLE_QUOTE && !single_quoted) {
-      double_quoted = !double_quoted;
-    } else if (char === SINGLE_QUOTE && !double_quoted) {
-      single_quoted = !single_quoted;
-    } else if (double_quoted && char === ESCAPE && raw[current + 1] === DOUBLE_QUOTE) {
-      // (skip over double-quote)
-      current++;
-    }
-
-    current++;
-  }
-
-  parts.push(raw.substr(index, raw.length - index));
-
-  return parts.map(part =>
-    part[0] === DOUBLE_QUOTE || part[0] === SINGLE_QUOTE ? parseString(part) : part
-  );
 }
 
 export function unescape(escaped: string): string {

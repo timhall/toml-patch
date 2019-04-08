@@ -565,7 +565,7 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 16,
+        "column": 10,
         "line": 18,
       },
       "start": Object {
@@ -573,7 +573,35 @@ Array [
         "line": 18,
       },
     },
-    "raw": "servers.alpha",
+    "raw": "servers",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 11,
+        "line": 18,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 18,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 16,
+        "line": 18,
+      },
+      "start": Object {
+        "column": 11,
+        "line": 18,
+      },
+    },
+    "raw": "alpha",
     "type": "String",
   },
   Object {
@@ -691,7 +719,7 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 15,
+        "column": 10,
         "line": 22,
       },
       "start": Object {
@@ -699,7 +727,35 @@ Array [
         "line": 22,
       },
     },
-    "raw": "servers.beta",
+    "raw": "servers",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 11,
+        "line": 22,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 22,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 15,
+        "line": 22,
+      },
+      "start": Object {
+        "column": 11,
+        "line": 22,
+      },
+    },
+    "raw": "beta",
     "type": "String",
   },
   Object {
@@ -1167,7 +1223,7 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 9,
+        "column": 1,
         "line": 35,
       },
       "start": Object {
@@ -1175,7 +1231,63 @@ Array [
         "line": 35,
       },
     },
-    "raw": "a.'b'.\\"c\\"",
+    "raw": "a",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 2,
+        "line": 35,
+      },
+      "start": Object {
+        "column": 1,
+        "line": 35,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 35,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 35,
+      },
+    },
+    "raw": "'b'",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 35,
+      },
+      "start": Object {
+        "column": 5,
+        "line": 35,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 35,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 35,
+      },
+    },
+    "raw": "\\"c\\"",
     "type": "String",
   },
   Object {
@@ -1247,6 +1359,137 @@ Array [
     },
     "raw": "2018-01-01 08:00:00",
     "type": "String",
+  },
+]
+`;
+
+exports[`should tokenize dotted key with spaces 1`] = `
+Array [
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 1,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 1,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 2,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 1,
+        "line": 1,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 3,
+        "line": 1,
+      },
+    },
+    "raw": "a",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 5,
+        "line": 1,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 10,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 1,
+      },
+    },
+    "raw": "\\"b\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 12,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 11,
+        "line": 1,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 16,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 13,
+        "line": 1,
+      },
+    },
+    "raw": "'c'",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 18,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 17,
+        "line": 1,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 19,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 18,
+        "line": 1,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
   },
 ]
 `;
@@ -1428,7 +1671,7 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 13,
+        "column": 7,
         "line": 10,
       },
       "start": Object {
@@ -1436,7 +1679,63 @@ Array [
         "line": 10,
       },
     },
-    "raw": "\\"i\\".'j'.k",
+    "raw": "\\"i\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 10,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 10,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 11,
+        "line": 10,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 10,
+      },
+    },
+    "raw": "'j'",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 12,
+        "line": 10,
+      },
+      "start": Object {
+        "column": 11,
+        "line": 10,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 13,
+        "line": 10,
+      },
+      "start": Object {
+        "column": 12,
+        "line": 10,
+      },
+    },
+    "raw": "k",
     "type": "String",
   },
   Object {
