@@ -20,6 +20,7 @@ import {
   Comment
 } from './ast';
 import {
+  Token,
   TokenType,
   tokenize,
   findPosition,
@@ -330,14 +331,8 @@ export default function parseTOML(input: string): Document {
 
       cursor.step();
 
-      // Note: the following ts-ignores are due to the raw check above
-      //       typescript seems to be getting confused that item is a static-ish value
-      //       and doesn't see it changing with cursor.step()
-
-      // @ts-ignore This condition will always return 'false' since the types '"{"' and '"}"' have no overlap
-      while (!(cursor.item!.type === TokenType.Curly && cursor.item!.raw === '}')) {
-        // @ts-ignore This condition will always return 'false' since the types 'TokenType.Curly' and 'TokenType.Comma' have no overlap.
-        if (cursor.item!.type === TokenType.Comma) {
+      while (!(cursor.item!.type === TokenType.Curly && (cursor.item! as Token).raw === '}')) {
+        if ((cursor.item! as Token).type === TokenType.Comma) {
           const previous = value.items[value.items.length - 1];
           if (!previous) {
             throw new Error('Found "," without previous value');
@@ -367,8 +362,7 @@ export default function parseTOML(input: string): Document {
         value.items.push(inline_item);
       }
 
-      // @ts-ignore This condition will always return 'true' since the types '"{"' and '"}"' have no overlap.
-      if (cursor.item!.type !== TokenType.Curly || cursor.item!.raw !== '}') {
+      if (cursor.item!.type !== TokenType.Curly || (cursor.item! as Token).raw !== '}') {
         throw new Error(`Expected closing brace "}", found ${JSON.stringify(cursor.item!)}`);
       }
 
@@ -396,10 +390,8 @@ export default function parseTOML(input: string): Document {
 
     cursor.step();
 
-    // @ts-ignore This condition will always return 'false' since the types '"["' and '"]"' have no overlap.
-    while (!(cursor.item!.type === TokenType.Bracket && cursor.item!.raw === ']')) {
-      // @ts-ignore This condition will always return 'false' since the types 'TokenType.Bracket' and 'TokenType.Comma' have no overlap.
-      if (cursor.item!.type === TokenType.Comma) {
+    while (!(cursor.item!.type === TokenType.Bracket && (cursor.item! as Token).raw === ']')) {
+      if ((cursor.item! as Token).type === TokenType.Comma) {
         const previous = value.items[value.items.length - 1];
         if (!previous) {
           throw new Error('Found "," without previous value');
@@ -412,8 +404,7 @@ export default function parseTOML(input: string): Document {
         continue;
       }
 
-      // @ts-ignore This condition will always return 'false' since the types 'TokenType.Bracket' and 'TokenType.Comment' have no overlap.
-      if (cursor.item!.type === TokenType.Comment) {
+      if ((cursor.item! as Token).type === TokenType.Comment) {
         // TODO
         cursor.step();
         continue;
@@ -430,8 +421,7 @@ export default function parseTOML(input: string): Document {
       value.items.push(inline_item);
     }
 
-    // @ts-ignore This condition will always return 'true' since the types '"["' and '"]"' have no overlap.
-    if (cursor.item!.type !== TokenType.Bracket || cursor.item!.raw !== ']') {
+    if (cursor.item!.type !== TokenType.Bracket || (cursor.item! as Token).raw !== ']') {
       throw new Error(`Expected closing bracket "]", found ${JSON.stringify(cursor.item!)}`);
     }
 
