@@ -1,3 +1,5 @@
+import Cursor from './cursor';
+
 // TODO
 // - [ ] Whitespace around the key is ignored
 //       -> Likely need to move dots from String and into separate token
@@ -40,7 +42,7 @@ export const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 const IS_VALID_LEADING_CHARACTER = /[\w,\d,\",\',\+,\-,\_]/;
 
 export function tokenize(input: string): Token[] {
-  let current = 0;
+  const cursor = new Cursor(input);
   const tokens: Token[] = [];
 
   const lines = findLines(input);
@@ -51,81 +53,83 @@ export function tokenize(input: string): Token[] {
     };
   };
 
-  while (current < input.length) {
-    let char = input[current];
-
-    const next = (step: number = 1) => {
-      current += step;
-      char = input[current];
-    };
+  while (!cursor.done) {
     const special = (type: TokenType) => {
-      tokens.push({ type, raw: char, loc: location(current, current + 1) });
-      current++;
+      tokens.push({ type, raw: cursor.item!, loc: location(cursor.index, cursor.index + 1) });
     };
 
-    if (IS_WHITESPACE.test(char)) {
-      current++;
+    if (IS_WHITESPACE.test(cursor.item!)) {
+      cursor.step();
       continue;
     }
 
     // Handle special characters: [, ], {, }, =, comma
-    if (char === '[' || char === ']') {
+    if (cursor.item! === '[' || cursor.item! === ']') {
       special(TokenType.Bracket);
+
+      cursor.step();
       continue;
     }
-    if (char === '{' || char === '}') {
+    if (cursor.item! === '{' || cursor.item! === '}') {
       special(TokenType.Curly);
+
+      cursor.step();
       continue;
     }
-    if (char === '=') {
+    if (cursor.item! === '=') {
       special(TokenType.Equal);
+
+      cursor.step();
       continue;
     }
-    if (char === ',') {
+    if (cursor.item! === ',') {
       special(TokenType.Comma);
+
+      cursor.step();
       continue;
     }
 
     // Handle comments = # -> EOL
-    if (char === '#') {
-      const start = current;
+    if (cursor.item! === '#') {
+      const start = cursor.index;
       let raw = '';
-      while (!IS_NEW_LINE.test(char) && current < input.length) {
-        raw += char;
-        next();
+      while (!IS_NEW_LINE.test(cursor.item!) && !cursor.done) {
+        raw += cursor.item!;
+        cursor.step();
       }
 
       tokens.push({
         type: TokenType.Comment,
         raw,
-        loc: location(start, current)
+        loc: location(start, cursor.index)
       });
       continue;
     }
 
     // Multi-line literals or strings = no escaping
     const multiline_char =
-      checkThree(input, current, SINGLE_QUOTE) || checkThree(input, current, DOUBLE_QUOTE);
+      checkThree(input, cursor.index, SINGLE_QUOTE) ||
+      checkThree(input, cursor.index, DOUBLE_QUOTE);
     if (multiline_char) {
-      const start = current;
+      const start = cursor.index;
       let raw = multiline_char + multiline_char + multiline_char;
-      next(3);
+      cursor.step(3);
 
-      while (!checkThree(input, current, multiline_char) && current < input.length) {
-        raw += char;
-        next();
+      while (!checkThree(input, cursor.index, multiline_char) && !cursor.done) {
+        raw += cursor.item!;
+        cursor.step();
       }
 
       raw += multiline_char + multiline_char + multiline_char;
-      current += 3;
+      cursor.step(3);
 
       tokens.push({
         type: TokenType.String,
         raw,
-        loc: location(start, current)
+        loc: location(start, cursor.index)
       });
 
-      current++;
+      cursor.step();
       continue;
     }
 
@@ -150,44 +154,44 @@ export function tokenize(input: string): Token[] {
     // | (say) a space character.
 
     // First, check for invalid characters
-    if (!IS_VALID_LEADING_CHARACTER.test(char)) {
-      throw new Error(`Unsupported character "${char}" found at ${current}`);
+    if (!IS_VALID_LEADING_CHARACTER.test(cursor.item!)) {
+      throw new Error(`Unsupported character "${cursor.item!}" found at ${cursor.index}`);
     }
 
-    const start = current;
+    const start = cursor.index;
     let raw = '';
     let double_quoted = false;
     let single_quoted = false;
 
-    while (current < input.length) {
-      if (char === DOUBLE_QUOTE) double_quoted = !double_quoted;
-      if (char === SINGLE_QUOTE) single_quoted = !single_quoted;
+    while (!cursor.done) {
+      if (cursor.item! === DOUBLE_QUOTE) double_quoted = !double_quoted;
+      if (cursor.item! === SINGLE_QUOTE) single_quoted = !single_quoted;
 
-      raw += char;
-      next();
+      raw += cursor.item!;
+      cursor.step();
 
       // If next character is escape and currently double-quoted,
       // check for escaped quote
-      if (double_quoted && char === ESCAPE) {
-        if (input[current + 1] === DOUBLE_QUOTE) {
+      if (double_quoted && cursor.item! === ESCAPE) {
+        if (input[cursor.index + 1] === DOUBLE_QUOTE) {
           raw += ESCAPE + DOUBLE_QUOTE;
-          next(2);
+          cursor.step(2);
         }
       }
 
       // If next character is IS_WHITESPACE,
       // check if raw is full date and following is full time
-      if (char === SPACE && IS_FULL_DATE.test(raw)) {
-        const possibly_time = input.substr(current + 1, 8);
+      if (cursor.item! === SPACE && IS_FULL_DATE.test(raw)) {
+        const possibly_time = input.substr(cursor.index + 1, 8);
         if (IS_FULL_TIME.test(possibly_time)) {
           raw += SPACE;
-          next();
+          cursor.step();
         }
       }
 
       if (
         !(double_quoted || single_quoted) &&
-        (IS_WHITESPACE.test(char) || char === ',' || char === ']')
+        (IS_WHITESPACE.test(cursor.item!) || cursor.item! === ',' || cursor.item! === ']')
       )
         break;
     }
@@ -202,7 +206,7 @@ export function tokenize(input: string): Token[] {
     tokens.push({
       type: TokenType.String,
       raw,
-      loc: location(start, current)
+      loc: location(start, cursor.index)
     });
   }
 
