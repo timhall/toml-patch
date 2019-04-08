@@ -4,7 +4,8 @@
     "target": "es2015",
     "moduleResolution": "node",
     "lib": ["es2015"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noEmit": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

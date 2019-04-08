@@ -1,9 +1,9 @@
-import { Document } from './ast';
+import { NodeType, Document } from './ast';
 
 export default function parseJSON<TValue>(value: TValue): Document {
   return {
-    type: 'document',
-    loc: null,
+    type: NodeType.Document,
+    loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } },
     body: []
   };
 }
