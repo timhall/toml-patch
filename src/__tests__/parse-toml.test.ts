@@ -67,7 +67,3 @@ test('it should parse complex document', () => {
 
   expect(parsed).toMatchSnapshot();
 });
-
-test('it should parse complex fixture', () => {
-  //
-});
