@@ -73,6 +73,7 @@ export default function traverse(document: Document, visitor: Visitor) {
         traverseNode((node as InlineTableItem).item, node);
         break;
 
+      case NodeType.Key:
       case NodeType.String:
       case NodeType.Integer:
       case NodeType.Float:
