@@ -402,7 +402,10 @@ function inlineTable(cursor: Cursor<Token>): InlineTable {
 
   cursor.step();
 
-  while (!(cursor.item!.type === TokenType.Curly && (cursor.item! as Token).raw === '}')) {
+  while (
+    !cursor.done &&
+    !(cursor.item!.type === TokenType.Curly && (cursor.item! as Token).raw === '}')
+  ) {
     if ((cursor.item! as Token).type === TokenType.Comma) {
       const previous = value.items[value.items.length - 1];
       if (!previous) {
