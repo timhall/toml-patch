@@ -1349,7 +1349,7 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 32,
+        "column": 23,
         "line": 36,
       },
       "start": Object {
@@ -1357,7 +1357,21 @@ Array [
         "line": 36,
       },
     },
-    "raw": "2018-01-01 08:00:00",
+    "raw": "2018-01-01",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 32,
+        "line": 36,
+      },
+      "start": Object {
+        "column": 24,
+        "line": 36,
+      },
+    },
+    "raw": "08:00:00",
     "type": "String",
   },
 ]

@@ -26,16 +26,13 @@ import {
   findPosition,
   findLines,
   DOUBLE_QUOTE,
-  SINGLE_QUOTE,
-  IS_FULL_DATE,
-  IS_FULL_TIME
+  SINGLE_QUOTE
 } from './tokenizer';
 import { parseString } from './parse-string';
 import Cursor from './cursor';
 
 const TRUE = 'true';
 const FALSE = 'false';
-const HAS_DOT = /\./;
 const HAS_E = /e/i;
 const IS_DIVIDER = /\_/g;
 const IS_INF = /inf/;
@@ -43,6 +40,8 @@ const IS_NAN = /nan/;
 const IS_HEX = /^0x/;
 const IS_OCTAL = /^0o/;
 const IS_BINARY = /^0b/;
+export const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
+export const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 
 export default function parseTOML(input: string): Document {
   const lines = findLines(input);
@@ -292,6 +291,21 @@ function datetime(cursor: Cursor<Token>): DateTime {
   let loc = cursor.item!.loc;
   let raw = cursor.item!.raw;
   let value: Date;
+
+  // If next token is string,
+  // check if raw is full date and following is full time
+  if (
+    !cursor.peekDone() &&
+    cursor.peek()!.type === TokenType.String &&
+    IS_FULL_DATE.test(raw) &&
+    IS_FULL_TIME.test(cursor.peek()!.raw)
+  ) {
+    const start = loc.start;
+
+    cursor.step();
+    loc = { start, end: cursor.item!.loc.end };
+    raw += ` ${cursor.item!.raw}`;
+  }
 
   if (!cursor.peekDone() && cursor.peek()!.type === TokenType.Dot) {
     const start = loc.start;
