@@ -2616,146 +2616,6 @@ Object {
             "type": "InlineArray",
           },
         },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 100,
-              "line": 24,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 24,
-            },
-          },
-          "raw": "# Each of the following keygroups/key value pairs should produce an error. Uncomment to them to test",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 58,
-              "line": 26,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 26,
-            },
-          },
-          "raw": "#[error]   if you didn't catch this, your parser is broken",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 160,
-              "line": 27,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 27,
-            },
-          },
-          "raw": "#string = \\"Anything other than tabs, spaces and newline after a keygroup or key value pair has ended should produce an error unless it is a comment\\"   like this",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 10,
-              "line": 28,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 28,
-            },
-          },
-          "raw": "#array = [",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 62,
-              "line": 29,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 29,
-            },
-          },
-          "raw": "#         \\"This might most likely happen in multiline arrays\\",",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 20,
-              "line": 30,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 30,
-            },
-          },
-          "raw": "#         Like here,",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 19,
-              "line": 31,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 31,
-            },
-          },
-          "raw": "#         \\"or here,",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 19,
-              "line": 32,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 32,
-            },
-          },
-          "raw": "#         and here\\"",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 50,
-              "line": 33,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 33,
-            },
-          },
-          "raw": "#         ]     End of array comment, forgot the #",
-          "type": "Comment",
-        },
-        Object {
-          "loc": Object {
-            "end": Object {
-              "column": 42,
-              "line": 34,
-            },
-            "start": Object {
-              "column": 0,
-              "line": 34,
-            },
-          },
-          "raw": "#number = 3.14  pi <--again forgot the #  ",
-          "type": "Comment",
-        },
       ],
       "key": Object {
         "loc": Object {
@@ -2791,8 +2651,8 @@ Object {
       },
       "loc": Object {
         "end": Object {
-          "column": 42,
-          "line": 34,
+          "column": 13,
+          "line": 22,
         },
         "start": Object {
           "column": 8,
@@ -2805,7 +2665,7 @@ Object {
   "loc": Object {
     "end": Object {
       "column": 0,
-      "line": 35,
+      "line": 23,
     },
     "start": Object {
       "column": 0,
