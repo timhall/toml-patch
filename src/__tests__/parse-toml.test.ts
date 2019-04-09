@@ -92,7 +92,7 @@ test_string = "You'll hate me after this - #"          # " Annoying, isn't it?
             ]
 `;
 
-test.only('it should parse hard document', () => {
+test('it should parse hard document', () => {
   const parsed = parseTOML(hard);
 
   expect(parsed).toMatchSnapshot();
