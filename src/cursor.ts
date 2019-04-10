@@ -12,8 +12,12 @@ export default class Cursor<T> {
     this.index = 0;
   }
 
-  get item(): T | undefined {
-    return this.items[this.index];
+  get item(): T {
+    if (this.done) {
+      throw new Error('Parsing could not complete, unexpectedly reached end of file');
+    }
+
+    return this.items[this.index]!;
   }
   get done(): boolean {
     return this.index >= this.items.length;

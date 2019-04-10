@@ -33,23 +33,20 @@ export function tokenize(input: string): Token[] {
   const locate = createLocate(input);
 
   while (!cursor.done) {
-    if (IS_WHITESPACE.test(cursor.item!)) {
-      cursor.step();
-      continue;
-    }
-
-    // Handle special characters: [, ], {, }, =, comma
-    if (cursor.item! === '[' || cursor.item! === ']') {
+    if (IS_WHITESPACE.test(cursor.item)) {
+      // (skip whitespace)
+    } else if (cursor.item === '[' || cursor.item === ']') {
+      // Handle special characters: [, ], {, }, =, comma
       tokens.push(specialCharacter(cursor, locate, TokenType.Bracket));
-    } else if (cursor.item! === '{' || cursor.item! === '}') {
+    } else if (cursor.item === '{' || cursor.item === '}') {
       tokens.push(specialCharacter(cursor, locate, TokenType.Curly));
-    } else if (cursor.item! === '=') {
+    } else if (cursor.item === '=') {
       tokens.push(specialCharacter(cursor, locate, TokenType.Equal));
-    } else if (cursor.item! === ',') {
+    } else if (cursor.item === ',') {
       tokens.push(specialCharacter(cursor, locate, TokenType.Comma));
-    } else if (cursor.item! === '.') {
+    } else if (cursor.item === '.') {
       tokens.push(specialCharacter(cursor, locate, TokenType.Dot));
-    } else if (cursor.item! === '#') {
+    } else if (cursor.item === '#') {
       // Handle comments = # -> EOL
       tokens.push(comment(cursor, locate));
     } else {
@@ -72,16 +69,18 @@ export function tokenize(input: string): Token[] {
 }
 
 function specialCharacter(cursor: Cursor<string>, locate: Locator, type: TokenType): Token {
-  return { type, raw: cursor.item!, loc: locate(cursor.index, cursor.index + 1) };
+  return { type, raw: cursor.item, loc: locate(cursor.index, cursor.index + 1) };
 }
 
 function comment(cursor: Cursor<string>, locate: Locator): Token {
   const start = cursor.index;
-  let raw = cursor.item!;
+  let raw = cursor.item;
   while (!cursor.peekDone() && !IS_NEW_LINE.test(cursor.peek()!)) {
     cursor.step();
-    raw += cursor.item!;
+    raw += cursor.item;
   }
+
+  // Early exit is ok for comment, no closing conditions
 
   return {
     type: TokenType.Comment,
@@ -97,17 +96,24 @@ function multiline(
   input: string
 ): Token {
   const start = cursor.index;
-  let raw = multiline_char + multiline_char + multiline_char;
+  let quotes = multiline_char + multiline_char + multiline_char;
+  let raw = quotes;
   cursor.step(3);
 
   while (!cursor.done && !checkThree(cursor.items as string, cursor.index, multiline_char)) {
-    raw += cursor.item!;
+    raw += cursor.item;
     cursor.step();
   }
 
-  // TODO Handle early exit from cursor.done
+  if (cursor.done) {
+    throw new ParseError(
+      input,
+      findPosition(input, cursor.index),
+      `Expected close of multiline string with ${quotes}, reached end of file`
+    );
+  }
 
-  raw += multiline_char + multiline_char + multiline_char;
+  raw += quotes;
   cursor.step(2);
 
   return {
@@ -139,11 +145,11 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
   // | (say) a space character.
 
   // First, check for invalid characters
-  if (!IS_VALID_LEADING_CHARACTER.test(cursor.item!)) {
+  if (!IS_VALID_LEADING_CHARACTER.test(cursor.item)) {
     throw new ParseError(
       input,
       findPosition(input, cursor.index),
-      `Unsupported character "${cursor.item!}". Expected ALPHANUMERIC, ", ', +, -, or _`
+      `Unsupported character "${cursor.item}". Expected ALPHANUMERIC, ", ', +, -, or _`
     );
   }
 
@@ -153,15 +159,17 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
   let single_quoted = false;
 
   while (!cursor.done) {
-    if (cursor.item! === DOUBLE_QUOTE) double_quoted = !double_quoted;
-    if (cursor.item! === SINGLE_QUOTE && !double_quoted) single_quoted = !single_quoted;
+    if (cursor.item === DOUBLE_QUOTE) double_quoted = !double_quoted;
+    if (cursor.item === SINGLE_QUOTE && !double_quoted) single_quoted = !single_quoted;
 
-    raw += cursor.item!;
+    raw += cursor.item;
+
     cursor.step();
+    if (cursor.done) break;
 
     // If next character is escape and currently double-quoted,
     // check for escaped quote
-    if (double_quoted && cursor.item! === ESCAPE) {
+    if (double_quoted && cursor.item === ESCAPE) {
       if (cursor.peek() === DOUBLE_QUOTE) {
         raw += ESCAPE + DOUBLE_QUOTE;
         cursor.step(2);
@@ -170,31 +178,20 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
 
     if (
       !(double_quoted || single_quoted) &&
-      (IS_WHITESPACE.test(cursor.item!) ||
-        cursor.item! === ',' ||
-        cursor.item! === '.' ||
-        cursor.item! === ']')
+      (IS_WHITESPACE.test(cursor.item) ||
+        cursor.item === ',' ||
+        cursor.item === '.' ||
+        cursor.item === ']')
     ) {
       break;
     }
   }
 
-  if (double_quoted) {
+  if (double_quoted || single_quoted) {
     throw new ParseError(
       input,
-      findPosition(input, cursor.index),
-      `Un-closed string found starting at line = ${findPosition(input, start).line}, column = ${
-        findPosition(input, start).column
-      }`
-    );
-  }
-  if (single_quoted) {
-    throw new ParseError(
-      input,
-      findPosition(input, cursor.index),
-      `Un-closed string literal found starting at line = ${
-        findPosition(input, start).line
-      }, column = ${findPosition(input, start).column}`
+      findPosition(input, start),
+      `Expected close of string with ${double_quoted ? DOUBLE_QUOTE : SINGLE_QUOTE}`
     );
   }
 
