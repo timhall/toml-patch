@@ -19,17 +19,10 @@ import {
   InlineArrayItem,
   Comment
 } from './ast';
-import {
-  Token,
-  TokenType,
-  tokenize,
-  findPosition,
-  findLines,
-  DOUBLE_QUOTE,
-  SINGLE_QUOTE
-} from './tokenizer';
+import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokenizer';
 import { parseString } from './parse-string';
 import Cursor from './cursor';
+import { findPosition } from './location';
 
 const TRUE = 'true';
 const FALSE = 'false';
@@ -44,13 +37,12 @@ export const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
 export const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 
 export default function parseTOML(input: string): Document {
-  const lines = findLines(input);
   const tokens = tokenize(input);
   const cursor = new Cursor(tokens);
 
   let document: Document = {
     type: NodeType.Document,
-    loc: { start: { line: 1, column: 0 }, end: findPosition(lines, input.length) },
+    loc: { start: { line: 1, column: 0 }, end: findPosition(input, input.length) },
     body: []
   };
 

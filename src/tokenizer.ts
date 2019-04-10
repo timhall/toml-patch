@@ -1,4 +1,5 @@
 import Cursor from './cursor';
+import { Location, Locator, createLocate } from './location';
 
 // TODO
 // - [ ] Whitespace around the key is ignored
@@ -20,19 +21,6 @@ export interface Token {
   loc: Location;
 }
 
-export interface Location {
-  start: Position;
-  end: Position;
-}
-
-export interface Position {
-  // Note: line is 1-indexed while column is 0-indexed
-  line: number;
-  column: number;
-}
-
-type Locator = (start: number, end: number) => Location;
-
 export const IS_WHITESPACE = /\s/;
 export const IS_NEW_LINE = /(\r\n|\n)/;
 export const DOUBLE_QUOTE = `"`;
@@ -45,14 +33,7 @@ const IS_VALID_LEADING_CHARACTER = /[\w,\d,\",\',\+,\-,\_]/;
 export function tokenize(input: string): Token[] {
   const cursor = new Cursor(input);
   const tokens: Token[] = [];
-
-  const lines = findLines(input);
-  const location: Locator = (start: number, end: number) => {
-    return {
-      start: findPosition(lines, start),
-      end: findPosition(lines, end)
-    };
-  };
+  const locate = createLocate(input);
 
   while (!cursor.done) {
     if (IS_WHITESPACE.test(cursor.item!)) {
@@ -62,18 +43,18 @@ export function tokenize(input: string): Token[] {
 
     // Handle special characters: [, ], {, }, =, comma
     if (cursor.item! === '[' || cursor.item! === ']') {
-      tokens.push(specialCharacter(cursor, location, TokenType.Bracket));
+      tokens.push(specialCharacter(cursor, locate, TokenType.Bracket));
     } else if (cursor.item! === '{' || cursor.item! === '}') {
-      tokens.push(specialCharacter(cursor, location, TokenType.Curly));
+      tokens.push(specialCharacter(cursor, locate, TokenType.Curly));
     } else if (cursor.item! === '=') {
-      tokens.push(specialCharacter(cursor, location, TokenType.Equal));
+      tokens.push(specialCharacter(cursor, locate, TokenType.Equal));
     } else if (cursor.item! === ',') {
-      tokens.push(specialCharacter(cursor, location, TokenType.Comma));
+      tokens.push(specialCharacter(cursor, locate, TokenType.Comma));
     } else if (cursor.item! === '.') {
-      tokens.push(specialCharacter(cursor, location, TokenType.Dot));
+      tokens.push(specialCharacter(cursor, locate, TokenType.Dot));
     } else if (cursor.item! === '#') {
       // Handle comments = # -> EOL
-      tokens.push(comment(cursor, location));
+      tokens.push(comment(cursor, locate));
     } else {
       const multiline_char =
         checkThree(input, cursor.index, SINGLE_QUOTE) ||
@@ -81,9 +62,9 @@ export function tokenize(input: string): Token[] {
 
       if (multiline_char) {
         // Multi-line literals or strings = no escaping
-        tokens.push(multiline(cursor, location, multiline_char));
+        tokens.push(multiline(cursor, locate, multiline_char));
       } else {
-        tokens.push(string(cursor, location));
+        tokens.push(string(cursor, locate));
       }
     }
 
@@ -93,11 +74,11 @@ export function tokenize(input: string): Token[] {
   return tokens;
 }
 
-function specialCharacter(cursor: Cursor<string>, location: Locator, type: TokenType): Token {
-  return { type, raw: cursor.item!, loc: location(cursor.index, cursor.index + 1) };
+function specialCharacter(cursor: Cursor<string>, locate: Locator, type: TokenType): Token {
+  return { type, raw: cursor.item!, loc: locate(cursor.index, cursor.index + 1) };
 }
 
-function comment(cursor: Cursor<string>, location: Locator): Token {
+function comment(cursor: Cursor<string>, locate: Locator): Token {
   const start = cursor.index;
   let raw = cursor.item!;
   while (!cursor.peekDone() && !IS_NEW_LINE.test(cursor.peek()!)) {
@@ -108,11 +89,11 @@ function comment(cursor: Cursor<string>, location: Locator): Token {
   return {
     type: TokenType.Comment,
     raw,
-    loc: location(start, cursor.index + 1)
+    loc: locate(start, cursor.index + 1)
   };
 }
 
-function multiline(cursor: Cursor<string>, location: Locator, multiline_char: string): Token {
+function multiline(cursor: Cursor<string>, locate: Locator, multiline_char: string): Token {
   const start = cursor.index;
   let raw = multiline_char + multiline_char + multiline_char;
   cursor.step(3);
@@ -128,11 +109,11 @@ function multiline(cursor: Cursor<string>, location: Locator, multiline_char: st
   return {
     type: TokenType.String,
     raw,
-    loc: location(start, cursor.index + 1)
+    loc: locate(start, cursor.index + 1)
   };
 }
 
-function string(cursor: Cursor<string>, location: Locator): Token {
+function string(cursor: Cursor<string>, locate: Locator): Token {
   // Remaining possibilities: keys, strings, literals, integer, float, boolean
   //
   // Special cases:
@@ -203,7 +184,7 @@ function string(cursor: Cursor<string>, location: Locator): Token {
   return {
     type: TokenType.String,
     raw,
-    loc: location(start, cursor.index + 1)
+    loc: locate(start, cursor.index + 1)
   };
 }
 
@@ -214,36 +195,4 @@ function checkThree(input: string, current: number, check: string): false | stri
     input[current + 2] === check &&
     check
   );
-}
-
-export function findLines(input: string): number[] {
-  // exec is stateful, so create new regexp each time
-  const BY_NEW_LINE = /[\r\n|\n]/g;
-  const indexes: number[] = [];
-
-  let match;
-  while ((match = BY_NEW_LINE.exec(input)) != null) {
-    indexes.push(match.index);
-  }
-
-  return indexes.concat([input.length + 1]);
-}
-
-// abc\ndef\ng
-// 0123 4567 8
-//      012
-//           0
-//
-// lines = [3, 7, 9]
-//
-// c = 2: 0 -> 1, 2 - (undefined + 1 || 0) = 2
-//     3: 0 -> 1, 3 - (undefined + 1 || 0) = 3
-// e = 5: 1 -> 2, 5 - (3 + 1 || 0) = 1
-// g = 8: 2 -> 3, 8 - (7 + 1 || 0) = 0
-
-export function findPosition(lines: number[], index: number): Position {
-  const line = lines.findIndex(line_index => line_index >= index) + 1;
-  const column = index - (lines[line - 2] + 1 || 0);
-
-  return { line, column };
 }
