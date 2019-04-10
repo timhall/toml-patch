@@ -16,6 +16,10 @@ export default class ParseError extends Error {
   }
 }
 
+export function isParseError(error: Error): error is ParseError {
+  return error && Object.prototype.hasOwnProperty.call(error, 'line');
+}
+
 function whitespace(count: number, character: string = ' '): string {
   return character.repeat(count);
 }

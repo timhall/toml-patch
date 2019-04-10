@@ -23,7 +23,7 @@ import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokeni
 import { parseString } from './parse-string';
 import Cursor from './cursor';
 import { findPosition } from './location';
-import ParseError from './parse-error';
+import ParseError, { isParseError } from './parse-error';
 
 const TRUE = 'true';
 const FALSE = 'false';
@@ -37,14 +37,34 @@ const IS_BINARY = /^0b/;
 export const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
 export const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 
-export default function parseTOML(input: string): Document {
+export default function parseTOML(input: string): Document | Value {
   const tokens = tokenize(input);
   const cursor = new Cursor(tokens);
+
+  // Best way to determine if block or value is to try
+  // -> Try to walk initial block and if that fails try walking as value
+  let first_block: Block | undefined;
+  if (!cursor.done) {
+    try {
+      first_block = walkBlock(cursor, input);
+      cursor.step();
+    } catch (block_err) {
+      // Only try to walk value if parser failed to find desired tokens
+      if (!isParseError(block_err)) throw block_err;
+
+      try {
+        return walkValue(cursor, input);
+      } catch (value_err) {
+        // Throw underlying block error since document mode is considered default
+        throw block_err;
+      }
+    }
+  }
 
   let document: Document = {
     type: NodeType.Document,
     loc: { start: { line: 1, column: 0 }, end: findPosition(input, input.length) },
-    body: []
+    body: first_block ? [first_block] : []
   };
 
   while (!cursor.done) {
@@ -55,7 +75,9 @@ export default function parseTOML(input: string): Document {
   return document;
 }
 
-function walkBlock(cursor: Cursor<Token>, input: string): KeyValue | Table | TableArray | Comment {
+type Block = KeyValue | Table | TableArray | Comment;
+
+function walkBlock(cursor: Cursor<Token>, input: string): Block {
   if (cursor.item.type === TokenType.Comment) {
     return comment(cursor);
   } else if (cursor.item.type === TokenType.Bracket) {
@@ -78,14 +100,14 @@ function walkValue(cursor: Cursor<Token>, input: string): Value {
     } else if (cursor.item.raw === TRUE || cursor.item.raw === FALSE) {
       return boolean(cursor);
     } else if (IS_FULL_DATE.test(cursor.item.raw) || IS_FULL_TIME.test(cursor.item.raw)) {
-      return datetime(cursor);
+      return datetime(cursor, input);
     } else if (
       (!cursor.peekDone() && cursor.peek()!.type === TokenType.Dot) ||
       IS_INF.test(cursor.item.raw) ||
       IS_NAN.test(cursor.item.raw) ||
       (HAS_E.test(cursor.item.raw) && !IS_HEX.test(cursor.item.raw))
     ) {
-      return float(cursor);
+      return float(cursor, input);
     } else {
       return integer(cursor);
     }

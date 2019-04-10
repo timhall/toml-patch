@@ -1,5 +1,5 @@
 import parseTOML from '../parse-toml';
-import { Table, KeyValue, InlineArray, DateTime, InlineArrayItem } from '../ast';
+import { Table, KeyValue, InlineArray, DateTime, Document } from '../ast';
 
 test('it should parse simple document', () => {
   expect(parseTOML(`a = "b"`)).toMatchSnapshot();
@@ -55,7 +55,7 @@ sku = 284758393
 color = "gray"`;
 
 test('it should parse complex document', () => {
-  const parsed = parseTOML(complex);
+  const parsed = parseTOML(complex) as Document;
 
   // Normalize local dates and times
   const date_local = (parsed.body[2] as Table).items[5] as KeyValue;
@@ -94,6 +94,5 @@ test_string = "You'll hate me after this - #"          # " Annoying, isn't it?
 
 test('it should parse hard document', () => {
   const parsed = parseTOML(hard);
-
   expect(parsed).toMatchSnapshot();
 });

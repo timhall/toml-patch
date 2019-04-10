@@ -4,7 +4,6 @@ import toTOML from './to-toml';
 import toJS from './to-js';
 
 export function parse(value: string) {
-  // TODO parse TOML value too (like JSON.parse('"abc"'))
   return toJS(parseTOML(value));
 }
 
