@@ -1,4 +1,4 @@
-import { Location } from './tokenizer';
+import { Location } from './location';
 
 export enum NodeType {
   Document = 'Document',

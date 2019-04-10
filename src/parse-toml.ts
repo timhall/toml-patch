@@ -23,6 +23,7 @@ import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokeni
 import { parseString } from './parse-string';
 import Cursor from './cursor';
 import { findPosition } from './location';
+import ParseError from './parse-error';
 
 const TRUE = 'true';
 const FALSE = 'false';
@@ -47,26 +48,30 @@ export default function parseTOML(input: string): Document {
   };
 
   while (!cursor.done) {
-    document.body.push(walkBlock(cursor));
+    document.body.push(walkBlock(cursor, input));
     cursor.step();
   }
 
   return document;
 }
 
-function walkBlock(cursor: Cursor<Token>): KeyValue | Table | TableArray | Comment {
+function walkBlock(cursor: Cursor<Token>, input: string): KeyValue | Table | TableArray | Comment {
   if (cursor.item!.type === TokenType.Comment) {
     return comment(cursor);
   } else if (cursor.item!.type === TokenType.Bracket) {
-    return table(cursor);
+    return table(cursor, input);
   } else if (cursor.item!.type === TokenType.String) {
-    return keyValue(cursor);
+    return keyValue(cursor, input);
   } else {
-    throw new Error(`Unexpected token ${JSON.stringify(cursor.item!)}`);
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Unexpected token "${cursor.item!.type}". Expected Comment, Bracket, or String`
+    );
   }
 }
 
-function walkValue(cursor: Cursor<Token>): Value {
+function walkValue(cursor: Cursor<Token>, input: string): Value {
   if (cursor.item!.type === TokenType.String) {
     if (cursor.item!.raw[0] === DOUBLE_QUOTE || cursor.item!.raw[0] === SINGLE_QUOTE) {
       return string(cursor);
@@ -85,13 +90,15 @@ function walkValue(cursor: Cursor<Token>): Value {
       return integer(cursor);
     }
   } else if (cursor.item!.type === TokenType.Curly) {
-    return inlineTable(cursor);
+    return inlineTable(cursor, input);
+  } else if (cursor.item!.type === TokenType.Bracket) {
+    return inlineArray(cursor, input);
   } else {
-    if (cursor.item!.type !== TokenType.Bracket) {
-      throw new Error(`Unrecognized token for value: ${JSON.stringify(cursor.item!)}`);
-    }
-
-    return inlineArray(cursor);
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Unrecognized token type "${cursor.item!.type}". Expected String, Curly, or Bracket`
+    );
   }
 }
 
@@ -105,7 +112,7 @@ function comment(cursor: Cursor<Token>): Comment {
   };
 }
 
-function table(cursor: Cursor<Token>): Table | TableArray {
+function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   // Table or TableArray
   //
   // [ key ]
@@ -125,13 +132,17 @@ function table(cursor: Cursor<Token>): Table | TableArray {
   const is_table = type === NodeType.Table;
 
   if (is_table && cursor.item!.raw !== '[') {
-    throw new Error(`Expected table opening "[", found ${JSON.stringify(cursor.item!)}`);
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Expected table opening "[", found ${cursor.item!.raw}`
+    );
   }
   if (!is_table && (cursor.item!.raw !== '[' || cursor.peek()!.raw !== '[')) {
-    throw new Error(
-      `Expected array of tables opening "[[", found ${JSON.stringify(
-        cursor.item!
-      )} and ${JSON.stringify(cursor.peek()!)}`
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Expected array of tables opening "[[", found ${cursor.item!.raw + cursor.peek()!.raw}`
     );
   }
 
@@ -167,13 +178,17 @@ function table(cursor: Cursor<Token>): Table | TableArray {
   cursor.step();
 
   if (is_table && cursor.item!.raw !== ']') {
-    throw new Error(`Expected table closing "]", found ${JSON.stringify(cursor.item!)}`);
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Expected table closing "]", found ${cursor.item!.raw}`
+    );
   }
   if (!is_table && (cursor.item!.raw !== ']' || cursor.peek()!.raw !== ']')) {
-    throw new Error(
-      `Expected array of tables closing "]]", found ${JSON.stringify(
-        cursor.item!
-      )} and ${JSON.stringify(cursor.peek()!)}`
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Expected array of tables closing "]]", found ${cursor.item!.raw + cursor.peek()!.raw}`
     );
   }
 
@@ -185,7 +200,7 @@ function table(cursor: Cursor<Token>): Table | TableArray {
   const items: Array<KeyValue | Comment> = [];
   while (!cursor.peekDone() && cursor.peek()!.type !== TokenType.Bracket) {
     cursor.step();
-    items.push(walkBlock(cursor) as (KeyValue | Comment));
+    items.push(walkBlock(cursor, input) as (KeyValue | Comment));
   }
 
   return {
@@ -199,7 +214,7 @@ function table(cursor: Cursor<Token>): Table | TableArray {
   } as Table | TableArray;
 }
 
-function keyValue(cursor: Cursor<Token>): KeyValue {
+function keyValue(cursor: Cursor<Token>, input: string): KeyValue {
   // 3. KeyValue
   //
   // key = value
@@ -224,13 +239,17 @@ function keyValue(cursor: Cursor<Token>): KeyValue {
   cursor.step();
 
   if (cursor.item!.type !== TokenType.Equal) {
-    throw new Error(`Expected "=" for key-value,  ${JSON.stringify(cursor.item!)}`);
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Expected "=" for key-value, found "${cursor.item!.raw}"`
+    );
   }
 
   const equals = cursor.item!.loc.start.column;
 
   cursor.step();
-  const value = walkValue(cursor);
+  const value = walkValue(cursor, input);
 
   return {
     type: NodeType.KeyValue,
@@ -378,10 +397,12 @@ function integer(cursor: Cursor<Token>): Integer {
   };
 }
 
-function inlineTable(cursor: Cursor<Token>): InlineTable {
+function inlineTable(cursor: Cursor<Token>, input: string): InlineTable {
   if (cursor.item!.raw !== '{') {
-    throw new Error(
-      `Expected opening brace for inline table, found ${JSON.stringify(cursor.item!)}`
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Expected "{" for inline table, found ${cursor.item!.raw}`
     );
   }
 
@@ -401,7 +422,11 @@ function inlineTable(cursor: Cursor<Token>): InlineTable {
     if ((cursor.item! as Token).type === TokenType.Comma) {
       const previous = value.items[value.items.length - 1];
       if (!previous) {
-        throw new Error('Found "," without previous value');
+        throw new ParseError(
+          input,
+          cursor.item!.loc.start,
+          'Found "," without previous value in inline table'
+        );
       }
 
       previous.comma = true;
@@ -411,7 +436,7 @@ function inlineTable(cursor: Cursor<Token>): InlineTable {
       continue;
     }
 
-    const item = walkBlock(cursor);
+    const item = walkBlock(cursor, input);
     if (item.type !== NodeType.KeyValue) {
       throw new Error(
         `Only key-values are supported in inline tables, found ${JSON.stringify(item)}`
@@ -430,7 +455,7 @@ function inlineTable(cursor: Cursor<Token>): InlineTable {
   }
 
   if (cursor.item!.type !== TokenType.Curly || (cursor.item! as Token).raw !== '}') {
-    throw new Error(`Expected closing brace "}", found ${JSON.stringify(cursor.item!)}`);
+    throw new ParseError(input, cursor.item!.loc.start, `Expected "}", found ${cursor.item!.raw}`);
   }
 
   value.loc.end = cursor.item!.loc.end;
@@ -438,11 +463,13 @@ function inlineTable(cursor: Cursor<Token>): InlineTable {
   return value;
 }
 
-function inlineArray(cursor: Cursor<Token>): InlineArray {
+function inlineArray(cursor: Cursor<Token>, input: string): InlineArray {
   // 7. InlineArray
   if (cursor.item!.raw !== '[') {
-    throw new Error(
-      `Expected opening brace for inline array, found ${JSON.stringify(cursor.item!)}`
+    throw new ParseError(
+      input,
+      cursor.item!.loc.start,
+      `Expected "[" for inline array, found ${cursor.item!.raw}`
     );
   }
 
@@ -458,7 +485,11 @@ function inlineArray(cursor: Cursor<Token>): InlineArray {
     if ((cursor.item! as Token).type === TokenType.Comma) {
       const previous = value.items[value.items.length - 1];
       if (!previous) {
-        throw new Error('Found "," without previous value');
+        throw new ParseError(
+          input,
+          cursor.item!.loc.start,
+          'Found "," without previous value for inline array'
+        );
       }
 
       previous.comma = true;
@@ -474,7 +505,7 @@ function inlineArray(cursor: Cursor<Token>): InlineArray {
       continue;
     }
 
-    const item = walkValue(cursor);
+    const item = walkValue(cursor, input);
     const inline_item: InlineArrayItem = {
       type: NodeType.InlineArrayItem,
       loc: { start: item.loc.start, end: item.loc.end },
@@ -487,7 +518,7 @@ function inlineArray(cursor: Cursor<Token>): InlineArray {
   }
 
   if (cursor.item!.type !== TokenType.Bracket || (cursor.item! as Token).raw !== ']') {
-    throw new Error(`Expected closing bracket "]", found ${JSON.stringify(cursor.item!)}`);
+    throw new ParseError(input, cursor.item!.loc.start, `Expected "]", found ${cursor.item!.raw}`);
   }
 
   value.loc.end = cursor.item!.loc.end;
