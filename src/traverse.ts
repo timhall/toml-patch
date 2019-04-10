@@ -7,18 +7,44 @@ import {
   TableArray,
   TableArrayKey,
   KeyValue,
+  Key,
+  Value,
+  String,
+  Integer,
+  Float,
+  Boolean,
+  DateTime,
+  Comment,
   InlineArray,
   InlineArrayItem,
   InlineTable,
   InlineTableItem
 } from './ast';
 
-export type Visit = (node: Node, parent: Node | null) => void;
-export type EnterExit = { enter?: Visit; exit?: Visit };
+export type Visit<TNode = Node> = (node: TNode, parent: TNode | null) => void;
+export type EnterExit<TNode = Node> = { enter?: Visit<TNode>; exit?: Visit<TNode> };
 
-export type Visitor = { [key in NodeType]?: Visit | EnterExit };
+export type Visitor = {
+  Document?: Visit<Document> | EnterExit<Document>;
+  Table?: Visit<Table> | EnterExit<Table>;
+  TableKey?: Visit<TableKey>;
+  TableArray?: Visit<TableArray>;
+  TableArrayKey?: Visit<TableArrayKey>;
+  KeyValue?: Visit<KeyValue>;
+  Key?: Visit<Key>;
+  String?: Visit<String>;
+  Integer?: Visit<Integer>;
+  Float?: Visit<Float>;
+  Boolean?: Visit<Boolean>;
+  DateTime?: Visit<DateTime>;
+  InlineArray?: Visit<InlineArray>;
+  InlineArrayItem?: Visit<InlineArrayItem>;
+  InlineTable?: Visit<InlineTable>;
+  InlineTableItem?: Visit<InlineTableItem>;
+  Comment?: Visit<Comment>;
+};
 
-export default function traverse(document: Document, visitor: Visitor) {
+export default function traverse(node: Node, visitor: Visitor) {
   function traverseArray(array: Node[], parent: Node | null) {
     array.forEach(node => {
       traverseNode(node, parent);
@@ -29,7 +55,7 @@ export default function traverse(document: Document, visitor: Visitor) {
     const visit = visitor[node.type];
 
     if (visit && typeof visit === 'function') {
-      visit(node, parent);
+      (visit as Visit)(node, parent);
     }
     if (visit && (visit as EnterExit).enter) {
       (visit as EnterExit).enter!(node, parent);
@@ -91,5 +117,5 @@ export default function traverse(document: Document, visitor: Visitor) {
     }
   }
 
-  traverseNode(document, null);
+  traverseNode(node, null);
 }

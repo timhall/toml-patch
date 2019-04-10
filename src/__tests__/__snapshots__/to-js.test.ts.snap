@@ -1,0 +1,198 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it should convert examples to js 1`] = `
+Object {
+  "clients": Object {
+    "data": Array [
+      Array [
+        "gamma",
+        "delta",
+      ],
+      Array [
+        1,
+        2,
+      ],
+    ],
+    "hosts": Array [
+      "alpha",
+      "omega",
+    ],
+  },
+  "database": Object {
+    "connection_max": 5000,
+    "enabled": true,
+    "ports": Array [
+      8001,
+      8001,
+      8002,
+    ],
+    "server": "192.168.1.1",
+  },
+  "owner": Object {
+    "bio": "GitHub Cofounder & CEO
+Likes tater tots and beer.",
+    "dob": 1979-05-27T07:32:00.000Z,
+    "name": "Tom Preston-Werner",
+    "organization": "GitHub",
+  },
+  "products": Array [
+    Object {
+      "name": "Hammer",
+      "sku": 738594937,
+    },
+    Object {
+      "color": "gray",
+      "name": "Nail",
+      "sku": 284758393,
+    },
+  ],
+  "servers": Object {
+    "alpha": Object {
+      "dc": "eqdc10",
+      "ip": "10.0.0.1",
+    },
+    "beta": Object {
+      "country": "中国",
+      "dc": "eqdc10",
+      "ip": "10.0.0.2",
+    },
+  },
+  "title": "TOML Example",
+}
+`;
+
+exports[`it should convert examples to js 2`] = `
+Object {
+  "fruit": Object {
+    "blah": Array [
+      Object {
+        "name": "apple",
+      },
+      Object {
+        "name": "banana",
+      },
+    ],
+  },
+}
+`;
+
+exports[`it should convert hard examples to JS 1`] = `
+Object {
+  "the": Object {
+    "hard": Object {
+      "another_test_string": " Same thing, but with a string #",
+      "bit#": Object {
+        "multi_line_array": Array [
+          "]",
+        ],
+        "what?": "You don't think some user won't do that?",
+      },
+      "harder_test_string": " And when \\"'s are in the string, along with # \\"",
+      "test_array": Array [
+        "] ",
+        " # ",
+      ],
+      "test_array2": Array [
+        "Test #11 ]proved that",
+        "Experiment #9 was a success",
+      ],
+    },
+    "test_string": "You'll hate me after this - #",
+  },
+}
+`;
+
+exports[`it should convert hard examples to JS 2`] = `
+Object {
+  "the": Object {
+    "hard": Object {
+      "another_test_string": "§á₥è ƭλïñϱ, βúƭ ωïƭλ á ƨƭřïñϱ #",
+      "harder_test_string": " Âñδ ωλèñ \\"'ƨ ářè ïñ ƭλè ƨƭřïñϱ, áℓôñϱ ωïƭλ # \\"",
+      "test_array": Array [
+        "] ",
+        " # ",
+      ],
+      "test_array2": Array [
+        "Tèƨƭ #11 ]ƥřôƲèδ ƭλáƭ",
+        "Éжƥèřï₥èñƭ #9 ωáƨ á ƨúççèƨƨ",
+      ],
+      "βïƭ#": Object {
+        "multi_line_array": Array [
+          "]",
+        ],
+        "ωλáƭ?": "Ýôú δôñ'ƭ ƭλïñƙ ƨô₥è úƨèř ωôñ'ƭ δô ƭλáƭ?",
+      },
+    },
+    "test_string": "Ýôú'ℓℓ λáƭè ₥è áƒƭèř ƭλïƨ - #",
+  },
+}
+`;
+
+exports[`it should convert kitchen sink to JS 1`] = `
+Object {
+  "dog": Object {
+    "tater.man": Object {
+      "type": Object {
+        "name": "pug",
+      },
+    },
+  },
+  "products": Array [
+    Object {
+      "name": "Hammer",
+      "sku": 738594937,
+    },
+    Object {},
+    Object {
+      "color": "gray",
+      "name": "Nail",
+      "sku": 284758393,
+    },
+  ],
+  "title": "TOML Example",
+  "values": Object {
+    "array": Object {
+      "trailing": Array [
+        1,
+        2,
+      ],
+    },
+    "boolean": true,
+    "date": Object {
+      "local": Array [
+        "[object Date]",
+        "[object Date]",
+        "[object Date]",
+      ],
+    },
+    "float": Array [
+      1234.567,
+      -0.01,
+      5e+22,
+      1000000,
+      Infinity,
+      -Infinity,
+      NaN,
+      NaN,
+    ],
+    "integer": Array [
+      1234,
+      3735928559,
+      342391,
+      493,
+      214,
+    ],
+    "string": "string...",
+    "table": Object {
+      "dotted": Object {
+        "type": Object {
+          "name": "pug",
+        },
+      },
+    },
+    "type": Object {
+      "name": "pug",
+    },
+  },
+}
+`;
