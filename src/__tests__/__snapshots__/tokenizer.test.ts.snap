@@ -5,7 +5,7 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 26,
+        "column": 32,
         "line": 1,
       },
       "start": Object {
@@ -13,7 +13,7 @@ Array [
         "line": 1,
       },
     },
-    "raw": "# This is a TOML document.",
+    "raw": "# This is a TOML document. Boom.",
     "type": "Comment",
   },
   Object {
@@ -145,1202 +145,26 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 3,
-        "line": 7,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 7,
-      },
-    },
-    "raw": "dob",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 5,
-        "line": 7,
-      },
-      "start": Object {
-        "column": 4,
-        "line": 7,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 31,
-        "line": 7,
-      },
-      "start": Object {
-        "column": 6,
-        "line": 7,
-      },
-    },
-    "raw": "1979-05-27T07:32:00-08:00",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 51,
-        "line": 7,
-      },
-      "start": Object {
-        "column": 32,
-        "line": 7,
-      },
-    },
-    "raw": "# First class dates",
-    "type": "Comment",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 1,
-        "line": 9,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 9,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 9,
-      },
-      "start": Object {
-        "column": 1,
-        "line": 9,
-      },
-    },
-    "raw": "database",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 10,
-        "line": 9,
-      },
-      "start": Object {
-        "column": 9,
-        "line": 9,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 10,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 10,
-      },
-    },
-    "raw": "server",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 8,
-        "line": 10,
-      },
-      "start": Object {
-        "column": 7,
-        "line": 10,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 22,
-        "line": 10,
-      },
-      "start": Object {
-        "column": 9,
-        "line": 10,
-      },
-    },
-    "raw": "\\"192.168.1.1\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 5,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 11,
-      },
-    },
-    "raw": "ports",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 7,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 6,
-        "line": 11,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 8,
-        "line": 11,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 14,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 10,
-        "line": 11,
-      },
-    },
-    "raw": "8001",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 15,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 14,
-        "line": 11,
-      },
-    },
-    "raw": ",",
-    "type": "Comma",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 20,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 16,
-        "line": 11,
-      },
-    },
-    "raw": "8001",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 21,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 20,
-        "line": 11,
-      },
-    },
-    "raw": ",",
-    "type": "Comma",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 26,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 22,
-        "line": 11,
-      },
-    },
-    "raw": "8002",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 28,
-        "line": 11,
-      },
-      "start": Object {
-        "column": 27,
-        "line": 11,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 14,
-        "line": 12,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 12,
-      },
-    },
-    "raw": "connection_max",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 16,
-        "line": 12,
-      },
-      "start": Object {
-        "column": 15,
-        "line": 12,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 21,
-        "line": 12,
-      },
-      "start": Object {
-        "column": 17,
-        "line": 12,
-      },
-    },
-    "raw": "5000",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 7,
-        "line": 13,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 13,
-      },
-    },
-    "raw": "enabled",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 13,
-      },
-      "start": Object {
-        "column": 8,
-        "line": 13,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 14,
-        "line": 13,
-      },
-      "start": Object {
-        "column": 10,
-        "line": 13,
-      },
-    },
-    "raw": "true",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 1,
-        "line": 15,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 15,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 8,
-        "line": 15,
-      },
-      "start": Object {
-        "column": 1,
-        "line": 15,
-      },
-    },
-    "raw": "servers",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 15,
-      },
-      "start": Object {
-        "column": 8,
-        "line": 15,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 64,
-        "line": 17,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 17,
-      },
-    },
-    "raw": "# Indentation (tabs and/or spaces) is allowed but not required",
-    "type": "Comment",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 3,
-        "line": 18,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 18,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 10,
-        "line": 18,
-      },
-      "start": Object {
-        "column": 3,
-        "line": 18,
-      },
-    },
-    "raw": "servers",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 11,
-        "line": 18,
-      },
-      "start": Object {
-        "column": 10,
-        "line": 18,
-      },
-    },
-    "raw": ".",
-    "type": "Dot",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 16,
-        "line": 18,
-      },
-      "start": Object {
-        "column": 11,
-        "line": 18,
-      },
-    },
-    "raw": "alpha",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 17,
-        "line": 18,
-      },
-      "start": Object {
-        "column": 16,
-        "line": 18,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 4,
-        "line": 19,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 19,
-      },
-    },
-    "raw": "ip",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 19,
-      },
-      "start": Object {
-        "column": 5,
-        "line": 19,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 17,
-        "line": 19,
-      },
-      "start": Object {
-        "column": 7,
-        "line": 19,
-      },
-    },
-    "raw": "\\"10.0.0.1\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 4,
-        "line": 20,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 20,
-      },
-    },
-    "raw": "dc",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 20,
-      },
-      "start": Object {
-        "column": 5,
-        "line": 20,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 15,
-        "line": 20,
-      },
-      "start": Object {
-        "column": 7,
-        "line": 20,
-      },
-    },
-    "raw": "\\"eqdc10\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 3,
-        "line": 22,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 22,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 10,
-        "line": 22,
-      },
-      "start": Object {
-        "column": 3,
-        "line": 22,
-      },
-    },
-    "raw": "servers",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 11,
-        "line": 22,
-      },
-      "start": Object {
-        "column": 10,
-        "line": 22,
-      },
-    },
-    "raw": ".",
-    "type": "Dot",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 15,
-        "line": 22,
-      },
-      "start": Object {
-        "column": 11,
-        "line": 22,
-      },
-    },
-    "raw": "beta",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 16,
-        "line": 22,
-      },
-      "start": Object {
-        "column": 15,
-        "line": 22,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 4,
-        "line": 23,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 23,
-      },
-    },
-    "raw": "ip",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 23,
-      },
-      "start": Object {
-        "column": 5,
-        "line": 23,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 17,
-        "line": 23,
-      },
-      "start": Object {
-        "column": 7,
-        "line": 23,
-      },
-    },
-    "raw": "\\"10.0.0.2\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 4,
-        "line": 24,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 24,
-      },
-    },
-    "raw": "dc",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 24,
-      },
-      "start": Object {
-        "column": 5,
-        "line": 24,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 15,
-        "line": 24,
-      },
-      "start": Object {
-        "column": 7,
-        "line": 24,
-      },
-    },
-    "raw": "\\"eqdc10\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 1,
-        "line": 26,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 26,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 8,
-        "line": 26,
-      },
-      "start": Object {
-        "column": 1,
-        "line": 26,
-      },
-    },
-    "raw": "clients",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 26,
-      },
-      "start": Object {
-        "column": 8,
-        "line": 26,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 4,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 27,
-      },
-    },
-    "raw": "data",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 5,
-        "line": 27,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 8,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 7,
-        "line": 27,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 10,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 9,
-        "line": 27,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 17,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 10,
-        "line": 27,
-      },
-    },
-    "raw": "\\"gamma\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 18,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 17,
-        "line": 27,
-      },
-    },
-    "raw": ",",
-    "type": "Comma",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 26,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 19,
-        "line": 27,
-      },
-    },
-    "raw": "\\"delta\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 27,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 26,
-        "line": 27,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 28,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 27,
-        "line": 27,
-      },
-    },
-    "raw": ",",
-    "type": "Comma",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 30,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 29,
-        "line": 27,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 31,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 30,
-        "line": 27,
-      },
-    },
-    "raw": "1",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 32,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 31,
-        "line": 27,
-      },
-    },
-    "raw": ",",
-    "type": "Comma",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 34,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 33,
-        "line": 27,
-      },
-    },
-    "raw": "2",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 35,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 34,
-        "line": 27,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 37,
-        "line": 27,
-      },
-      "start": Object {
-        "column": 36,
-        "line": 27,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 39,
-        "line": 29,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 29,
-      },
-    },
-    "raw": "# Line breaks are OK when inside arrays",
-    "type": "Comment",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 5,
-        "line": 30,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 30,
-      },
-    },
-    "raw": "hosts",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 7,
-        "line": 30,
-      },
-      "start": Object {
-        "column": 6,
-        "line": 30,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 30,
-      },
-      "start": Object {
-        "column": 8,
-        "line": 30,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 31,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 31,
-      },
-    },
-    "raw": "\\"alpha\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 10,
-        "line": 31,
-      },
-      "start": Object {
-        "column": 9,
-        "line": 31,
-      },
-    },
-    "raw": ",",
-    "type": "Comma",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 32,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 32,
-      },
-    },
-    "raw": "\\"omega\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 1,
-        "line": 33,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 33,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 1,
-        "line": 35,
-      },
-      "start": Object {
-        "column": 0,
-        "line": 35,
-      },
-    },
-    "raw": "a",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 2,
-        "line": 35,
-      },
-      "start": Object {
-        "column": 1,
-        "line": 35,
-      },
-    },
-    "raw": ".",
-    "type": "Dot",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 5,
-        "line": 35,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 35,
-      },
-    },
-    "raw": "'b'",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 35,
-      },
-      "start": Object {
-        "column": 5,
-        "line": 35,
-      },
-    },
-    "raw": ".",
-    "type": "Dot",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 9,
-        "line": 35,
-      },
-      "start": Object {
-        "column": 6,
-        "line": 35,
-      },
-    },
-    "raw": "\\"c\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 11,
-        "line": 35,
-      },
-      "start": Object {
-        "column": 10,
-        "line": 35,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 15,
-        "line": 35,
-      },
-      "start": Object {
         "column": 12,
-        "line": 35,
-      },
-    },
-    "raw": "\\"d\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 10,
-        "line": 36,
+        "line": 7,
       },
       "start": Object {
         "column": 0,
-        "line": 36,
+        "line": 7,
       },
     },
-    "raw": "date_space",
+    "raw": "organization",
     "type": "String",
   },
   Object {
     "loc": Object {
       "end": Object {
-        "column": 12,
-        "line": 36,
+        "column": 14,
+        "line": 7,
       },
       "start": Object {
-        "column": 11,
-        "line": 36,
+        "column": 13,
+        "line": 7,
       },
     },
     "raw": "=",
@@ -1350,28 +174,1568 @@ Array [
     "loc": Object {
       "end": Object {
         "column": 23,
-        "line": 36,
+        "line": 7,
       },
       "start": Object {
-        "column": 13,
-        "line": 36,
+        "column": 15,
+        "line": 7,
       },
     },
-    "raw": "2018-01-01",
+    "raw": "\\"GitHub\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 8,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 8,
+      },
+    },
+    "raw": "bio",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 8,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 8,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 58,
+        "line": 8,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 8,
+      },
+    },
+    "raw": "\\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 9,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 9,
+      },
+    },
+    "raw": "dob",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 9,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 9,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 26,
+        "line": 9,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 9,
+      },
+    },
+    "raw": "1979-05-27T07:32:00Z",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 56,
+        "line": 9,
+      },
+      "start": Object {
+        "column": 27,
+        "line": 9,
+      },
+    },
+    "raw": "# First class dates? Why not?",
+    "type": "Comment",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 1,
+        "line": 11,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 11,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 11,
+      },
+      "start": Object {
+        "column": 1,
+        "line": 11,
+      },
+    },
+    "raw": "database",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 10,
+        "line": 11,
+      },
+      "start": Object {
+        "column": 9,
+        "line": 11,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 12,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 12,
+      },
+    },
+    "raw": "server",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 12,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 12,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 22,
+        "line": 12,
+      },
+      "start": Object {
+        "column": 9,
+        "line": 12,
+      },
+    },
+    "raw": "\\"192.168.1.1\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 13,
+      },
+    },
+    "raw": "ports",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 13,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 13,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 14,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 13,
+      },
+    },
+    "raw": "8001",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 15,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 14,
+        "line": 13,
+      },
+    },
+    "raw": ",",
+    "type": "Comma",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 20,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 16,
+        "line": 13,
+      },
+    },
+    "raw": "8001",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 21,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 20,
+        "line": 13,
+      },
+    },
+    "raw": ",",
+    "type": "Comma",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 26,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 22,
+        "line": 13,
+      },
+    },
+    "raw": "8002",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 28,
+        "line": 13,
+      },
+      "start": Object {
+        "column": 27,
+        "line": 13,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 14,
+        "line": 14,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 14,
+      },
+    },
+    "raw": "connection_max",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 16,
+        "line": 14,
+      },
+      "start": Object {
+        "column": 15,
+        "line": 14,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 21,
+        "line": 14,
+      },
+      "start": Object {
+        "column": 17,
+        "line": 14,
+      },
+    },
+    "raw": "5000",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 15,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 15,
+      },
+    },
+    "raw": "enabled",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 15,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 15,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 14,
+        "line": 15,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 15,
+      },
+    },
+    "raw": "true",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 1,
+        "line": 17,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 17,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 17,
+      },
+      "start": Object {
+        "column": 1,
+        "line": 17,
+      },
+    },
+    "raw": "servers",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 17,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 17,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 66,
+        "line": 19,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 19,
+      },
+    },
+    "raw": "# You can indent as you please. Tabs or spaces. TOML don't care.",
+    "type": "Comment",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 20,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 20,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 10,
+        "line": 20,
+      },
+      "start": Object {
+        "column": 3,
+        "line": 20,
+      },
+    },
+    "raw": "servers",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 11,
+        "line": 20,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 20,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 16,
+        "line": 20,
+      },
+      "start": Object {
+        "column": 11,
+        "line": 20,
+      },
+    },
+    "raw": "alpha",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 20,
+      },
+      "start": Object {
+        "column": 16,
+        "line": 20,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 21,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 21,
+      },
+    },
+    "raw": "ip",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 21,
+      },
+      "start": Object {
+        "column": 5,
+        "line": 21,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 21,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 21,
+      },
+    },
+    "raw": "\\"10.0.0.1\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 22,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 22,
+      },
+    },
+    "raw": "dc",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 22,
+      },
+      "start": Object {
+        "column": 5,
+        "line": 22,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 15,
+        "line": 22,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 22,
+      },
+    },
+    "raw": "\\"eqdc10\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 24,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 24,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 10,
+        "line": 24,
+      },
+      "start": Object {
+        "column": 3,
+        "line": 24,
+      },
+    },
+    "raw": "servers",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 11,
+        "line": 24,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 24,
+      },
+    },
+    "raw": ".",
+    "type": "Dot",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 15,
+        "line": 24,
+      },
+      "start": Object {
+        "column": 11,
+        "line": 24,
+      },
+    },
+    "raw": "beta",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 16,
+        "line": 24,
+      },
+      "start": Object {
+        "column": 15,
+        "line": 24,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 25,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 25,
+      },
+    },
+    "raw": "ip",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 25,
+      },
+      "start": Object {
+        "column": 5,
+        "line": 25,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 25,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 25,
+      },
+    },
+    "raw": "\\"10.0.0.2\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 26,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 26,
+      },
+    },
+    "raw": "dc",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 26,
+      },
+      "start": Object {
+        "column": 5,
+        "line": 26,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 15,
+        "line": 26,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 26,
+      },
+    },
+    "raw": "\\"eqdc10\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 27,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 27,
+      },
+    },
+    "raw": "country",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 11,
+        "line": 27,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 27,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 16,
+        "line": 27,
+      },
+      "start": Object {
+        "column": 12,
+        "line": 27,
+      },
+    },
+    "raw": "\\"中国\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 49,
+        "line": 27,
+      },
+      "start": Object {
+        "column": 17,
+        "line": 27,
+      },
+    },
+    "raw": "# This should be parsed as UTF-8",
+    "type": "Comment",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 1,
+        "line": 29,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 29,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 29,
+      },
+      "start": Object {
+        "column": 1,
+        "line": 29,
+      },
+    },
+    "raw": "clients",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 29,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 29,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 30,
+      },
+    },
+    "raw": "data",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 5,
+        "line": 30,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 30,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 10,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 9,
+        "line": 30,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 30,
+      },
+    },
+    "raw": "\\"gamma\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 18,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 17,
+        "line": 30,
+      },
+    },
+    "raw": ",",
+    "type": "Comma",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 26,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 19,
+        "line": 30,
+      },
+    },
+    "raw": "\\"delta\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 27,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 26,
+        "line": 30,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 28,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 27,
+        "line": 30,
+      },
+    },
+    "raw": ",",
+    "type": "Comma",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 30,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 29,
+        "line": 30,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 31,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 30,
+        "line": 30,
+      },
+    },
+    "raw": "1",
     "type": "String",
   },
   Object {
     "loc": Object {
       "end": Object {
         "column": 32,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 31,
+        "line": 30,
+      },
+    },
+    "raw": ",",
+    "type": "Comma",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 34,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 33,
+        "line": 30,
+      },
+    },
+    "raw": "2",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 35,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 34,
+        "line": 30,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 37,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 36,
+        "line": 30,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 86,
+        "line": 30,
+      },
+      "start": Object {
+        "column": 38,
+        "line": 30,
+      },
+    },
+    "raw": "# just an update to make sure parsers support it",
+    "type": "Comment",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 39,
+        "line": 32,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 32,
+      },
+    },
+    "raw": "# Line breaks are OK when inside arrays",
+    "type": "Comment",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 33,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 33,
+      },
+    },
+    "raw": "hosts",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 33,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 33,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 33,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 33,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 34,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 34,
+      },
+    },
+    "raw": "\\"alpha\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 10,
+        "line": 34,
+      },
+      "start": Object {
+        "column": 9,
+        "line": 34,
+      },
+    },
+    "raw": ",",
+    "type": "Comma",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 35,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 35,
+      },
+    },
+    "raw": "\\"omega\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 1,
         "line": 36,
       },
       "start": Object {
-        "column": 24,
+        "column": 0,
         "line": 36,
       },
     },
-    "raw": "08:00:00",
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 10,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 38,
+      },
+    },
+    "raw": "# Products",
+    "type": "Comment",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 40,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 40,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 40,
+      },
+      "start": Object {
+        "column": 3,
+        "line": 40,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 12,
+        "line": 40,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 40,
+      },
+    },
+    "raw": "products",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 13,
+        "line": 40,
+      },
+      "start": Object {
+        "column": 12,
+        "line": 40,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 14,
+        "line": 40,
+      },
+      "start": Object {
+        "column": 13,
+        "line": 40,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 41,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 41,
+      },
+    },
+    "raw": "name",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 41,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 41,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 41,
+      },
+      "start": Object {
+        "column": 9,
+        "line": 41,
+      },
+    },
+    "raw": "\\"Hammer\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 42,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 42,
+      },
+    },
+    "raw": "sku",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 42,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 42,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 42,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 42,
+      },
+    },
+    "raw": "738594937",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 44,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 44,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 44,
+      },
+      "start": Object {
+        "column": 3,
+        "line": 44,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 12,
+        "line": 44,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 44,
+      },
+    },
+    "raw": "products",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 13,
+        "line": 44,
+      },
+      "start": Object {
+        "column": 12,
+        "line": 44,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 14,
+        "line": 44,
+      },
+      "start": Object {
+        "column": 13,
+        "line": 44,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
+        "line": 45,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 45,
+      },
+    },
+    "raw": "name",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 45,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 45,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 15,
+        "line": 45,
+      },
+      "start": Object {
+        "column": 9,
+        "line": 45,
+      },
+    },
+    "raw": "\\"Nail\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 46,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 46,
+      },
+    },
+    "raw": "sku",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 46,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 46,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 46,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 46,
+      },
+    },
+    "raw": "284758393",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 47,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 47,
+      },
+    },
+    "raw": "color",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 47,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 47,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 16,
+        "line": 47,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 47,
+      },
+    },
+    "raw": "\\"gray\\"",
     "type": "String",
   },
 ]
