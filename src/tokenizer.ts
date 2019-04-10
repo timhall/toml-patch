@@ -1,9 +1,6 @@
 import Cursor from './cursor';
-import { Location, Locator, createLocate } from './location';
-
-// TODO
-// - [ ] Whitespace around the key is ignored
-//       -> Likely need to move dots from String and into separate token
+import { Location, Locator, createLocate, findPosition } from './location';
+import ParseError from './parse-error';
 
 export enum TokenType {
   Bracket = 'Bracket',
@@ -62,9 +59,9 @@ export function tokenize(input: string): Token[] {
 
       if (multiline_char) {
         // Multi-line literals or strings = no escaping
-        tokens.push(multiline(cursor, locate, multiline_char));
+        tokens.push(multiline(cursor, locate, multiline_char, input));
       } else {
-        tokens.push(string(cursor, locate));
+        tokens.push(string(cursor, locate, input));
       }
     }
 
@@ -93,7 +90,12 @@ function comment(cursor: Cursor<string>, locate: Locator): Token {
   };
 }
 
-function multiline(cursor: Cursor<string>, locate: Locator, multiline_char: string): Token {
+function multiline(
+  cursor: Cursor<string>,
+  locate: Locator,
+  multiline_char: string,
+  input: string
+): Token {
   const start = cursor.index;
   let raw = multiline_char + multiline_char + multiline_char;
   cursor.step(3);
@@ -102,6 +104,8 @@ function multiline(cursor: Cursor<string>, locate: Locator, multiline_char: stri
     raw += cursor.item!;
     cursor.step();
   }
+
+  // TODO Handle early exit from cursor.done
 
   raw += multiline_char + multiline_char + multiline_char;
   cursor.step(2);
@@ -113,7 +117,7 @@ function multiline(cursor: Cursor<string>, locate: Locator, multiline_char: stri
   };
 }
 
-function string(cursor: Cursor<string>, locate: Locator): Token {
+function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
   // Remaining possibilities: keys, strings, literals, integer, float, boolean
   //
   // Special cases:
@@ -136,7 +140,11 @@ function string(cursor: Cursor<string>, locate: Locator): Token {
 
   // First, check for invalid characters
   if (!IS_VALID_LEADING_CHARACTER.test(cursor.item!)) {
-    throw new Error(`Unsupported character "${cursor.item!}" found at ${cursor.index}`);
+    throw new ParseError(
+      input,
+      findPosition(input, cursor.index),
+      `Unsupported character "${cursor.item!}". Expected ALPHANUMERIC, ", ', +, -, or _`
+    );
   }
 
   const start = cursor.index;
@@ -172,10 +180,22 @@ function string(cursor: Cursor<string>, locate: Locator): Token {
   }
 
   if (double_quoted) {
-    throw new Error(`Un-closed string found starting at ${start} (${raw})`);
+    throw new ParseError(
+      input,
+      findPosition(input, cursor.index),
+      `Un-closed string found starting at line = ${findPosition(input, start).line}, column = ${
+        findPosition(input, start).column
+      }`
+    );
   }
   if (single_quoted) {
-    throw new Error(`Un-closed string literal found starting at ${start} (${raw})`);
+    throw new ParseError(
+      input,
+      findPosition(input, cursor.index),
+      `Un-closed string literal found starting at line = ${
+        findPosition(input, start).line
+      }, column = ${findPosition(input, start).column}`
+    );
   }
 
   // Character loop has put cursor a step ahead, step back

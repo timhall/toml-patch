@@ -42,6 +42,14 @@ export function findPosition(input: string | number[], index: number): Position 
   return { line, column };
 }
 
+export function getLine(input: string, position: Position): string {
+  const lines = findLines(input);
+  const start = lines[position.line - 1] || 0;
+  const end = lines[position.line] || input.length;
+
+  return input.substr(start, end - start);
+}
+
 export function findLines(input: string): number[] {
   // exec is stateful, so create new regexp each time
   const BY_NEW_LINE = /[\r\n|\n]/g;
