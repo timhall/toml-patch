@@ -4,7 +4,7 @@ import toTOML from './to-toml';
 import toJS from './to-js';
 
 export function parse(value: string) {
-  return toJS(parseTOML(value));
+  return toJS(parseTOML(value), value);
 }
 
 export function stringify<TValue>(value: TValue): string {

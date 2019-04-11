@@ -1,13 +1,13 @@
 import { Document, Value, NodeType, Node } from './ast';
 import traverse from './traverse';
-import { BlankObject, last, blank } from './utils';
+import { last, blank, isDate, has, equalArrays } from './utils';
+import ParseError from './parse-error';
 
-export type primitive = string | number | boolean | Date;
-
-export default function toJS(document: Document | Value): any {
+export default function toJS(document: Document | Value, input: string = ''): any {
   if (isValue(document)) return toValue(document);
 
   const result = blank();
+  const table_arrays: Array<string[]> = [];
   let active: any = result;
   let previous_active: any;
   let skip = false;
@@ -15,11 +15,26 @@ export default function toJS(document: Document | Value): any {
   traverse(document, {
     [NodeType.Table](node) {
       const key = node.key.value.value;
+      try {
+        validateKey(result, key, node.type, { table_arrays });
+      } catch (err) {
+        throw new ParseError(input, node.key.loc.start, err.message);
+      }
+
       active = ensureTable(result, key);
     },
 
     [NodeType.TableArray](node) {
       const key = node.key.value.value;
+
+      try {
+        validateKey(result, key, node.type, { table_arrays });
+      } catch (err) {
+        throw new ParseError(input, node.key.loc.start, err.message);
+      }
+
+      table_arrays.push(key);
+
       active = ensureTableArray(result, key);
     },
 
@@ -28,9 +43,15 @@ export default function toJS(document: Document | Value): any {
         if (skip) return;
 
         const key = node.key.value;
-        const value = toValue(node.value);
+        try {
+          validateKey(active, key, node.type, { table_arrays });
+        } catch (err) {
+          throw new ParseError(input, node.key.loc.start, err.message);
+        }
 
+        const value = toValue(node.value);
         const target = key.length > 1 ? ensureTable(active, key.slice(0, -1)) : active;
+
         target[last(key)!] = value;
 
         if (node.value.type === NodeType.InlineTable) {
@@ -86,10 +107,45 @@ export function toValue(node: Value): any {
   }
 }
 
-function ensureTable(object: BlankObject, key: string[]): any {
-  // First, validate key
-  // TODO
+function validateKey(
+  object: any,
+  key: string[],
+  type: NodeType.Table | NodeType.TableArray | NodeType.KeyValue,
+  state: { table_arrays: Array<string[]> }
+) {
+  // 1. Cannot override primitive value
+  let parts: string[] = [];
+  let index = 0;
+  for (const part of key) {
+    parts.push(part);
 
+    if (!has(object, part)) return;
+    if (isPrimitive(object[part])) {
+      throw new Error(`Invalid key, a value has already been defined for ${parts.join('.')}`);
+    }
+
+    const next_is_last = index++ < key.length - 1;
+    object = Array.isArray(object[part]) && next_is_last ? last(object[part]) : object[part];
+  }
+
+  // 2. Cannot override table
+  if (object && type === NodeType.Table) {
+    throw new Error(`Invalid key, a table has already been defined named ${parts.join('.')}`);
+  }
+
+  // 3. Cannot add table array to static array or table
+  if (
+    object &&
+    type === NodeType.TableArray &&
+    !state.table_arrays.find(existing => equalArrays(existing, key))
+  ) {
+    throw new Error(
+      `Invalid key, cannot add an array of tables to a static array or table at ${parts.join('.')}`
+    );
+  }
+}
+
+function ensureTable(object: any, key: string[]): any {
   const target = ensure(object, key.slice(0, -1));
   const next = blank();
   target[last(key)!] = next;
@@ -98,9 +154,6 @@ function ensureTable(object: BlankObject, key: string[]): any {
 }
 
 function ensureTableArray(object: any, key: string[]): any {
-  // First, validate key
-  // TODO
-
   const target = ensure(object, key.slice(0, -1));
   const last_key = last(key)!;
   if (!target[last_key]) {
@@ -132,4 +185,8 @@ export function isValue(node: Node): node is Value {
     node.type === NodeType.InlineArray ||
     node.type === NodeType.InlineTable
   );
+}
+
+function isPrimitive(value: any) {
+  return typeof value !== 'object' && !isDate(value);
 }
