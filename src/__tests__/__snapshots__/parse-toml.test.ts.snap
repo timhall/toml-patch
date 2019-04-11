@@ -3993,6 +3993,129 @@ Object {
 }
 `;
 
+exports[`it should parse inline table 1`] = `
+Object {
+  "body": Array [
+    Object {
+      "equals": 4,
+      "key": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 3,
+            "line": 1,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 1,
+          },
+        },
+        "raw": "key",
+        "type": "Key",
+        "value": Array [
+          "key",
+        ],
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 19,
+          "line": 1,
+        },
+        "start": Object {
+          "column": 0,
+          "line": 1,
+        },
+      },
+      "type": "KeyValue",
+      "value": Object {
+        "items": Array [
+          Object {
+            "comma": false,
+            "item": Object {
+              "equals": 12,
+              "key": Object {
+                "loc": Object {
+                  "end": Object {
+                    "column": 11,
+                    "line": 1,
+                  },
+                  "start": Object {
+                    "column": 8,
+                    "line": 1,
+                  },
+                },
+                "raw": "end",
+                "type": "Key",
+                "value": Array [
+                  "end",
+                ],
+              },
+              "loc": Object {
+                "end": Object {
+                  "column": 18,
+                  "line": 1,
+                },
+                "start": Object {
+                  "column": 8,
+                  "line": 1,
+                },
+              },
+              "type": "KeyValue",
+              "value": Object {
+                "loc": Object {
+                  "end": Object {
+                    "column": 18,
+                    "line": 1,
+                  },
+                  "start": Object {
+                    "column": 14,
+                    "line": 1,
+                  },
+                },
+                "type": "Boolean",
+                "value": true,
+              },
+            },
+            "loc": Object {
+              "end": Object {
+                "column": 18,
+                "line": 1,
+              },
+              "start": Object {
+                "column": 8,
+                "line": 1,
+              },
+            },
+            "type": "InlineTableItem",
+          },
+        ],
+        "loc": Object {
+          "end": Object {
+            "column": 19,
+            "line": 1,
+          },
+          "start": Object {
+            "column": 6,
+            "line": 1,
+          },
+        },
+        "type": "InlineTable",
+      },
+    },
+  ],
+  "loc": Object {
+    "end": Object {
+      "column": 19,
+      "line": 1,
+    },
+    "start": Object {
+      "column": 0,
+      "line": 1,
+    },
+  },
+  "type": "Document",
+}
+`;
+
 exports[`it should parse kitchen sink 1`] = `
 Object {
   "body": Array [

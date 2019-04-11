@@ -2,6 +2,10 @@ import parseTOML from '../parse-toml';
 import { Table, KeyValue, InlineArray, DateTime, Document } from '../ast';
 import { example, fruit, hard_example, hard_example_unicode, kitchen_sink } from '../__fixtures__';
 
+test('it should parse inline table', () => {
+  expect(parseTOML(`key = { end = true}`)).toMatchSnapshot();
+});
+
 test('it should parse examples', () => {
   expect(parseTOML(example)).toMatchSnapshot();
   expect(parseTOML(fruit)).toMatchSnapshot();
