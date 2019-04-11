@@ -71,13 +71,7 @@ function ensureTable(object: BlankObject, key: string[]): any {
   // First, validate key
   // TODO
 
-  const target = key.slice(0, -1).reduce((active, subkey) => {
-    if (!active[subkey]) {
-      active[subkey] = blank();
-    }
-    return active[subkey];
-  }, object);
-
+  const target = ensure(object, key.slice(0, -1));
   const next = blank();
   target[last(key)!] = next;
 
@@ -88,13 +82,7 @@ function ensureTableArray(object: any, key: string[]): any {
   // First, validate key
   // TODO
 
-  const target = key.slice(0, -1).reduce((active, subkey) => {
-    if (!active[subkey]) {
-      active[subkey] = blank();
-    }
-    return active[subkey];
-  }, object);
-
+  const target = ensure(object, key.slice(0, -1));
   const last_key = last(key)!;
   if (!target[last_key]) {
     target[last_key] = [];
@@ -104,6 +92,15 @@ function ensureTableArray(object: any, key: string[]): any {
   target[last(key)!].push(next);
 
   return next;
+}
+
+function ensure(object: any, keys: string[]): any {
+  return keys.reduce((active, subkey) => {
+    if (!active[subkey]) {
+      active[subkey] = blank();
+    }
+    return Array.isArray(active[subkey]) ? last(active[subkey]) : active[subkey];
+  }, object);
 }
 
 export function isValue(node: Node): node is Value {

@@ -67,9 +67,17 @@ Object {
     "blah": Array [
       Object {
         "name": "apple",
+        "physical": Object {
+          "color": "red",
+          "shape": "round",
+        },
       },
       Object {
         "name": "banana",
+        "physical": Object {
+          "color": "yellow",
+          "shape": "bent",
+        },
       },
     ],
   },
@@ -269,9 +277,26 @@ Object {
   "fruit": Array [
     Object {
       "name": "apple",
+      "physical": Object {
+        "color": "red",
+        "shape": "round",
+      },
+      "variety": Array [
+        Object {
+          "name": "red delicious",
+        },
+        Object {
+          "name": "granny smith",
+        },
+      ],
     },
     Object {
       "name": "banana",
+      "variety": Array [
+        Object {
+          "name": "plantain",
+        },
+      ],
     },
   ],
   "integer": Object {
