@@ -98,18 +98,6 @@ export type Value<TInlineArrayItem = Node> =
   | InlineArray<TInlineArrayItem>
   | InlineTable;
 
-export function isValue(node: Node): node is Value {
-  return (
-    node.type === NodeType.String ||
-    node.type === NodeType.Integer ||
-    node.type === NodeType.Float ||
-    node.type === NodeType.Boolean ||
-    node.type === NodeType.DateTime ||
-    node.type === NodeType.InlineArray ||
-    node.type === NodeType.InlineTable
-  );
-}
-
 // loc includes quotes
 //
 // a = "string"

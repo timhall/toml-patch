@@ -190,8 +190,169 @@ Object {
         },
       },
     },
-    "type": Object {
-      "name": "pug",
+  },
+}
+`;
+
+exports[`it should convert spec examples to JS 1`] = `
+Object {
+  "array": Object {
+    "key1": Array [
+      1,
+      2,
+      3,
+    ],
+    "key2": Array [
+      "red",
+      "yellow",
+      "green",
+    ],
+    "key3": Array [
+      Array [
+        1,
+        2,
+      ],
+      Array [
+        3,
+        4,
+        5,
+      ],
+    ],
+    "key4": Array [
+      Array [
+        1,
+        2,
+      ],
+      Array [
+        "a",
+        "b",
+        "c",
+      ],
+    ],
+    "key5": Array [
+      1,
+      2,
+      3,
+    ],
+    "key6": Array [
+      1,
+      2,
+    ],
+  },
+  "boolean": Object {
+    "False": false,
+    "True": true,
+  },
+  "datetime": Object {
+    "key1": 1979-05-27T07:32:00.000Z,
+    "key2": 1979-05-27T07:32:00.000Z,
+    "key3": 1979-05-27T07:32:00.999Z,
+  },
+  "float": Object {
+    "both": Object {
+      "key": 6.626e-34,
+    },
+    "exponent": Object {
+      "key1": 5e+22,
+      "key2": 1000000,
+      "key3": -0.02,
+    },
+    "fractional": Object {
+      "key1": 1,
+      "key2": 3.1415,
+      "key3": -0.01,
+    },
+    "underscores": Object {
+      "key1": 9224617.445991227,
+    },
+  },
+  "fruit": Array [
+    Object {
+      "name": "apple",
+    },
+    Object {
+      "name": "banana",
+    },
+  ],
+  "integer": Object {
+    "key1": 99,
+    "key2": 42,
+    "key3": 0,
+    "key4": -17,
+    "underscores": Object {
+      "key1": 1000,
+      "key2": 5349221,
+      "key3": 12345,
+    },
+  },
+  "products": Array [
+    Object {
+      "name": "Hammer",
+      "sku": 738594937,
+    },
+    Object {},
+    Object {
+      "color": "gray",
+      "name": "Nail",
+      "sku": 284758393,
+    },
+  ],
+  "string": Object {
+    "basic": Object {
+      "basic": "I'm a string. \\"You can quote me\\". Name	José
+Location	SF.",
+    },
+    "literal": Object {
+      "multiline": Object {
+        "lines": "The first newline is
+trimmed in raw strings.
+   All other whitespace
+   is preserved.
+",
+        "regex2": "I [dw]on't need \\\\d{2} apples",
+      },
+      "quoted": "Tom \\"Dubs\\" Preston-Werner",
+      "regex": "<\\\\i\\\\c*\\\\s*>",
+      "winpath": "C:\\\\Users\\\\nodejs\\\\templates",
+      "winpath2": "\\\\\\\\ServerX\\\\admin$\\\\system32\\\\",
+    },
+    "multiline": Object {
+      "continued": Object {
+        "key1": "The quick brown fox jumps over the lazy dog.",
+        "key2": "The quick brown \\\\n
+
+  fox jumps over \\\\n    the lazy dog.",
+        "key3": "\\\\n       The quick brown \\\\n       fox jumps over \\\\n       the lazy dog.\\\\n       ",
+      },
+      "key1": "One
+Two",
+      "key2": "One
+Two",
+      "key3": "One
+Two",
+    },
+  },
+  "table": Object {
+    "inline": Object {
+      "name": Object {
+        "first": "Tom",
+        "last": "Preston-Werner",
+      },
+      "point": Object {
+        "x": 1,
+        "y": 2,
+      },
+    },
+    "key": "value",
+    "subtable": Object {
+      "key": "another value",
+    },
+  },
+  "x": Object {
+    "y": Object {
+      "z": Object {
+        "w": Object {},
+      },
     },
   },
 }

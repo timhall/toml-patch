@@ -27,21 +27,21 @@ export type EnterExit<TNode = Node> = { enter?: Visit<TNode>; exit?: Visit<TNode
 export type Visitor = {
   Document?: Visit<Document> | EnterExit<Document>;
   Table?: Visit<Table> | EnterExit<Table>;
-  TableKey?: Visit<TableKey>;
-  TableArray?: Visit<TableArray>;
-  TableArrayKey?: Visit<TableArrayKey>;
-  KeyValue?: Visit<KeyValue>;
-  Key?: Visit<Key>;
-  String?: Visit<String>;
-  Integer?: Visit<Integer>;
-  Float?: Visit<Float>;
-  Boolean?: Visit<Boolean>;
-  DateTime?: Visit<DateTime>;
-  InlineArray?: Visit<InlineArray>;
-  InlineArrayItem?: Visit<InlineArrayItem>;
-  InlineTable?: Visit<InlineTable>;
-  InlineTableItem?: Visit<InlineTableItem>;
-  Comment?: Visit<Comment>;
+  TableKey?: Visit<TableKey> | EnterExit<TableKey>;
+  TableArray?: Visit<TableArray> | EnterExit<TableArray>;
+  TableArrayKey?: Visit<TableArrayKey> | EnterExit<TableArrayKey>;
+  KeyValue?: Visit<KeyValue> | EnterExit<KeyValue>;
+  Key?: Visit<Key> | EnterExit<Key>;
+  String?: Visit<String> | EnterExit<String>;
+  Integer?: Visit<Integer> | EnterExit<Integer>;
+  Float?: Visit<Float> | EnterExit<Float>;
+  Boolean?: Visit<Boolean> | EnterExit<Boolean>;
+  DateTime?: Visit<DateTime> | EnterExit<DateTime>;
+  InlineArray?: Visit<InlineArray> | EnterExit<InlineArray>;
+  InlineArrayItem?: Visit<InlineArrayItem> | EnterExit<InlineArrayItem>;
+  InlineTable?: Visit<InlineTable> | EnterExit<InlineTable>;
+  InlineTableItem?: Visit<InlineTableItem> | EnterExit<InlineTableItem>;
+  Comment?: Visit<Comment> | EnterExit<Comment>;
 };
 
 export default function traverse(node: Node, visitor: Visitor) {
