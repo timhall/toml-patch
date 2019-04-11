@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it should convert ast to toml 1`] = `
+"
+
+        \\"TOML Example\\"
+
+
+       \\"Tom Preston-Werner\\"
+               \\"GitHub\\"
+      \\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"
+      1979-05-27T07:32:00Z
+
+
+         \\"192.168.1.1\\"
+          8001  8001  8002
+                 5000
+          true
+
+
+
+
+
+       \\"10.0.0.1\\"
+       \\"eqdc10\\"
+
+
+       \\"10.0.0.2\\"
+       \\"eqdc10\\"
+            \\"中国\\"
+
+
+          \\"gamma\\"  \\"delta\\"    1  2
+
+
+
+  \\"alpha\\"
+  \\"omega\\"
+
+
+
+
+
+         \\"Hammer\\"
+        738594937
+
+
+         \\"Nail\\"
+        284758393
+          \\"gray\\""
+`;

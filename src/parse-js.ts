@@ -3,7 +3,6 @@ import {
   Document,
   Value,
   KeyValue,
-  String,
   Integer,
   Float,
   DateTime,
@@ -12,7 +11,8 @@ import {
   InlineTable,
   InlineArrayItem,
   InlineTableItem,
-  Key
+  Key,
+  String as StringNode
 } from './ast';
 import { Position } from './location';
 import { isObject, isString, isInteger, isFloat, isBoolean, isDate, last } from './utils';
@@ -116,7 +116,7 @@ function asKeyValue(key: string, value: any, options: Options): KeyValue {
   };
 }
 
-function asString(value: any, options: Options): String {
+function asString(value: any, options: Options): StringNode {
   const { start } = options;
   const raw = JSON.stringify(value);
 

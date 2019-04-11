@@ -1,6 +1,9 @@
 import { Document, Value, NodeType } from './ast';
 import traverse from './traverse';
 import { Location } from './location';
+import { SPACE, IS_NEW_LINE } from './tokenizer';
+
+const BY_NEW_LINE = /(\r\n|\n)/g;
 
 export default function toTOML(value: Document | Value, newline: string = '\n'): string {
   const lines: string[] = [];
@@ -20,6 +23,13 @@ export default function toTOML(value: Document | Value, newline: string = '\n'):
     },
     [NodeType.DateTime](node) {
       write(lines, node.loc, node.raw);
+    },
+
+    [NodeType.InlineArrayItem](node) {
+      if (!node.comma) return;
+
+      const start = node.loc.end;
+      write(lines, { start, end: { line: start.line, column: start.column + 1 } }, ',');
     }
   });
 
@@ -27,11 +37,20 @@ export default function toTOML(value: Document | Value, newline: string = '\n'):
 }
 
 function write(lines: string[], loc: Location, raw: string) {
-  const line = getLine(lines, loc.start.line);
-  const before = line.substr(0, loc.start.column);
-  const after = line.substr(loc.end.column);
+  const raw_lines = raw.split(BY_NEW_LINE);
 
-  lines[loc.start.line - 1] = before + raw + after;
+  for (let i = loc.start.line; i <= loc.end.line; i++) {
+    const line = getLine(lines, i);
+    const is_start_line = i === loc.start.line;
+    const is_end_line = i === loc.end.line;
+
+    const before = is_start_line
+      ? line.substr(0, loc.start.column).padEnd(loc.start.column, SPACE)
+      : '';
+    const after = is_end_line ? line.substr(loc.end.column) : '';
+
+    lines[i - 1] = before + raw_lines[i - loc.start.line] + after;
+  }
 }
 
 function getLine(lines: string[], index: number): string {
