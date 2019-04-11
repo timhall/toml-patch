@@ -235,6 +235,10 @@ function asInlineTable(value: any, options: Options): InlineTable | Value {
       const value_length = item.loc.end.column - item.loc.start.column;
       const loc = { start: item_start, end: { line, column: item_start.column + value_length } };
 
+      // walkObject adds key-values line-by-line
+      // move them all to single line
+      item.loc = loc;
+
       item_start = { line, column: loc.end.column + 2 };
 
       return {

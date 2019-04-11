@@ -253,7 +253,7 @@ Object {
       },
       "loc": Object {
         "end": Object {
-          "column": 15,
+          "column": 74,
           "line": 6,
         },
         "start": Object {
@@ -287,12 +287,12 @@ Object {
               },
               "loc": Object {
                 "end": Object {
-                  "column": 21,
-                  "line": 1,
+                  "column": 27,
+                  "line": 6,
                 },
                 "start": Object {
-                  "column": 0,
-                  "line": 1,
+                  "column": 6,
+                  "line": 6,
                 },
               },
               "type": "KeyValue",
@@ -401,12 +401,12 @@ Object {
             },
             "loc": Object {
               "end": Object {
-                "column": 21,
-                "line": 1,
+                "column": 27,
+                "line": 6,
               },
               "start": Object {
-                "column": 0,
-                "line": 1,
+                "column": 6,
+                "line": 6,
               },
             },
             "type": "InlineTableItem",
@@ -434,12 +434,12 @@ Object {
               },
               "loc": Object {
                 "end": Object {
-                  "column": 13,
-                  "line": 2,
+                  "column": 72,
+                  "line": 6,
                 },
                 "start": Object {
-                  "column": 0,
-                  "line": 2,
+                  "column": 29,
+                  "line": 6,
                 },
               },
               "type": "KeyValue",
@@ -472,12 +472,12 @@ Object {
                             },
                             "loc": Object {
                               "end": Object {
-                                "column": 7,
-                                "line": 1,
+                                "column": 15,
+                                "line": 2,
                               },
                               "start": Object {
-                                "column": 0,
-                                "line": 1,
+                                "column": 8,
+                                "line": 2,
                               },
                             },
                             "type": "KeyValue",
@@ -499,12 +499,12 @@ Object {
                           },
                           "loc": Object {
                             "end": Object {
-                              "column": 7,
-                              "line": 1,
+                              "column": 15,
+                              "line": 2,
                             },
                             "start": Object {
-                              "column": 0,
-                              "line": 1,
+                              "column": 8,
+                              "line": 2,
                             },
                           },
                           "type": "InlineTableItem",
@@ -512,7 +512,7 @@ Object {
                       ],
                       "loc": Object {
                         "end": Object {
-                          "column": 9,
+                          "column": 17,
                           "line": 2,
                         },
                         "start": Object {
@@ -524,7 +524,7 @@ Object {
                     },
                     "loc": Object {
                       "end": Object {
-                        "column": 9,
+                        "column": 17,
                         "line": 2,
                       },
                       "start": Object {
@@ -561,12 +561,12 @@ Object {
                             },
                             "loc": Object {
                               "end": Object {
-                                "column": 7,
-                                "line": 1,
+                                "column": 28,
+                                "line": 2,
                               },
                               "start": Object {
-                                "column": 0,
-                                "line": 1,
+                                "column": 21,
+                                "line": 2,
                               },
                             },
                             "type": "KeyValue",
@@ -588,12 +588,12 @@ Object {
                           },
                           "loc": Object {
                             "end": Object {
-                              "column": 7,
-                              "line": 1,
+                              "column": 28,
+                              "line": 2,
                             },
                             "start": Object {
-                              "column": 0,
-                              "line": 1,
+                              "column": 21,
+                              "line": 2,
                             },
                           },
                           "type": "InlineTableItem",
@@ -621,11 +621,11 @@ Object {
                             },
                             "loc": Object {
                               "end": Object {
-                                "column": 9,
+                                "column": 39,
                                 "line": 2,
                               },
                               "start": Object {
-                                "column": 0,
+                                "column": 30,
                                 "line": 2,
                               },
                             },
@@ -648,11 +648,11 @@ Object {
                           },
                           "loc": Object {
                             "end": Object {
-                              "column": 9,
+                              "column": 39,
                               "line": 2,
                             },
                             "start": Object {
-                              "column": 0,
+                              "column": 30,
                               "line": 2,
                             },
                           },
@@ -661,11 +661,11 @@ Object {
                       ],
                       "loc": Object {
                         "end": Object {
-                          "column": 11,
+                          "column": 41,
                           "line": 2,
                         },
                         "start": Object {
-                          "column": 11,
+                          "column": 19,
                           "line": 2,
                         },
                       },
@@ -673,11 +673,11 @@ Object {
                     },
                     "loc": Object {
                       "end": Object {
-                        "column": 11,
+                        "column": 41,
                         "line": 2,
                       },
                       "start": Object {
-                        "column": 11,
+                        "column": 19,
                         "line": 2,
                       },
                     },
@@ -686,7 +686,7 @@ Object {
                 ],
                 "loc": Object {
                   "end": Object {
-                    "column": 13,
+                    "column": 43,
                     "line": 2,
                   },
                   "start": Object {
@@ -699,12 +699,12 @@ Object {
             },
             "loc": Object {
               "end": Object {
-                "column": 13,
-                "line": 2,
+                "column": 72,
+                "line": 6,
               },
               "start": Object {
-                "column": 0,
-                "line": 2,
+                "column": 29,
+                "line": 6,
               },
             },
             "type": "InlineTableItem",
@@ -712,7 +712,7 @@ Object {
         ],
         "loc": Object {
           "end": Object {
-            "column": 15,
+            "column": 74,
             "line": 6,
           },
           "start": Object {
@@ -726,7 +726,7 @@ Object {
   ],
   "loc": Object {
     "end": Object {
-      "column": 15,
+      "column": 74,
       "line": 6,
     },
     "start": Object {
