@@ -319,10 +319,8 @@ trimmed in raw strings.
     "multiline": Object {
       "continued": Object {
         "key1": "The quick brown fox jumps over the lazy dog.",
-        "key2": "The quick brown \\\\n
-
-  fox jumps over \\\\n    the lazy dog.",
-        "key3": "\\\\n       The quick brown \\\\n       fox jumps over \\\\n       the lazy dog.\\\\n       ",
+        "key2": "The quick brown fox jumps over the lazy dog.",
+        "key3": "The quick brown fox jumps over the lazy dog.",
       },
       "key1": "One
 Two",

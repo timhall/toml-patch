@@ -7,16 +7,29 @@ const CRLF = '\\r\\n';
 const IS_CRLF = /\r\n/g;
 const IS_LF = /\n/g;
 const IS_LEADING_NEW_LINE = /^(\r\n|\n)/;
+const IS_LINE_ENDING_BACKSLASH = /\\[\n,\r\n]\s*/g;
 
 export function parseString(raw: string): string {
   if (raw.startsWith(TRIPLE_SINGLE_QUOTE)) {
-    return trimLeadingWhitespace(trim(raw, 3));
+    return pipe(
+      trim(raw, 3),
+      trimLeadingWhitespace
+    );
   } else if (raw.startsWith(SINGLE_QUOTE)) {
     return trim(raw, 1);
   } else if (raw.startsWith(TRIPLE_DOUBLE_QUOTE)) {
-    return unescape(escapeNewLines(trimLeadingWhitespace(trim(raw, 3))));
+    return pipe(
+      trim(raw, 3),
+      trimLeadingWhitespace,
+      lineEndingBackslash,
+      escapeNewLines,
+      unescape
+    );
   } else if (raw.startsWith(DOUBLE_QUOTE)) {
-    return unescape(trim(raw, 1));
+    return pipe(
+      trim(raw, 1),
+      unescape
+    );
   } else {
     return raw;
   }
@@ -40,4 +53,12 @@ function trimLeadingWhitespace(value: string): string {
 
 function escapeNewLines(value: string): string {
   return value.replace(IS_CRLF, CRLF).replace(IS_LF, LF);
+}
+
+function lineEndingBackslash(value: string): string {
+  return value.replace(IS_LINE_ENDING_BACKSLASH, '');
+}
+
+function pipe<TValue>(value: TValue, ...fns: Array<(value: TValue) => TValue>): TValue {
+  return fns.reduce((value, fn) => fn(value), value);
 }
