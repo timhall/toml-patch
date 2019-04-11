@@ -4,11 +4,11 @@ exports[`it should parse object 1`] = `
 Object {
   "body": Array [
     Object {
-      "equals": 0,
+      "equals": 2,
       "key": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
+            "column": 1,
             "line": 1,
           },
           "start": Object {
@@ -24,7 +24,7 @@ Object {
       },
       "loc": Object {
         "end": Object {
-          "column": 0,
+          "column": 7,
           "line": 1,
         },
         "start": Object {
@@ -36,30 +36,30 @@ Object {
       "value": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
+            "column": 7,
             "line": 1,
           },
           "start": Object {
-            "column": 0,
+            "column": 4,
             "line": 1,
           },
         },
-        "raw": "1",
+        "raw": "\\"1\\"",
         "type": "String",
         "value": "1",
       },
     },
     Object {
-      "equals": 0,
+      "equals": 2,
       "key": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 1,
+            "line": 2,
           },
           "start": Object {
             "column": 0,
-            "line": 1,
+            "line": 2,
           },
         },
         "raw": "b",
@@ -70,24 +70,24 @@ Object {
       },
       "loc": Object {
         "end": Object {
-          "column": 0,
-          "line": 1,
+          "column": 5,
+          "line": 2,
         },
         "start": Object {
           "column": 0,
-          "line": 1,
+          "line": 2,
         },
       },
       "type": "KeyValue",
       "value": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 5,
+            "line": 2,
           },
           "start": Object {
-            "column": 0,
-            "line": 1,
+            "column": 4,
+            "line": 2,
           },
         },
         "raw": "2",
@@ -96,16 +96,16 @@ Object {
       },
     },
     Object {
-      "equals": 0,
+      "equals": 2,
       "key": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 1,
+            "line": 3,
           },
           "start": Object {
             "column": 0,
-            "line": 1,
+            "line": 3,
           },
         },
         "raw": "c",
@@ -116,24 +116,24 @@ Object {
       },
       "loc": Object {
         "end": Object {
-          "column": 0,
-          "line": 1,
+          "column": 8,
+          "line": 3,
         },
         "start": Object {
           "column": 0,
-          "line": 1,
+          "line": 3,
         },
       },
       "type": "KeyValue",
       "value": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 8,
+            "line": 3,
           },
           "start": Object {
-            "column": 0,
-            "line": 1,
+            "column": 4,
+            "line": 3,
           },
         },
         "raw": "3.14",
@@ -142,16 +142,16 @@ Object {
       },
     },
     Object {
-      "equals": 0,
+      "equals": 2,
       "key": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 1,
+            "line": 4,
           },
           "start": Object {
             "column": 0,
-            "line": 1,
+            "line": 4,
           },
         },
         "raw": "d",
@@ -162,24 +162,24 @@ Object {
       },
       "loc": Object {
         "end": Object {
-          "column": 0,
-          "line": 1,
+          "column": 8,
+          "line": 4,
         },
         "start": Object {
           "column": 0,
-          "line": 1,
+          "line": 4,
         },
       },
       "type": "KeyValue",
       "value": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 8,
+            "line": 4,
           },
           "start": Object {
-            "column": 0,
-            "line": 1,
+            "column": 4,
+            "line": 4,
           },
         },
         "type": "Boolean",
@@ -187,16 +187,16 @@ Object {
       },
     },
     Object {
-      "equals": 0,
+      "equals": 2,
       "key": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 1,
+            "line": 5,
           },
           "start": Object {
             "column": 0,
-            "line": 1,
+            "line": 5,
           },
         },
         "raw": "e",
@@ -207,24 +207,24 @@ Object {
       },
       "loc": Object {
         "end": Object {
-          "column": 0,
-          "line": 1,
+          "column": 28,
+          "line": 5,
         },
         "start": Object {
           "column": 0,
-          "line": 1,
+          "line": 5,
         },
       },
       "type": "KeyValue",
       "value": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 28,
+            "line": 5,
           },
           "start": Object {
-            "column": 0,
-            "line": 1,
+            "column": 4,
+            "line": 5,
           },
         },
         "raw": "1979-05-27T07:32:00.000Z",
@@ -233,16 +233,16 @@ Object {
       },
     },
     Object {
-      "equals": 0,
+      "equals": 2,
       "key": Object {
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 1,
+            "line": 6,
           },
           "start": Object {
             "column": 0,
-            "line": 1,
+            "line": 6,
           },
         },
         "raw": "f",
@@ -253,12 +253,12 @@ Object {
       },
       "loc": Object {
         "end": Object {
-          "column": 0,
-          "line": 1,
+          "column": 15,
+          "line": 6,
         },
         "start": Object {
           "column": 0,
-          "line": 1,
+          "line": 6,
         },
       },
       "type": "KeyValue",
@@ -267,11 +267,11 @@ Object {
           Object {
             "comma": true,
             "item": Object {
-              "equals": 0,
+              "equals": 2,
               "key": Object {
                 "loc": Object {
                   "end": Object {
-                    "column": 0,
+                    "column": 1,
                     "line": 1,
                   },
                   "start": Object {
@@ -287,7 +287,7 @@ Object {
               },
               "loc": Object {
                 "end": Object {
-                  "column": 0,
+                  "column": 21,
                   "line": 1,
                 },
                 "start": Object {
@@ -303,25 +303,25 @@ Object {
                     "item": Object {
                       "loc": Object {
                         "end": Object {
-                          "column": 0,
+                          "column": 9,
                           "line": 1,
                         },
                         "start": Object {
-                          "column": 0,
+                          "column": 6,
                           "line": 1,
                         },
                       },
-                      "raw": "h",
+                      "raw": "\\"h\\"",
                       "type": "String",
                       "value": "h",
                     },
                     "loc": Object {
                       "end": Object {
-                        "column": 0,
+                        "column": 9,
                         "line": 1,
                       },
                       "start": Object {
-                        "column": 0,
+                        "column": 6,
                         "line": 1,
                       },
                     },
@@ -332,54 +332,54 @@ Object {
                     "item": Object {
                       "loc": Object {
                         "end": Object {
-                          "column": 0,
+                          "column": 14,
                           "line": 1,
                         },
                         "start": Object {
-                          "column": 0,
+                          "column": 11,
                           "line": 1,
                         },
                       },
-                      "raw": "i",
+                      "raw": "\\"i\\"",
                       "type": "String",
                       "value": "i",
                     },
                     "loc": Object {
                       "end": Object {
-                        "column": 0,
+                        "column": 14,
                         "line": 1,
                       },
                       "start": Object {
-                        "column": 0,
+                        "column": 11,
                         "line": 1,
                       },
                     },
                     "type": "InlineArrayItem",
                   },
                   Object {
-                    "comma": true,
+                    "comma": false,
                     "item": Object {
                       "loc": Object {
                         "end": Object {
-                          "column": 0,
+                          "column": 19,
                           "line": 1,
                         },
                         "start": Object {
-                          "column": 0,
+                          "column": 16,
                           "line": 1,
                         },
                       },
-                      "raw": "j",
+                      "raw": "\\"j\\"",
                       "type": "String",
                       "value": "j",
                     },
                     "loc": Object {
                       "end": Object {
-                        "column": 0,
+                        "column": 19,
                         "line": 1,
                       },
                       "start": Object {
-                        "column": 0,
+                        "column": 16,
                         "line": 1,
                       },
                     },
@@ -388,11 +388,11 @@ Object {
                 ],
                 "loc": Object {
                   "end": Object {
-                    "column": 0,
+                    "column": 21,
                     "line": 1,
                   },
                   "start": Object {
-                    "column": 0,
+                    "column": 4,
                     "line": 1,
                   },
                 },
@@ -401,7 +401,7 @@ Object {
             },
             "loc": Object {
               "end": Object {
-                "column": 0,
+                "column": 21,
                 "line": 1,
               },
               "start": Object {
@@ -412,18 +412,18 @@ Object {
             "type": "InlineTableItem",
           },
           Object {
-            "comma": true,
+            "comma": false,
             "item": Object {
-              "equals": 0,
+              "equals": 2,
               "key": Object {
                 "loc": Object {
                   "end": Object {
-                    "column": 0,
-                    "line": 1,
+                    "column": 1,
+                    "line": 2,
                   },
                   "start": Object {
                     "column": 0,
-                    "line": 1,
+                    "line": 2,
                   },
                 },
                 "raw": "k",
@@ -434,12 +434,12 @@ Object {
               },
               "loc": Object {
                 "end": Object {
-                  "column": 0,
-                  "line": 1,
+                  "column": 13,
+                  "line": 2,
                 },
                 "start": Object {
                   "column": 0,
-                  "line": 1,
+                  "line": 2,
                 },
               },
               "type": "KeyValue",
@@ -450,13 +450,13 @@ Object {
                     "item": Object {
                       "items": Array [
                         Object {
-                          "comma": true,
+                          "comma": false,
                           "item": Object {
-                            "equals": 0,
+                            "equals": 2,
                             "key": Object {
                               "loc": Object {
                                 "end": Object {
-                                  "column": 0,
+                                  "column": 1,
                                   "line": 1,
                                 },
                                 "start": Object {
@@ -472,7 +472,7 @@ Object {
                             },
                             "loc": Object {
                               "end": Object {
-                                "column": 0,
+                                "column": 7,
                                 "line": 1,
                               },
                               "start": Object {
@@ -484,22 +484,22 @@ Object {
                             "value": Object {
                               "loc": Object {
                                 "end": Object {
-                                  "column": 0,
+                                  "column": 7,
                                   "line": 1,
                                 },
                                 "start": Object {
-                                  "column": 0,
+                                  "column": 4,
                                   "line": 1,
                                 },
                               },
-                              "raw": "m",
+                              "raw": "\\"m\\"",
                               "type": "String",
                               "value": "m",
                             },
                           },
                           "loc": Object {
                             "end": Object {
-                              "column": 0,
+                              "column": 7,
                               "line": 1,
                             },
                             "start": Object {
@@ -512,40 +512,40 @@ Object {
                       ],
                       "loc": Object {
                         "end": Object {
-                          "column": 0,
-                          "line": 1,
+                          "column": 9,
+                          "line": 2,
                         },
                         "start": Object {
-                          "column": 0,
-                          "line": 1,
+                          "column": 6,
+                          "line": 2,
                         },
                       },
                       "type": "InlineTable",
                     },
                     "loc": Object {
                       "end": Object {
-                        "column": 0,
-                        "line": 1,
+                        "column": 9,
+                        "line": 2,
                       },
                       "start": Object {
-                        "column": 0,
-                        "line": 1,
+                        "column": 6,
+                        "line": 2,
                       },
                     },
                     "type": "InlineArrayItem",
                   },
                   Object {
-                    "comma": true,
+                    "comma": false,
                     "item": Object {
                       "items": Array [
                         Object {
                           "comma": true,
                           "item": Object {
-                            "equals": 0,
+                            "equals": 2,
                             "key": Object {
                               "loc": Object {
                                 "end": Object {
-                                  "column": 0,
+                                  "column": 1,
                                   "line": 1,
                                 },
                                 "start": Object {
@@ -561,7 +561,7 @@ Object {
                             },
                             "loc": Object {
                               "end": Object {
-                                "column": 0,
+                                "column": 7,
                                 "line": 1,
                               },
                               "start": Object {
@@ -573,22 +573,22 @@ Object {
                             "value": Object {
                               "loc": Object {
                                 "end": Object {
-                                  "column": 0,
+                                  "column": 7,
                                   "line": 1,
                                 },
                                 "start": Object {
-                                  "column": 0,
+                                  "column": 4,
                                   "line": 1,
                                 },
                               },
-                              "raw": "o",
+                              "raw": "\\"o\\"",
                               "type": "String",
                               "value": "o",
                             },
                           },
                           "loc": Object {
                             "end": Object {
-                              "column": 0,
+                              "column": 7,
                               "line": 1,
                             },
                             "start": Object {
@@ -599,18 +599,18 @@ Object {
                           "type": "InlineTableItem",
                         },
                         Object {
-                          "comma": true,
+                          "comma": false,
                           "item": Object {
-                            "equals": 0,
+                            "equals": 2,
                             "key": Object {
                               "loc": Object {
                                 "end": Object {
-                                  "column": 0,
-                                  "line": 1,
+                                  "column": 1,
+                                  "line": 2,
                                 },
                                 "start": Object {
                                   "column": 0,
-                                  "line": 1,
+                                  "line": 2,
                                 },
                               },
                               "raw": "p",
@@ -621,39 +621,39 @@ Object {
                             },
                             "loc": Object {
                               "end": Object {
-                                "column": 0,
-                                "line": 1,
+                                "column": 9,
+                                "line": 2,
                               },
                               "start": Object {
                                 "column": 0,
-                                "line": 1,
+                                "line": 2,
                               },
                             },
                             "type": "KeyValue",
                             "value": Object {
                               "loc": Object {
                                 "end": Object {
-                                  "column": 0,
-                                  "line": 1,
+                                  "column": 9,
+                                  "line": 2,
                                 },
                                 "start": Object {
-                                  "column": 0,
-                                  "line": 1,
+                                  "column": 4,
+                                  "line": 2,
                                 },
                               },
-                              "raw": "qrs",
+                              "raw": "\\"qrs\\"",
                               "type": "String",
                               "value": "qrs",
                             },
                           },
                           "loc": Object {
                             "end": Object {
-                              "column": 0,
-                              "line": 1,
+                              "column": 9,
+                              "line": 2,
                             },
                             "start": Object {
                               "column": 0,
-                              "line": 1,
+                              "line": 2,
                             },
                           },
                           "type": "InlineTableItem",
@@ -661,24 +661,24 @@ Object {
                       ],
                       "loc": Object {
                         "end": Object {
-                          "column": 0,
-                          "line": 1,
+                          "column": 11,
+                          "line": 2,
                         },
                         "start": Object {
-                          "column": 0,
-                          "line": 1,
+                          "column": 11,
+                          "line": 2,
                         },
                       },
                       "type": "InlineTable",
                     },
                     "loc": Object {
                       "end": Object {
-                        "column": 0,
-                        "line": 1,
+                        "column": 11,
+                        "line": 2,
                       },
                       "start": Object {
-                        "column": 0,
-                        "line": 1,
+                        "column": 11,
+                        "line": 2,
                       },
                     },
                     "type": "InlineArrayItem",
@@ -686,12 +686,12 @@ Object {
                 ],
                 "loc": Object {
                   "end": Object {
-                    "column": 0,
-                    "line": 1,
+                    "column": 13,
+                    "line": 2,
                   },
                   "start": Object {
-                    "column": 0,
-                    "line": 1,
+                    "column": 4,
+                    "line": 2,
                   },
                 },
                 "type": "InlineArray",
@@ -699,12 +699,12 @@ Object {
             },
             "loc": Object {
               "end": Object {
-                "column": 0,
-                "line": 1,
+                "column": 13,
+                "line": 2,
               },
               "start": Object {
                 "column": 0,
-                "line": 1,
+                "line": 2,
               },
             },
             "type": "InlineTableItem",
@@ -712,12 +712,12 @@ Object {
         ],
         "loc": Object {
           "end": Object {
-            "column": 0,
-            "line": 1,
+            "column": 15,
+            "line": 6,
           },
           "start": Object {
-            "column": 0,
-            "line": 1,
+            "column": 4,
+            "line": 6,
           },
         },
         "type": "InlineTable",
@@ -726,8 +726,8 @@ Object {
   ],
   "loc": Object {
     "end": Object {
-      "column": 0,
-      "line": 1,
+      "column": 15,
+      "line": 6,
     },
     "start": Object {
       "column": 0,
