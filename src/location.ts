@@ -44,8 +44,8 @@ export function findPosition(input: string | number[], index: number): Position 
 
 export function getLine(input: string, position: Position): string {
   const lines = findLines(input);
-  const start = lines[position.line - 1] || 0;
-  const end = lines[position.line] || input.length;
+  const start = lines[position.line - 2] || 0;
+  const end = lines[position.line - 1] || input.length;
 
   return input.substr(start, end - start);
 }

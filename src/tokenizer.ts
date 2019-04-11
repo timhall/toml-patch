@@ -182,7 +182,8 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
         cursor.item === ',' ||
         cursor.item === '.' ||
         cursor.item === ']' ||
-        cursor.item === '}')
+        cursor.item === '}' ||
+        cursor.item === '=')
     ) {
       break;
     }

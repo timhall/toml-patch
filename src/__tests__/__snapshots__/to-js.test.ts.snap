@@ -380,3 +380,21 @@ Two",
   },
 }
 `;
+
+exports[`it should convert values to js 1`] = `
+Object {
+  "a": "b",
+  "c": "d",
+}
+`;
+
+exports[`it should convert values to js 2`] = `
+Array [
+  Object {
+    "a": "b",
+  },
+  Object {
+    "c": "d",
+  },
+]
+`;

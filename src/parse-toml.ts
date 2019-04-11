@@ -53,6 +53,8 @@ export default function parseTOML(input: string): Document | Value {
       if (!isParseError(block_err)) throw block_err;
 
       try {
+        // Reset cursor and retry as value
+        cursor.index = 0;
         return walkValue(cursor, input);
       } catch (value_err) {
         // Throw underlying block error since document mode is considered default
@@ -209,15 +211,21 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   if (cursor.done || (is_table && cursor.item.raw !== ']')) {
     throw new ParseError(
       input,
-      cursor.item.loc.start,
-      `Expected table closing "]", found ${cursor.item.raw}`
+      cursor.done ? key.value.loc.end : cursor.item.loc.start,
+      `Expected table closing "]", found ${cursor.done ? 'end of file' : cursor.item.raw}`
     );
   }
-  if (cursor.done || (!is_table && (cursor.item.raw !== ']' || cursor.peek()!.raw !== ']'))) {
+  if (
+    cursor.done ||
+    cursor.peekDone() ||
+    (!is_table && (cursor.item.raw !== ']' || cursor.peek()!.raw !== ']'))
+  ) {
     throw new ParseError(
       input,
-      cursor.item.loc.start,
-      `Expected array of tables closing "]]", found ${cursor.item.raw + cursor.peek()!.raw}`
+      cursor.done || cursor.peekDone() ? key.value.loc.end : cursor.item.loc.start,
+      `Expected array of tables closing "]]", found ${
+        cursor.done || cursor.peekDone() ? 'end of file' : cursor.item.raw + cursor.peek()!.raw
+      }`
     );
   }
 
@@ -270,8 +278,8 @@ function keyValue(cursor: Cursor<Token>, input: string): KeyValue {
   if (cursor.done || cursor.item.type !== TokenType.Equal) {
     throw new ParseError(
       input,
-      cursor.item.loc.start,
-      `Expected "=" for key-value, found "${cursor.item.raw}"`
+      cursor.done ? key.loc.end : cursor.item.loc.start,
+      `Expected "=" for key-value, found ${cursor.done ? 'end of file' : cursor.item.raw}`
     );
   }
 

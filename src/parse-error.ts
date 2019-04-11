@@ -6,7 +6,7 @@ export default class ParseError extends Error {
 
   constructor(input: string, position: Position, message: string) {
     const line = getLine(input, position);
-    const pointer = `${whitespace(position.column + 1)}^`;
+    const pointer = `${whitespace(position.column)}^`;
     const error_message = `Error parsing TOML:\n${line}\n${pointer}\n${message}`;
 
     super(error_message);

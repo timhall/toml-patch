@@ -10,6 +10,7 @@ export default function toJS(document: Document | Value): any {
   const result = blank();
   let active: any = result;
   let previous_active: any;
+  let skip = false;
 
   traverse(document, {
     [NodeType.Table](node) {
@@ -24,6 +25,8 @@ export default function toJS(document: Document | Value): any {
 
     [NodeType.KeyValue]: {
       enter(node) {
+        if (skip) return;
+
         const key = node.key.value;
         const value = toValue(node.value);
 
@@ -40,6 +43,16 @@ export default function toJS(document: Document | Value): any {
           active = previous_active;
         }
       }
+    },
+
+    [NodeType.InlineTable]: {
+      enter() {
+        // Handled by toValue
+        skip = true;
+      },
+      exit() {
+        skip = false;
+      }
     }
   });
 
@@ -49,8 +62,14 @@ export default function toJS(document: Document | Value): any {
 export function toValue(node: Value): any {
   switch (node.type) {
     case NodeType.InlineTable:
-      // Key-Values are handled in toJS()
-      return blank();
+      // Use a placeholder document so that items aren't filtered
+      const placeholder: Document = {
+        type: NodeType.Document,
+        loc: node.loc,
+        body: node.items.map(item => item.item)
+      };
+
+      return toJS(placeholder);
 
     case NodeType.InlineArray:
       return node.items.map(item => toValue(item.item as Value));
@@ -110,6 +129,7 @@ export function isValue(node: Node): node is Value {
     node.type === NodeType.Float ||
     node.type === NodeType.Boolean ||
     node.type === NodeType.DateTime ||
-    node.type === NodeType.InlineArray
+    node.type === NodeType.InlineArray ||
+    node.type === NodeType.InlineTable
   );
 }
