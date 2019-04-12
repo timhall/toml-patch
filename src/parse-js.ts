@@ -210,9 +210,10 @@ function asDateTime(value: any, options: Options): DateTime {
 
 function asInlineArray(value: any, options: Options): InlineArray {
   const { start, format } = options;
-  const spacing = format.bracketSpacing ? 1 : 0;
+  const leading_spacing = format.bracketSpacing ? 1 : 0;
+  const trailing_spacing = leading_spacing + (format.trailingComma ? 1 : 0);
 
-  let item_start = { line: start.line, column: start.column + 1 + spacing };
+  let item_start = { line: start.line, column: start.column + 1 + leading_spacing };
   const items: InlineArrayItem[] = value.map((value: any, index: number, values: any[]) => {
     const item = walkValue(value, { start: item_start, format });
     const is_last = index === values.length - 1;
@@ -228,7 +229,10 @@ function asInlineArray(value: any, options: Options): InlineArray {
   });
 
   const end = items.length
-    ? { line: last(items)!.loc.end.line, column: last(items)!.loc.end.column + 1 + spacing }
+    ? {
+        line: last(items)!.loc.end.line,
+        column: last(items)!.loc.end.column + 1 + trailing_spacing
+      }
     : { line: start.line, column: start.column + 1 };
 
   return {
@@ -244,13 +248,14 @@ function asInlineTable(value: any, options: Options): InlineTable | Value {
 
   const { start, format } = options;
   const line = start.line;
-  const spacing = format.bracketSpacing ? 1 : 0;
+  const leading_spacing = format.bracketSpacing ? 1 : 0;
+  const trailing_spacing = leading_spacing + (format.trailingComma ? 1 : 0);
 
-  let item_start = { line, column: start.column + 1 + spacing };
+  let item_start = { line, column: start.column + 1 + leading_spacing };
   const items: InlineTableItem[] = walkObjectInline(value, { start: item_start, format });
 
   const end = items.length
-    ? { line, column: last(items)!.loc.end.column + 1 + spacing }
+    ? { line, column: last(items)!.loc.end.column + 1 + trailing_spacing }
     : { line, column: start.column + 2 };
 
   return {

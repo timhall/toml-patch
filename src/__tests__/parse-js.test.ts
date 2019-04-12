@@ -29,4 +29,5 @@ test('it should parse object', () => {
 
 test.only('it should be properly formatted', () => {
   expect(toTOML(parseJS(value))).toMatchSnapshot();
+  expect(toTOML(parseJS(value, { trailingComma: true }))).toMatchSnapshot();
 });

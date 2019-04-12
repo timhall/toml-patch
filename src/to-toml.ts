@@ -69,7 +69,7 @@ export default function toTOML(value: Document | Value, newline: string = '\n'):
       write(lines, { start, end: { line: start.line, column: start.column + 1 } }, '{');
       write(lines, { start: { line: end.line, column: end.column - 1 }, end }, '}');
     },
-    [NodeType.InlineArrayItem](node) {
+    [NodeType.InlineTableItem](node) {
       if (!node.comma) return;
 
       const start = node.loc.end;
