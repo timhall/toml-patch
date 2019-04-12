@@ -63,7 +63,7 @@ export default function parseTOML(input: string): Document | Value {
     }
   }
 
-  let document: Document = {
+  const document: Document = {
     type: NodeType.Document,
     loc: { start: { line: 1, column: 0 }, end: findPosition(input, input.length) },
     body: first_block ? [first_block] : []

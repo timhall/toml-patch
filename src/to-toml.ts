@@ -1,7 +1,7 @@
 import { Document, Value, NodeType } from './ast';
 import traverse from './traverse';
 import { Location } from './location';
-import { SPACE, IS_NEW_LINE } from './tokenizer';
+import { SPACE } from './tokenizer';
 
 const BY_NEW_LINE = /(\r\n|\n)/g;
 
@@ -9,6 +9,33 @@ export default function toTOML(value: Document | Value, newline: string = '\n'):
   const lines: string[] = [];
 
   traverse(value, {
+    [NodeType.TableKey](node) {
+      const { start, end } = node.loc;
+
+      write(lines, { start, end: { line: start.line, column: start.column + 1 } }, '[');
+      write(lines, { start: { line: end.line, column: end.column - 1 }, end }, ']');
+    },
+    [NodeType.TableArrayKey](node) {
+      const { start, end } = node.loc;
+
+      write(lines, { start, end: { line: start.line, column: start.column + 2 } }, '[[');
+      write(lines, { start: { line: end.line, column: end.column - 2 }, end }, ']]');
+    },
+
+    [NodeType.KeyValue](node) {
+      const {
+        start: { line }
+      } = node.loc;
+      write(
+        lines,
+        { start: { line, column: node.equals }, end: { line, column: node.equals + 1 } },
+        '='
+      );
+    },
+    [NodeType.Key](node) {
+      write(lines, node.loc, node.raw);
+    },
+
     [NodeType.String](node) {
       write(lines, node.loc, node.raw);
     },
@@ -25,11 +52,32 @@ export default function toTOML(value: Document | Value, newline: string = '\n'):
       write(lines, node.loc, node.raw);
     },
 
+    [NodeType.InlineArray](node) {
+      const { start, end } = node.loc;
+      write(lines, { start, end: { line: start.line, column: start.column + 1 } }, '[');
+      write(lines, { start: { line: end.line, column: end.column - 1 }, end }, ']');
+    },
     [NodeType.InlineArrayItem](node) {
       if (!node.comma) return;
 
       const start = node.loc.end;
       write(lines, { start, end: { line: start.line, column: start.column + 1 } }, ',');
+    },
+
+    [NodeType.InlineTable](node) {
+      const { start, end } = node.loc;
+      write(lines, { start, end: { line: start.line, column: start.column + 1 } }, '{');
+      write(lines, { start: { line: end.line, column: end.column - 1 }, end }, '}');
+    },
+    [NodeType.InlineArrayItem](node) {
+      if (!node.comma) return;
+
+      const start = node.loc.end;
+      write(lines, { start, end: { line: start.line, column: start.column + 1 } }, ',');
+    },
+
+    [NodeType.Comment](node) {
+      write(lines, node.loc, node.raw);
     }
   });
 

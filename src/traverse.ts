@@ -66,6 +66,7 @@ export default function traverse(node: Node, visitor: Visitor) {
         break;
 
       case NodeType.Table:
+        traverseNode((node as Table).key, node);
         traverseArray((node as Table).items, node);
         break;
       case NodeType.TableKey:
@@ -73,6 +74,7 @@ export default function traverse(node: Node, visitor: Visitor) {
         break;
 
       case NodeType.TableArray:
+        traverseNode((node as TableArray).key, node);
         traverseArray((node as TableArray).items, node);
         break;
       case NodeType.TableArrayKey:
