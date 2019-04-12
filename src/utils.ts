@@ -45,3 +45,7 @@ export function equalArrays<TItem>(a: TItem[], b: TItem[]): boolean {
 
   return true;
 }
+
+export function pipe<TValue>(value: TValue, ...fns: Array<(value: TValue) => TValue>): TValue {
+  return fns.reduce((value, fn) => fn(value), value);
+}

@@ -1,4 +1,5 @@
 import { SINGLE_QUOTE, DOUBLE_QUOTE } from './tokenizer';
+import { pipe } from './utils';
 
 const TRIPLE_DOUBLE_QUOTE = `"""`;
 const TRIPLE_SINGLE_QUOTE = `'''`;
@@ -57,8 +58,4 @@ function escapeNewLines(value: string): string {
 
 function lineEndingBackslash(value: string): string {
   return value.replace(IS_LINE_ENDING_BACKSLASH, '');
-}
-
-function pipe<TValue>(value: TValue, ...fns: Array<(value: TValue) => TValue>): TValue {
-  return fns.reduce((value, fn) => fn(value), value);
 }

@@ -15,15 +15,8 @@ import {
   String as StringNode
 } from './ast';
 import { Position } from './location';
-import { isObject, isString, isInteger, isFloat, isBoolean, isDate, last } from './utils';
-
-export interface Format {
-  printWidth?: number;
-  tabWidth?: number;
-  useTabs?: boolean;
-  trailingComma?: boolean;
-  bracketSpacing?: boolean;
-}
+import { Format, formatTopLevel, formatPrintWidth } from './format';
+import { isObject, isString, isInteger, isFloat, isBoolean, isDate, last, pipe } from './utils';
 
 interface Options {
   start: Position;
@@ -32,8 +25,6 @@ interface Options {
 
 const default_format = {
   printWidth: 80,
-  tabWidth: 2,
-  useTabs: false,
   trailingComma: false,
   bracketSpacing: true
 };
@@ -46,7 +37,14 @@ export default function parseJS(value: any, format: Format = {}): Document | Val
   value = toJSON(value);
   if (!isObject(value)) return walkValue(value, { start: zero(), format });
 
-  const body = walkObject(value, { start: zero(), format });
+  // Heuristics:
+  // 1. Top-level objects/arrays should be tables/table arrays
+  // 2. Convert objects/arrays to tables/table arrays based on print width
+  let body = pipe(
+    walkObject(value, { start: zero(), format }),
+    formatTopLevel,
+    body => formatPrintWidth(body, format)
+  );
 
   return {
     type: NodeType.Document,
