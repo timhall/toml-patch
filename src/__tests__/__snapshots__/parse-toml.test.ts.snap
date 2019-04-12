@@ -2921,6 +2921,20 @@ Object {
         Object {
           "loc": Object {
             "end": Object {
+              "column": 28,
+              "line": 20,
+            },
+            "start": Object {
+              "column": 12,
+              "line": 20,
+            },
+          },
+          "raw": "# ] Oh yes I did",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
               "column": 100,
               "line": 23,
             },
@@ -3792,6 +3806,20 @@ Object {
             },
             "type": "InlineArray",
           },
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 28,
+              "line": 22,
+            },
+            "start": Object {
+              "column": 12,
+              "line": 22,
+            },
+          },
+          "raw": "# ] Óλ ¥èƨ Ì δïδ",
+          "type": "Comment",
         },
         Object {
           "loc": Object {
@@ -5038,6 +5066,34 @@ Object {
           },
         },
         Object {
+          "loc": Object {
+            "end": Object {
+              "column": 26,
+              "line": 20,
+            },
+            "start": Object {
+              "column": 14,
+              "line": 20,
+            },
+          },
+          "raw": "# Local Date",
+          "type": "Comment",
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 26,
+              "line": 21,
+            },
+            "start": Object {
+              "column": 14,
+              "line": 21,
+            },
+          },
+          "raw": "# Local Time",
+          "type": "Comment",
+        },
+        Object {
           "equals": 13,
           "key": Object {
             "loc": Object {
@@ -5391,6 +5447,20 @@ Object {
             },
             "type": "InlineArray",
           },
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 17,
+              "line": 27,
+            },
+            "start": Object {
+              "column": 5,
+              "line": 27,
+            },
+          },
+          "raw": "# this is ok",
+          "type": "Comment",
         },
         Object {
           "equals": 13,

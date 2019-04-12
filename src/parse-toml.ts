@@ -43,10 +43,10 @@ export default function parseTOML(input: string): Document | Value {
 
   // Best way to determine if block or value is to try
   // -> Try to walk initial block and if that fails try walking as value
-  let first_block: Block | undefined;
+  let first_blocks: Block[] | undefined;
   if (!cursor.done) {
     try {
-      first_block = walkBlock(cursor, input);
+      first_blocks = walkBlock(cursor, input);
       cursor.step();
     } catch (block_err) {
       // Only try to walk value if parser failed to find desired tokens
@@ -55,7 +55,8 @@ export default function parseTOML(input: string): Document | Value {
       try {
         // Reset cursor and retry as value
         cursor.index = 0;
-        return walkValue(cursor, input);
+        const [value] = walkValue(cursor, input);
+        return value;
       } catch (value_err) {
         // Throw underlying block error since document mode is considered default
         throw block_err;
@@ -66,11 +67,11 @@ export default function parseTOML(input: string): Document | Value {
   const document: Document = {
     type: NodeType.Document,
     loc: { start: { line: 1, column: 0 }, end: findPosition(input, input.length) },
-    body: first_block ? [first_block] : []
+    body: first_blocks ? first_blocks : []
   };
 
   while (!cursor.done) {
-    document.body.push(walkBlock(cursor, input));
+    document.body = document.body.concat(walkBlock(cursor, input));
     cursor.step();
   }
 
@@ -79,13 +80,14 @@ export default function parseTOML(input: string): Document | Value {
 
 type Block = KeyValue | Table | TableArray | Comment;
 
-function walkBlock(cursor: Cursor<Token>, input: string): Block {
+function walkBlock(cursor: Cursor<Token>, input: string): Block[] {
   if (cursor.item.type === TokenType.Comment) {
-    return comment(cursor);
+    return [comment(cursor)];
   } else if (cursor.item.type === TokenType.Bracket) {
-    return table(cursor, input);
+    return [table(cursor, input)];
   } else if (cursor.item.type === TokenType.String) {
-    return keyValue(cursor, input);
+    const [value, comments] = keyValue(cursor, input);
+    return ([value] as Block[]).concat(comments);
   } else {
     throw new ParseError(
       input,
@@ -95,26 +97,26 @@ function walkBlock(cursor: Cursor<Token>, input: string): Block {
   }
 }
 
-function walkValue(cursor: Cursor<Token>, input: string): Value {
+function walkValue(cursor: Cursor<Token>, input: string): [Value, Comment[]] {
   if (cursor.item.type === TokenType.String) {
     if (cursor.item.raw[0] === DOUBLE_QUOTE || cursor.item.raw[0] === SINGLE_QUOTE) {
-      return string(cursor);
+      return [string(cursor), []];
     } else if (cursor.item.raw === TRUE || cursor.item.raw === FALSE) {
-      return boolean(cursor);
+      return [boolean(cursor), []];
     } else if (IS_FULL_DATE.test(cursor.item.raw) || IS_FULL_TIME.test(cursor.item.raw)) {
-      return datetime(cursor, input);
+      return [datetime(cursor, input), []];
     } else if (
       (!cursor.peekDone() && cursor.peek()!.type === TokenType.Dot) ||
       IS_INF.test(cursor.item.raw) ||
       IS_NAN.test(cursor.item.raw) ||
       (HAS_E.test(cursor.item.raw) && !IS_HEX.test(cursor.item.raw))
     ) {
-      return float(cursor, input);
+      return [float(cursor, input), []];
     } else {
-      return integer(cursor);
+      return [integer(cursor), []];
     }
   } else if (cursor.item.type === TokenType.Curly) {
-    return inlineTable(cursor, input);
+    return [inlineTable(cursor, input), []];
   } else if (cursor.item.type === TokenType.Bracket) {
     return inlineArray(cursor, input);
   } else {
@@ -239,10 +241,10 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   key.loc!.end = cursor.item.loc.end;
 
   // Add child items
-  const items: Array<KeyValue | Comment> = [];
+  let items: Array<KeyValue | Comment> = [];
   while (!cursor.peekDone() && cursor.peek()!.type !== TokenType.Bracket) {
     cursor.step();
-    items.push(walkBlock(cursor, input) as (KeyValue | Comment));
+    items = items.concat(walkBlock(cursor, input) as Array<KeyValue | Comment>);
   }
 
   return {
@@ -256,7 +258,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   } as Table | TableArray;
 }
 
-function keyValue(cursor: Cursor<Token>, input: string): KeyValue {
+function keyValue(cursor: Cursor<Token>, input: string): [KeyValue, Comment[]] {
   // 3. KeyValue
   //
   // key = value
@@ -296,18 +298,21 @@ function keyValue(cursor: Cursor<Token>, input: string): KeyValue {
     throw new ParseError(input, key.loc.start, `Expected value for key-value, reached end of file`);
   }
 
-  const value = walkValue(cursor, input);
+  const [value, comments] = walkValue(cursor, input);
 
-  return {
-    type: NodeType.KeyValue,
-    key,
-    value,
-    loc: {
-      start: key.loc.start,
-      end: value.loc.end
+  return [
+    {
+      type: NodeType.KeyValue,
+      key,
+      value,
+      loc: {
+        start: key.loc.start,
+        end: value.loc.end
+      },
+      equals
     },
-    equals
-  };
+    comments
+  ];
 }
 
 function string(cursor: Cursor<Token>): String {
@@ -494,10 +499,12 @@ function inlineTable(cursor: Cursor<Token>, input: string): InlineTable {
       continue;
     }
 
-    const item = walkBlock(cursor, input);
+    const [item] = walkBlock(cursor, input);
     if (item.type !== NodeType.KeyValue) {
-      throw new Error(
-        `Only key-values are supported in inline tables, found ${JSON.stringify(item)}`
+      throw new ParseError(
+        input,
+        cursor.item.loc.start,
+        `Only key-values are supported in inline tables, found ${item.type}`
       );
     }
 
@@ -525,7 +532,7 @@ function inlineTable(cursor: Cursor<Token>, input: string): InlineTable {
   return value;
 }
 
-function inlineArray(cursor: Cursor<Token>, input: string): InlineArray {
+function inlineArray(cursor: Cursor<Token>, input: string): [InlineArray, Comment[]] {
   // 7. InlineArray
   if (cursor.item.raw !== '[') {
     throw new ParseError(
@@ -540,6 +547,7 @@ function inlineArray(cursor: Cursor<Token>, input: string): InlineArray {
     loc: cursor.item.loc,
     items: []
   };
+  let comments: Comment[] = [];
 
   cursor.step();
 
@@ -559,26 +567,21 @@ function inlineArray(cursor: Cursor<Token>, input: string): InlineArray {
 
       previous.comma = true;
       previous.loc.end = cursor.item.loc.start;
+    } else if ((cursor.item as Token).type === TokenType.Comment) {
+      comments.push(comment(cursor));
+    } else {
+      const [item, additional_comments] = walkValue(cursor, input);
+      const inline_item: InlineArrayItem = {
+        type: NodeType.InlineArrayItem,
+        loc: { start: item.loc.start, end: item.loc.end },
+        item,
+        comma: false
+      };
 
-      cursor.step();
-      continue;
+      value.items.push(inline_item);
+      comments = comments.concat(additional_comments);
     }
 
-    if ((cursor.item as Token).type === TokenType.Comment) {
-      // TODO
-      cursor.step();
-      continue;
-    }
-
-    const item = walkValue(cursor, input);
-    const inline_item: InlineArrayItem = {
-      type: NodeType.InlineArrayItem,
-      loc: { start: item.loc.start, end: item.loc.end },
-      item,
-      comma: false
-    };
-
-    value.items.push(inline_item);
     cursor.step();
   }
 
@@ -592,5 +595,5 @@ function inlineArray(cursor: Cursor<Token>, input: string): InlineArray {
 
   value.loc.end = cursor.item.loc.end;
 
-  return value;
+  return [value, comments];
 }
