@@ -67,6 +67,24 @@ function walkObject(value: any, options: Options): KeyValue[] {
   });
 }
 
+function walkObjectInline(value: any, options: Options): InlineTableItem[] {
+  let { start, format } = options;
+  return Object.keys(value).map((key: string, index: number, keys: string[]) => {
+    const is_last = index === keys.length - 1;
+    const key_value = asKeyValue(key, value[key], { start, format });
+
+    // Move start position to after this item
+    start = { line: start.line, column: key_value.loc.end.column + 2 };
+
+    return {
+      type: NodeType.InlineTableItem,
+      loc: key_value.loc,
+      item: key_value,
+      comma: !is_last || format.trailingComma ? true : false
+    };
+  });
+}
+
 function walkValue(value: any, options: Options): Value {
   if (value == null) {
     throw new Error('"null" and "undefined" values are not supported');
@@ -229,30 +247,11 @@ function asInlineTable(value: any, options: Options): InlineTable | Value {
   const spacing = format.bracketSpacing ? 1 : 0;
 
   let item_start = { line, column: start.column + 1 + spacing };
-  const items: InlineTableItem[] = walkObject(value, { start: zero(), format }).map(
-    (item: KeyValue, index: number, items: KeyValue[]) => {
-      const is_last = index === items.length - 1;
-      const value_length = item.loc.end.column - item.loc.start.column;
-      const loc = { start: item_start, end: { line, column: item_start.column + value_length } };
-
-      // walkObject adds key-values line-by-line
-      // move them all to single line
-      item.loc = loc;
-
-      item_start = { line, column: loc.end.column + 2 };
-
-      return {
-        type: NodeType.InlineTableItem,
-        loc: item.loc,
-        item,
-        comma: !is_last || format.trailingComma ? true : false
-      };
-    }
-  );
+  const items: InlineTableItem[] = walkObjectInline(value, { start: item_start, format });
 
   const end = items.length
     ? { line, column: last(items)!.loc.end.column + 1 + spacing }
-    : { line, column: start.column + 1 };
+    : { line, column: start.column + 2 };
 
   return {
     type: NodeType.InlineTable,

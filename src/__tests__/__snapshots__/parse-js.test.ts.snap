@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`it should be properly formatted 1`] = `
+"a = \\"1\\"
+b = 2
+c = 3.14
+d = true
+e = 1979-05-27T07:32:00.000Z
+f = { g = [ \\"h\\", \\"i\\", \\"j\\" ]  k = [ { l = \\"m\\" }, { n = \\"o\\"  p = \\"qrs\\" } ] }
+"
+`;
+
 exports[`it should parse object 1`] = `
 Object {
   "body": Array [
