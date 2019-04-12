@@ -199,10 +199,15 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   };
 
   while (!cursor.peekDone() && cursor.peek()!.type === TokenType.Dot) {
-    cursor.step(2);
+    cursor.step();
+    const dot = cursor.item;
+
+    cursor.step(1);
+    const before = ' '.repeat(dot.loc.start.column - key.value.loc.end.column);
+    const after = ' '.repeat(cursor.item.loc.start.column - dot.loc.end.column);
 
     key.value.loc.end = cursor.item.loc.end;
-    key.value.raw += `.${cursor.item.raw}`;
+    key.value.raw += `${before}.${after}${cursor.item.raw}`;
     key.value.value.push(parseString(cursor.item.raw));
   }
 

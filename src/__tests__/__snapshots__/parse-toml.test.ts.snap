@@ -5638,7 +5638,7 @@ Object {
       "key": Object {
         "loc": Object {
           "end": Object {
-            "column": 17,
+            "column": 21,
             "line": 33,
           },
           "start": Object {
@@ -5650,7 +5650,7 @@ Object {
         "value": Object {
           "loc": Object {
             "end": Object {
-              "column": 16,
+              "column": 20,
               "line": 33,
             },
             "start": Object {
@@ -5658,7 +5658,7 @@ Object {
               "line": 33,
             },
           },
-          "raw": "dog.\\"tater.man\\"",
+          "raw": "dog  .  \\"tater.man\\"",
           "type": "Key",
           "value": Array [
             "dog",
