@@ -81,7 +81,7 @@ export default function toTOML(value: Document | Value, newline: string = '\n'):
     }
   });
 
-  return lines.join(newline);
+  return lines.join(newline) + newline;
 }
 
 function write(lines: string[], loc: Location, raw: string) {
