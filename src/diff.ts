@@ -84,49 +84,80 @@ function compareObjects(before: any, after: any, path: Path = []): Change[] {
 }
 
 function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
-  const before_indexes: { [item: string]: number[] } = {};
-  const changes: Change[] = [];
+  // To properly maintain indexes during operations:
+  // 1. Remove
+  // 2. Move
+  // 3. Add
+  type Indexes = { [item: string]: number[] };
+  const before_indexes: Indexes = {};
+  const after_indexes: Indexes = {};
 
+  // 0. Load indexes for items in arrays
+  // (use stable stringify to create keys)
   before.forEach((item, index) => {
     const item_as_string = stableStringify(item);
     if (!before_indexes[item_as_string]) {
       before_indexes[item_as_string] = [];
     }
-    before_indexes[stableStringify(item)].push(index);
+    before_indexes[item_as_string].push(index);
+  });
+  const after_items = after.map((item, index) => {
+    const item_as_string = stableStringify(item);
+    if (!after_indexes[item_as_string]) {
+      after_indexes[item_as_string] = [];
+    }
+    after_indexes[item_as_string].push(index);
+
+    return [item, item_as_string];
   });
 
-  after.forEach((item, index) => {
-    const item_as_string = stableStringify(item);
+  // 1. Find items that have before indexes, but no after
+  const removes: Remove[] = [];
+  Object.keys(before_indexes).forEach(item_as_string => {
+    before_indexes[item_as_string] = before_indexes[item_as_string].filter((index, i) => {
+      if (!after_indexes[item_as_string] || after_indexes[item_as_string][i] == null) {
+        removes.push({
+          type: ChangeType.Remove,
+          path: path.concat(index)
+        });
+
+        return false;
+      }
+
+      return true;
+    });
+  });
+
+  // 2. Find moved items
+  // 3. Find added items
+  //
+  // Note: store added offset to move items to proper positions
+  let added_offset = 0;
+  let moves: Move[] = [];
+  let adds: Add[] = [];
+  after_items.forEach(([item, item_as_string], index) => {
     const previous_index = before_indexes[item_as_string] && before_indexes[item_as_string].shift();
 
     if (previous_index == null) {
-      changes.push({
+      adds.push({
         type: ChangeType.Add,
         path: path.concat(index),
         item
       });
+      added_offset += 1;
     } else {
-      if (previous_index !== index) {
-        changes.push({
+      if (previous_index !== index - added_offset) {
+        moves.push({
           type: ChangeType.Move,
           path,
           from: previous_index,
-          to: index
+          to: index - added_offset
         });
       }
     }
   });
 
-  Object.keys(before_indexes).forEach(item => {
-    before_indexes[item].forEach(index => {
-      changes.push({
-        type: ChangeType.Remove,
-        path: path.concat(index)
-      });
-    });
-  });
-
-  return changes;
+  return (removes as Change[]).concat(moves).concat(adds);
 }
 
 function stableStringify(object: any): string {
