@@ -49,3 +49,21 @@ export function equalArrays<TItem>(a: TItem[], b: TItem[]): boolean {
 export function pipe<TValue>(value: TValue, ...fns: Array<(value: TValue) => TValue>): TValue {
   return fns.reduce((value, fn) => fn(value), value);
 }
+
+export function flatMap<TValue, TResult>(
+  values: TValue[],
+  iterator: (value: TValue, index: number, values: TValue[]) => TResult | TResult[],
+  context?: any
+): TResult[] {
+  const flattened: TResult[] = [];
+
+  values.forEach((value, index) => {
+    const result = context
+      ? iterator.call(context, value, index, values)
+      : iterator(value, index, values);
+
+    Array.isArray(result) ? flattened.push.apply(flattened, result) : flattened.push(result);
+  });
+
+  return flattened;
+}

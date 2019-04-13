@@ -20,7 +20,8 @@ const value = {
         }
       }
     ]
-  }
+  },
+  t: [{ u: 'v' }, { w: 'x' }, { y: 'z' }]
 };
 
 test('it should be properly formatted', () => {
