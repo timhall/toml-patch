@@ -1,5 +1,6 @@
 import {
   NodeType,
+  Block,
   Document,
   Value,
   KeyValue,
@@ -14,7 +15,7 @@ import {
   Key,
   String as StringNode
 } from './ast';
-import { Position } from './location';
+import { Position, clonePosition, cloneLocation } from './location';
 import { Format, formatTopLevel, formatPrintWidth } from './format';
 import { isObject, isString, isInteger, isFloat, isBoolean, isDate, last, pipe } from './utils';
 
@@ -41,7 +42,7 @@ export default function parseJS(value: any, format: Format = {}): Document | Val
   // 1. Top-level objects/arrays should be tables/table arrays
   // 2. Convert objects/arrays to tables/table arrays based on print width
   let body = pipe(
-    walkObject(value, { start: zero(), format }),
+    walkObject(value, { start: zero(), format }) as Array<Block>,
     formatTopLevel,
     body => formatPrintWidth(body, format)
   );
@@ -76,7 +77,7 @@ function walkObjectInline(value: any, options: Options): InlineTableItem[] {
 
     return {
       type: NodeType.InlineTableItem,
-      loc: key_value.loc,
+      loc: cloneLocation(key_value.loc),
       item: key_value,
       comma: !is_last || format.trailingComma ? true : false
     };
@@ -112,7 +113,7 @@ function asKeyValue(key: string, value: any, options: Options): KeyValue {
   const key_node: Key = {
     type: NodeType.Key,
     loc: {
-      start,
+      start: clonePosition(start),
       end: { line: start.line, column: start.column + raw.length }
     },
     raw,
@@ -125,7 +126,7 @@ function asKeyValue(key: string, value: any, options: Options): KeyValue {
 
   return {
     type: NodeType.KeyValue,
-    loc: { start, end: value_node.loc.end },
+    loc: { start, end: clonePosition(value_node.loc.end) },
     key: key_node,
     value: value_node,
     equals
@@ -213,14 +214,17 @@ function asInlineArray(value: any, options: Options): InlineArray {
 
   let item_start = { line: start.line, column: start.column + 1 + leading_spacing };
   const items: InlineArrayItem[] = value.map((value: any, index: number, values: any[]) => {
-    const item = walkValue(value, { start: item_start, format });
+    const item = walkValue(value, {
+      start: clonePosition(item_start),
+      format
+    });
     const is_last = index === values.length - 1;
 
     item_start = { line: item.loc.end.line, column: item.loc.end.column + 2 };
 
     return {
       type: NodeType.InlineArrayItem,
-      loc: item.loc,
+      loc: cloneLocation(item.loc),
       item,
       comma: !is_last || format.trailingComma ? true : false
     };

@@ -62,3 +62,11 @@ export function findLines(input: string): number[] {
 
   return indexes.concat([input.length + 1]);
 }
+
+export function clonePosition(position: Position): Position {
+  return { line: position.line, column: position.column };
+}
+
+export function cloneLocation(location: Location): Location {
+  return { start: clonePosition(location.start), end: clonePosition(location.end) };
+}

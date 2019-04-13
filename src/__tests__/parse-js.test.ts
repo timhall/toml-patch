@@ -23,11 +23,7 @@ const value = {
   }
 };
 
-test('it should parse object', () => {
-  expect(parseJS(value)).toMatchSnapshot();
-});
-
-test.only('it should be properly formatted', () => {
+test('it should be properly formatted', () => {
   expect(toTOML(parseJS(value))).toMatchSnapshot();
-  expect(toTOML(parseJS(value, { trailingComma: true }))).toMatchSnapshot();
+  expect(toTOML(parseJS(value, { bracketSpacing: false, trailingComma: true }))).toMatchSnapshot();
 });
