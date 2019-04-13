@@ -84,80 +84,69 @@ function compareObjects(before: any, after: any, path: Path = []): Change[] {
 }
 
 function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
-  // To properly maintain indexes during operations:
-  // 1. Remove
-  // 2. Move
-  // 3. Add
-  type Indexes = { [item: string]: number[] };
-  const before_indexes: Indexes = {};
-  const after_indexes: Indexes = {};
+  let changes: Change[] = [];
 
-  // 0. Load indexes for items in arrays
-  // (use stable stringify to create keys)
-  before.forEach((item, index) => {
-    const item_as_string = stableStringify(item);
-    if (!before_indexes[item_as_string]) {
-      before_indexes[item_as_string] = [];
+  // 1. Convert arrays to stable objects
+  const before_stable = before.map(stableStringify);
+  const after_stable = after.map(stableStringify);
+
+  // 2. Step through after array making changes to before array as-needed
+  //
+  // - Check if items are the same
+  // - Check if item has been moved -> shift into place
+  // - Check if item is removed -> assume it's been edited and replace
+  // - Add as new item and shift existing
+  after_stable.forEach((value, index) => {
+    const overflow = index >= before_stable.length;
+
+    // Check if items are the same
+    if (!overflow && before_stable[index] === value) {
+      return;
     }
-    before_indexes[item_as_string].push(index);
-  });
-  const after_items = after.map((item, index) => {
-    const item_as_string = stableStringify(item);
-    if (!after_indexes[item_as_string]) {
-      after_indexes[item_as_string] = [];
+
+    // Check if item has been moved -> shift into place
+    const from = before_stable.indexOf(value, index + 1);
+    if (!overflow && from > -1) {
+      changes.push({
+        type: ChangeType.Move,
+        path,
+        from,
+        to: index
+      });
+
+      const move = before_stable.splice(from, 1);
+      before_stable.splice(index, 0, ...move);
+
+      return;
     }
-    after_indexes[item_as_string].push(index);
 
-    return [item, item_as_string];
-  });
+    // Check if item is removed -> assume it's been edited and replace
+    const removed = !after_stable.includes(before_stable[index]);
+    if (!overflow && removed) {
+      changes = changes.concat(diff(before[index], after[index], path.concat(index)));
+      before_stable[index] = value;
 
-  // 1. Find items that have before indexes, but no after
-  const removes: Remove[] = [];
-  Object.keys(before_indexes).forEach(item_as_string => {
-    before_indexes[item_as_string] = before_indexes[item_as_string].filter((index, i) => {
-      if (!after_indexes[item_as_string] || after_indexes[item_as_string][i] == null) {
-        removes.push({
-          type: ChangeType.Remove,
-          path: path.concat(index)
-        });
+      return;
+    }
 
-        return false;
-      }
-
-      return true;
+    // Add as new item and shift existing
+    changes.push({
+      type: ChangeType.Add,
+      path: path.concat(index),
+      item: after[index]
     });
   });
 
-  // 2. Find moved items
-  // 3. Find added items
-  //
-  // Note: store added offset to move items to proper positions
-  let added_offset = 0;
-  let moves: Move[] = [];
-  let adds: Add[] = [];
-  after_items.forEach(([item, item_as_string], index) => {
-    const previous_index = before_indexes[item_as_string] && before_indexes[item_as_string].shift();
+  // Remove any remaining overflow items
+  while (before_stable.length > after_stable.length) {
+    changes.push({
+      type: ChangeType.Remove,
+      path: path.concat(before_stable.length - 1)
+    });
+    before_stable.pop();
+  }
 
-    if (previous_index == null) {
-      adds.push({
-        type: ChangeType.Add,
-        path: path.concat(index),
-        item
-      });
-      added_offset += 1;
-    } else {
-      if (previous_index !== index - added_offset) {
-        moves.push({
-          type: ChangeType.Move,
-          path,
-          from: previous_index,
-          to: index - added_offset
-        });
-      }
-    }
-  });
-
-  return (removes as Change[]).concat(moves).concat(adds);
+  return changes;
 }
 
 function stableStringify(object: any): string {

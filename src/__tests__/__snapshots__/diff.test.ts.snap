@@ -3,16 +3,28 @@
 exports[`it should attempt to find moved array items 1`] = `
 Array [
   Object {
+    "after": 4,
+    "before": 1,
+    "path": Array [
+      0,
+      "value",
+    ],
+    "type": "Edit",
+  },
+  Object {
     "from": 2,
     "path": Array [],
-    "to": 0,
+    "to": 1,
     "type": "Move",
   },
   Object {
-    "from": 0,
-    "path": Array [],
-    "to": 2,
-    "type": "Move",
+    "item": Object {
+      "value": 5,
+    },
+    "path": Array [
+      3,
+    ],
+    "type": "Add",
   },
 ]
 `;

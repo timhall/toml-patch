@@ -25,7 +25,10 @@ test('it should diff objects', () => {
 
 test('it should attempt to find moved array items', () => {
   expect(
-    diff([{ value: 1 }, { value: 2 }, { value: 3 }], [{ value: 3 }, { value: 2 }, { value: 1 }])
+    diff(
+      [{ value: 1 }, { value: 2 }, { value: 3 }],
+      [{ value: 4 }, { value: 3 }, { value: 2 }, { value: 5 }]
+    )
   ).toMatchSnapshot();
 });
 
