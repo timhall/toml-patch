@@ -17,7 +17,8 @@ import {
   InlineTableItem,
   InlineArray,
   InlineArrayItem,
-  Comment
+  Comment,
+  AST
 } from './ast';
 import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokenizer';
 import { parseString } from './parse-string';
@@ -37,7 +38,7 @@ const IS_BINARY = /^0b/;
 export const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
 export const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 
-export default function parseTOML(input: string): Document | Value {
+export default function parseTOML(input: string): AST {
   const tokens = tokenize(input);
   const cursor = new Cursor(tokens);
 

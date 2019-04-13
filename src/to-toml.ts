@@ -1,11 +1,11 @@
-import { Document, Value, NodeType } from './ast';
+import { NodeType, AST } from './ast';
 import traverse from './traverse';
 import { Location } from './location';
 import { SPACE } from './tokenizer';
 
 const BY_NEW_LINE = /(\r\n|\n)/g;
 
-export default function toTOML(value: Document | Value, newline: string = '\n'): string {
+export default function toTOML(value: AST, newline: string = '\n'): string {
   const lines: string[] = [];
 
   traverse(value, {

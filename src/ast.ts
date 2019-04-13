@@ -20,12 +20,14 @@ export enum NodeType {
   Comment = 'Comment'
 }
 
-export type Block = KeyValue | Table | TableArray | Comment;
+export type AST = Document | Value;
 
 export interface Document extends Node {
   type: NodeType.Document;
   body: Array<Block>;
 }
+
+export type Block = KeyValue | Table | TableArray | Comment;
 
 // v-------|
 // [table] |

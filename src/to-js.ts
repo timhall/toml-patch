@@ -1,9 +1,9 @@
-import { Document, Value, NodeType, Node } from './ast';
+import { Document, Value, NodeType, Node, AST } from './ast';
 import traverse from './traverse';
 import { last, blank, isDate, has, equalArrays } from './utils';
 import ParseError from './parse-error';
 
-export default function toJS(document: Document | Value, input: string = ''): any {
+export default function toJS(document: AST, input: string = ''): any {
   if (isValue(document)) return toValue(document);
 
   const result = blank();

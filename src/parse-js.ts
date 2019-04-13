@@ -1,7 +1,6 @@
 import {
   NodeType,
   Block,
-  Document,
   Value,
   KeyValue,
   Integer,
@@ -13,7 +12,8 @@ import {
   InlineArrayItem,
   InlineTableItem,
   Key,
-  String as StringNode
+  String as StringNode,
+  AST
 } from './ast';
 import { Position, clonePosition, cloneLocation } from './location';
 import { Format, formatTopLevel, formatPrintWidth } from './format';
@@ -32,7 +32,7 @@ const default_format = {
 
 const IS_BARE_KEY = /[\w,\d,\_,\-]+/;
 
-export default function parseJS(value: any, format: Format = {}): Document | Value {
+export default function parseJS(value: any, format: Format = {}): AST {
   format = Object.assign({}, default_format, format);
 
   value = toJSON(value);

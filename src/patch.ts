@@ -3,7 +3,7 @@ import parseJS from './parse-js';
 import toJS from './to-js';
 import toTOML from './to-toml';
 import { Format } from './format';
-import { Document, Value } from './ast';
+import { AST } from './ast';
 import diff, { Change } from './diff';
 
 export default function patch(existing: string, updated: any, format?: Format): string {
@@ -17,10 +17,7 @@ export default function patch(existing: string, updated: any, format?: Format): 
   return toTOML(patched_ast);
 }
 
-function applyChanges(
-  original: Document | Value,
-  updated: Document | Value,
-  changes: Change[]
-): Document | Value {
+function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
+  // TODO
   return original;
 }
