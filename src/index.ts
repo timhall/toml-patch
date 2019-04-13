@@ -1,7 +1,8 @@
 import parseTOML from './parse-toml';
-import parseJS, { Format } from './parse-js';
+import parseJS from './parse-js';
 import toTOML from './to-toml';
 import toJS from './to-js';
+import { Format } from './format';
 
 export function parse(value: string) {
   return toJS(parseTOML(value), value);
