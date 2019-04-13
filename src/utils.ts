@@ -8,23 +8,23 @@ export function blank(): BlankObject {
   return Object.create(null);
 }
 
-export function isString(value: any): boolean {
+export function isString(value: any): value is string {
   return typeof value === 'string';
 }
 
-export function isInteger(value: any): boolean {
+export function isInteger(value: any): value is number {
   return typeof value === 'number' && value % 1 === 0;
 }
 
-export function isFloat(value: any): boolean {
+export function isFloat(value: any): value is number {
   return typeof value === 'number' && !isInteger(value);
 }
 
-export function isBoolean(value: any): boolean {
+export function isBoolean(value: any): value is boolean {
   return typeof value === 'boolean';
 }
 
-export function isDate(value: any): boolean {
+export function isDate(value: any): value is Date {
   return Object.prototype.toString.call(value) === '[object Date]';
 }
 
@@ -32,7 +32,7 @@ export function isObject(value: any): boolean {
   return value && typeof value === 'object' && !isDate(value) && !Array.isArray(value);
 }
 
-export function has(object: any, key: string) {
+export function has(object: any, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 

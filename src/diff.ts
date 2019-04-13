@@ -34,26 +34,15 @@ export interface Move {
 export type Change = Add | Edit | Remove | Move;
 
 export default function diff(before: any, after: any, path: Path = []): Change[] {
-  if (before === after) {
+  if (before === after || datesEqual(before, after)) {
     return [];
   }
 
   if (Array.isArray(before) && Array.isArray(after)) {
     return compareArrays(before, after, path);
-  } else if (isDate(before) && isDate(after)) {
-    if ((before as Date).toISOString() !== (after as Date).toISOString()) {
-      return [
-        {
-          type: ChangeType.Edit,
-          path,
-          before,
-          after
-        }
-      ];
-    } else {
-      return [];
-    }
-  } else if (!isObject(before) || !isObject(after)) {
+  } else if (isObject(before) && isObject(after)) {
+    return compareObjects(before, after, path);
+  } else {
     return [
       {
         type: ChangeType.Edit,
@@ -62,8 +51,6 @@ export default function diff(before: any, after: any, path: Path = []): Change[]
         after
       }
     ];
-  } else {
-    return compareObjects(before, after, path);
   }
 }
 
@@ -154,4 +141,8 @@ function stableStringify(object: any): string {
   } else {
     return JSON.stringify(object);
   }
+}
+
+function datesEqual(a: any, b: any): boolean {
+  return isDate(a) && isDate(b) && a.toISOString() === b.toISOString();
 }
