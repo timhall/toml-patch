@@ -8,7 +8,6 @@ import {
   TableKey,
   TableArray,
   TableArrayKey,
-  Key,
   InlineArray
 } from './ast';
 import traverse from './traverse';

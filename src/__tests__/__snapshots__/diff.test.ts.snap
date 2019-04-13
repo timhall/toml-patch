@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it should attempt to find moved array items 1`] = `
+Array [
+  Object {
+    "from": 2,
+    "path": Array [],
+    "to": 0,
+    "type": "Move",
+  },
+  Object {
+    "from": 0,
+    "path": Array [],
+    "to": 2,
+    "type": "Move",
+  },
+]
+`;
+
+exports[`it should diff objects 1`] = `
+Array [
+  Object {
+    "after": 2,
+    "before": 1,
+    "path": Array [
+      "a",
+    ],
+    "type": "Edit",
+  },
+  Object {
+    "after": 3.141,
+    "before": 3.14,
+    "path": Array [
+      "b",
+    ],
+    "type": "Edit",
+  },
+  Object {
+    "after": "dd",
+    "before": "d",
+    "path": Array [
+      "c",
+    ],
+    "type": "Edit",
+  },
+  Object {
+    "after": false,
+    "before": true,
+    "path": Array [
+      "e",
+    ],
+    "type": "Edit",
+  },
+  Object {
+    "item": 4,
+    "path": Array [
+      "f",
+      3,
+    ],
+    "type": "Add",
+  },
+  Object {
+    "item": "k",
+    "path": Array [
+      "g",
+      "j",
+    ],
+    "type": "Add",
+  },
+]
+`;
