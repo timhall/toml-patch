@@ -28,3 +28,7 @@ test('it should attempt to find moved array items', () => {
     diff([{ value: 1 }, { value: 2 }, { value: 3 }], [{ value: 3 }, { value: 2 }, { value: 1 }])
   ).toMatchSnapshot();
 });
+
+test('it should compare dates by ISO', () => {
+  expect(diff(new Date('1979-05-27T07:32:00Z'), new Date('1979-05-27T07:32:00Z'))).toEqual([]);
+});

@@ -1,4 +1,4 @@
-import { isObject } from './utils';
+import { isObject, isDate } from './utils';
 
 export enum ChangeType {
   Add = 'Add',
@@ -37,8 +37,22 @@ export default function diff(before: any, after: any, path: Path = []): Change[]
   if (before === after) {
     return [];
   }
+
   if (Array.isArray(before) && Array.isArray(after)) {
     return compareArrays(before, after, path);
+  } else if (isDate(before) && isDate(after)) {
+    if ((before as Date).toISOString() !== (after as Date).toISOString()) {
+      return [
+        {
+          type: ChangeType.Edit,
+          path,
+          before,
+          after
+        }
+      ];
+    } else {
+      return [];
+    }
   } else if (!isObject(before) || !isObject(after)) {
     return [
       {
