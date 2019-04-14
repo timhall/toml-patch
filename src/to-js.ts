@@ -1,6 +1,6 @@
 import { Document, Value, NodeType, Node, AST } from './ast';
 import traverse from './traverse';
-import { last, blank, isDate, has, equalArrays } from './utils';
+import { last, blank, isDate, has, arraysEqual } from './utils';
 import ParseError from './parse-error';
 
 export default function toJS(document: AST, input: string = ''): any {
@@ -137,7 +137,7 @@ function validateKey(
   if (
     object &&
     type === NodeType.TableArray &&
-    !state.table_arrays.find(existing => equalArrays(existing, key))
+    !state.table_arrays.find(existing => arraysEqual(existing, key))
   ) {
     throw new Error(
       `Invalid key, cannot add an array of tables to a static array or table at ${parts.join('.')}`

@@ -36,7 +36,7 @@ export function has(object: any, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
-export function equalArrays<TItem>(a: TItem[], b: TItem[]): boolean {
+export function arraysEqual<TItem>(a: TItem[], b: TItem[]): boolean {
   if (a.length !== b.length) return false;
 
   for (let i = 0; i < a.length; i++) {
@@ -44,6 +44,10 @@ export function equalArrays<TItem>(a: TItem[], b: TItem[]): boolean {
   }
 
   return true;
+}
+
+export function datesEqual(a: any, b: any): boolean {
+  return isDate(a) && isDate(b) && a.toISOString() === b.toISOString();
 }
 
 export function pipe<TValue>(value: TValue, ...fns: Array<(value: TValue) => TValue>): TValue {

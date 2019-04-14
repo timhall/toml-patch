@@ -17,11 +17,14 @@ import {
   InlineArray,
   InlineArrayItem,
   InlineTable,
-  InlineTableItem
+  InlineTableItem,
+  AST
 } from './ast';
+import { arraysEqual } from './utils';
 
 export type Visit<TNode = Node> = (node: TNode, parent: TNode | null) => void;
 export type EnterExit<TNode = Node> = { enter?: Visit<TNode>; exit?: Visit<TNode> };
+export type Path = Array<string | number>;
 
 export type Visitor = {
   Document?: Visit<Document> | EnterExit<Document>;
@@ -119,4 +122,47 @@ export default function traverse(node: Node, visitor: Visitor) {
   }
 
   traverseNode(node, null);
+}
+
+export function findByPath(ast: AST, path: Path): Node {
+  const found = path.reduce((node: Node | undefined, _part, index) => {
+    if (!node) return;
+
+    if (node.type === NodeType.Document) {
+      return (node as Document).body.find(block => {
+        let key;
+        if (block.type === NodeType.KeyValue) {
+          key = block.key.value;
+        } else if (block.type === NodeType.Table) {
+          key = block.key.value.value;
+        } else if (block.type === NodeType.TableArray) {
+          key = block.key.value.value;
+        }
+
+        return !!key && arraysEqual(key, path.slice(index, index + key.length));
+      }) as KeyValue | Table | TableArray | undefined;
+    } else if (node.type === NodeType.Table) {
+      return (node as Table).items.find(key_value => {
+        if (key_value.type !== NodeType.KeyValue) return false;
+
+        const key = key_value.key.value;
+        return arraysEqual(key, path.slice(index, index + key.length));
+      });
+    } else if (node.type === NodeType.TableArray) {
+      return (node as TableArray).items.find(key_value => {
+        if (key_value.type !== NodeType.KeyValue) return false;
+
+        const key = key_value.key.value;
+        return arraysEqual(key, path.slice(index, index + key.length));
+      });
+    } else {
+      return;
+    }
+  }, ast);
+
+  if (!found) {
+    throw new Error(`Could not find node at path ${path.join('.')}`);
+  }
+
+  return found;
 }

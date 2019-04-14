@@ -1,4 +1,5 @@
-import { isObject, isDate } from './utils';
+import { isObject, datesEqual } from './utils';
+import { Path } from './traverse';
 
 export enum ChangeType {
   Add = 'Add',
@@ -6,8 +7,6 @@ export enum ChangeType {
   Remove = 'Remove',
   Move = 'Move'
 }
-
-export type Path = Array<string | number>;
 
 export interface Add {
   type: ChangeType.Add;
@@ -161,8 +160,4 @@ function stableStringify(object: any): string {
   } else {
     return JSON.stringify(object);
   }
-}
-
-function datesEqual(a: any, b: any): boolean {
-  return isDate(a) && isDate(b) && a.toISOString() === b.toISOString();
 }

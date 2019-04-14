@@ -3,8 +3,9 @@ import parseJS from './parse-js';
 import toJS from './to-js';
 import toTOML from './to-toml';
 import { Format } from './format';
-import { AST } from './ast';
-import diff, { Change } from './diff';
+import { AST, Node, NodeType, KeyValue } from './ast';
+import diff, { Change, ChangeType } from './diff';
+import traverse, { Path, findByPath } from './traverse';
 
 export default function patch(existing: string, updated: any, format?: Format): string {
   const existing_ast = parseTOML(existing);
@@ -18,6 +19,56 @@ export default function patch(existing: string, updated: any, format?: Format): 
 }
 
 function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
-  // TODO
+  const search: Map<Change, Node> = new Map();
+  changes.forEach(change => {
+    const path = change.type === ChangeType.Add ? change.path.slice(0, -1) : change.path;
+    const node = findByPath(original, path);
+
+    search.set(change, node);
+  });
+
+  let current_path: string[] = [];
+  traverse(original, {
+    [NodeType.Table]: {
+      enter(node) {
+        current_path = current_path.concat(node.key.value.value);
+        //
+      },
+      exit(node) {
+        current_path = current_path.slice(0, -node.key.value.value.length);
+        //
+      }
+    },
+    [NodeType.InlineTable]: {
+      enter(node) {
+        //
+      },
+      exit(node) {
+        //
+      }
+    },
+
+    [NodeType.TableArray]: {
+      enter(node) {
+        //
+      },
+      exit(node) {
+        //
+      }
+    },
+    [NodeType.InlineTable]: {
+      enter(node) {
+        //
+      },
+      exit(node) {
+        //
+      }
+    },
+
+    [NodeType.KeyValue](node) {
+      //
+    }
+  });
+
   return original;
 }
