@@ -71,11 +71,11 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
   traverse(original, {
     // For nodes with children, need to update the start separately from the end
     // in case a child has changed offsets internally
+    // and apply changes on exit so that all children have already moved
 
     [NodeType.Table]: {
       enter: shiftStart,
       exit(node) {
-        // Apply changes on exit so that all child nodes have already moved
         const changes = search.get(node) || [];
         changes.forEach(change => {
           if (change.type === ChangeType.Add) {
@@ -93,7 +93,6 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
     [NodeType.InlineTable]: {
       enter: shiftStart,
       exit(node) {
-        // Apply changes on exit so that all child nodes have already moved
         const changes = search.get(node) || [];
         changes.forEach(change => {
           if (change.type === ChangeType.Add) {
@@ -112,7 +111,6 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
     [NodeType.TableArray]: {
       enter: shiftStart,
       exit(node) {
-        // Apply changes on exit so that all child nodes have already moved
         const changes = search.get(node) || [];
         changes.forEach(change => {
           if (change.type === ChangeType.Add) {
@@ -132,7 +130,6 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
     [NodeType.InlineArray]: {
       enter: shiftStart,
       exit(node) {
-        // Apply changes on exit so that all child nodes have already moved
         const changes = search.get(node) || [];
         changes.forEach(change => {
           if (change.type === ChangeType.Add) {
@@ -153,7 +150,6 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
     [NodeType.KeyValue]: {
       enter: shiftStart,
       exit(node) {
-        // Apply changes on exit so that all child nodes have already moved
         const changes = search.get(node) || [];
         changes.forEach(change => {
           if (change.type === ChangeType.Edit) {
@@ -185,12 +181,23 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
         shiftEnd(node);
       }
     },
+    [NodeType.InlineArrayItem]: {
+      enter: shiftStart,
+      exit(node) {
+        const changes = search.get(node) || [];
+        changes.forEach(change => {
+          if (change.type === ChangeType.Edit) {
+            console.log('edit', node, change);
+          } else {
+            throw new Error(`Unsupported change "${change.type}" on inline-array-item`);
+          }
+        });
+
+        shiftEnd(node);
+      }
+    },
 
     [NodeType.Document]: {
-      enter: shiftStart,
-      exit: shiftEnd
-    },
-    [NodeType.InlineTableItem]: {
       enter: shiftStart,
       exit: shiftEnd
     },
