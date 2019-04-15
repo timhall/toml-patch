@@ -33,7 +33,6 @@ export interface Move {
 export interface Rename {
   type: ChangeType.Rename;
   path: Path;
-  from: string;
   to: string;
 }
 
@@ -84,8 +83,7 @@ function compareObjects(before: any, after: any, path: Path = []): Change[] {
       const to = after_keys[after_stable.indexOf(before_stable[index])];
       changes.push({
         type: ChangeType.Rename,
-        path,
-        from: key,
+        path: path.concat(key),
         to
       });
     } else {
