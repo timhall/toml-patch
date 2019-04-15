@@ -178,7 +178,7 @@ export interface Comment extends Node {
   raw: string;
 }
 
-export type Node = {
+export interface Node {
   type: NodeType;
   loc: Location;
-};
+}
