@@ -17,14 +17,11 @@ import {
   InlineArray,
   InlineArrayItem,
   InlineTable,
-  InlineTableItem,
-  AST
+  InlineTableItem
 } from './ast';
-import { arraysEqual, stableStringify } from './utils';
 
 export type Visit<TNode = Node> = (node: TNode, parent: TNode | null) => void;
 export type EnterExit<TNode = Node> = { enter?: Visit<TNode>; exit?: Visit<TNode> };
-export type Path = Array<string | number>;
 
 export type Visitor = {
   Document?: Visit<Document> | EnterExit<Document>;
@@ -122,69 +119,4 @@ export default function traverse(node: Node, visitor: Visitor) {
   }
 
   traverseNode(node, null);
-}
-
-export function findByPath(ast: AST, path: Path): Node {
-  const found = path.reduce((node: Node | undefined, _part, index) => {
-    if (!node) return;
-
-    if (node.type === NodeType.Document) {
-      const indexes: { [key: string]: number } = {};
-      return (node as Document).body.find(block => {
-        let key: Path = [];
-        if (block.type === NodeType.KeyValue) {
-          key = block.key.value;
-        } else if (block.type === NodeType.Table) {
-          key = block.key.value.value;
-        } else if (block.type === NodeType.TableArray) {
-          key = block.key.value.value;
-
-          const key_string = stableStringify(key);
-          if (!indexes[key_string]) {
-            indexes[key_string] = 0;
-          }
-          const index = indexes[key_string]++;
-
-          key = key.concat(index);
-        }
-
-        return key.length > 0 && arraysEqual(key, path.slice(index, index + key.length));
-      }) as KeyValue | Table | TableArray | undefined;
-    } else if (node.type === NodeType.Table) {
-      return (node as Table).items.find(key_value => {
-        if (key_value.type !== NodeType.KeyValue) return false;
-
-        const key = key_value.key.value;
-        return arraysEqual(key, path.slice(index, index + key.length));
-      });
-    } else if (node.type === NodeType.InlineTable) {
-      return (node as InlineTable).items
-        .map(item => item.item)
-        .find(key_value => {
-          const key = key_value.key.value;
-          return arraysEqual(key, path.slice(index, index + key.length));
-        });
-    } else if (node.type === NodeType.TableArray) {
-      return (node as TableArray).items.find(key_value => {
-        if (key_value.type !== NodeType.KeyValue) return false;
-
-        const key = key_value.key.value;
-        return arraysEqual(key, path.slice(index, index + key.length));
-      });
-    } else if (node.type === NodeType.InlineArray) {
-      return (node as InlineArray).items
-        .map(item => item.item)
-        .find((_node, inline_index) => {
-          return inline_index === path[index];
-        });
-    } else {
-      return;
-    }
-  }, ast);
-
-  if (!found) {
-    throw new Error(`Could not find node at path ${path.join('.')}`);
-  }
-
-  return found;
 }

@@ -5,7 +5,8 @@ import toTOML from './to-toml';
 import { Format } from './format';
 import { AST, Node, NodeType, KeyValue } from './ast';
 import diff, { Change, ChangeType } from './diff';
-import traverse, { findByPath } from './traverse';
+import traverse from './traverse';
+import findByPath from './find-by-path';
 import { Location } from './location';
 import { Position } from 'estree';
 
