@@ -5,7 +5,8 @@ export enum ChangeType {
   Add = 'Add',
   Edit = 'Edit',
   Remove = 'Remove',
-  Move = 'Move'
+  Move = 'Move',
+  Rename = 'Rename'
 }
 
 export interface Add {
@@ -29,8 +30,14 @@ export interface Move {
   from: number;
   to: number;
 }
+export interface Rename {
+  type: ChangeType.Rename;
+  path: Path;
+  from: string;
+  to: string;
+}
 
-export type Change = Add | Edit | Remove | Move;
+export type Change = Add | Edit | Remove | Move | Rename;
 
 export default function diff(before: any, after: any, path: Path = []): Change[] {
   if (before === after || datesEqual(before, after)) {
@@ -54,23 +61,43 @@ export default function diff(before: any, after: any, path: Path = []): Change[]
 }
 
 function compareObjects(before: any, after: any, path: Path = []): Change[] {
-  const before_keys = Object.keys(before);
-  const after_keys = Object.keys(after);
   let changes: Change[] = [];
 
-  before_keys.forEach(key => {
+  const before_keys = Object.keys(before);
+  const before_stable = before_keys.map(key => stableStringify(before[key]));
+  const after_keys = Object.keys(after);
+  const after_stable = after_keys.map(key => stableStringify(after[key]));
+
+  const isRename = (stable: string, search: string[]) => {
+    const index = search.indexOf(stable);
+    if (index < 0) return false;
+
+    const before_key = before_keys[before_stable.indexOf(stable)];
+    return !after_keys.includes(before_key);
+  };
+
+  before_keys.forEach((key, index) => {
     const sub_path = path.concat(key);
-    if (!after_keys.includes(key)) {
+    if (after_keys.includes(key)) {
+      changes = changes.concat(diff(before[key], after[key], sub_path));
+    } else if (isRename(before_stable[index], after_stable)) {
+      const to = after_keys[after_stable.indexOf(before_stable[index])];
+      changes.push({
+        type: ChangeType.Rename,
+        path,
+        from: key,
+        to
+      });
+    } else {
       changes.push({
         type: ChangeType.Remove,
         path: sub_path
       });
-    } else {
-      changes = changes.concat(diff(before[key], after[key], sub_path));
     }
   });
-  after_keys.forEach(key => {
-    if (!before_keys.includes(key)) {
+
+  after_keys.forEach((key, index) => {
+    if (!before_keys.includes(key) && !isRename(after_stable[index], before_stable)) {
       changes.push({
         type: ChangeType.Add,
         path: path.concat(key),
@@ -90,11 +117,6 @@ function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
   const after_stable = after.map(stableStringify);
 
   // 2. Step through after array making changes to before array as-needed
-  //
-  // - Check if items are the same
-  // - Check if item has been moved -> shift into place
-  // - Check if item is removed -> assume it's been edited and replace
-  // - Add as new item and shift existing
   after_stable.forEach((value, index) => {
     const overflow = index >= before_stable.length;
 
@@ -137,12 +159,11 @@ function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
   });
 
   // Remove any remaining overflow items
-  while (before_stable.length > after_stable.length) {
+  for (let i = after_stable.length; i < before_stable.length; i++) {
     changes.push({
       type: ChangeType.Remove,
-      path: path.concat(before_stable.length - 1)
+      path: path.concat(i)
     });
-    before_stable.pop();
   }
 
   return changes;
