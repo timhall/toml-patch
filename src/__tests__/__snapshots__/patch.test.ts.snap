@@ -1,5 +1,164 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`it should add key-value to inline table 1`] = `
+"# This is a TOML document. Boom.
+
+title = \\"TOML Example\\"
+
+[owner]
+name = \\"Tom Preston-Werner\\"
+organization = \\"GitHub\\"
+bio = \\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"
+dob = 1979-05-27T07:32:00Z # First class dates? Why not?
+
+[database]
+server = \\"192.168.1.1\\"
+ports = [ 8001, 8001, 8002 ]
+connection_max = 5000
+enabled = true
+
+[servers]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [servers.alpha]
+  ip = \\"10.0.0.1\\"
+  dc = \\"eqdc10\\"                d   4
+
+  [servers.beta]
+  ip = \\"10.0.0.2\\"
+  dc = \\"eqdc10\\"
+  country = \\"中国\\" # This should be parsed as UTF-8
+
+[clients]
+data = [ [\\"gamma\\", \\"delta\\"], [1, 2] ] # just an update to make sure parsers support it
+
+# Line breaks are OK when inside arrays
+hosts = [
+  \\"alpha\\",
+  \\"omega\\"
+]
+
+count = { a = 1, b=2   , c = 3,  =  }
+
+# Products
+
+  [[products]]
+  name = \\"Hammer\\"
+  sku = 738594937
+
+  [[products]]
+  name = \\"Nail\\"
+  sku = 284758393
+  color = \\"gray\\"
+"
+`;
+
+exports[`it should add key-value to table 1`] = `
+"# This is a TOML document. Boom.
+
+title = \\"TOML Example\\"
+
+[owner]
+name = \\"Tom Preston-Werner\\"
+organization = \\"GitHub\\"
+handle\\"Gi\\"timhall\\"under & CEO\\\\nLikes tater tots and beer.\\"
+dob = 1979-05-27T07:32:00Z # First class dates? Why not?
+       =
+[database]
+server = \\"192.168.1.1\\"
+ports = [ 8001, 8001, 8002 ]
+connection_max = 5000
+enabled = true
+
+[servers]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [servers.alpha]
+  ip = \\"10.0.0.1\\"
+  dc = \\"eqdc10\\"
+
+  [servers.beta]
+  ip = \\"10.0.0.2\\"
+  dc = \\"eqdc10\\"
+  country = \\"中国\\" # This should be parsed as UTF-8
+
+[clients]
+data = [ [\\"gamma\\", \\"delta\\"], [1, 2] ] # just an update to make sure parsers support it
+
+# Line breaks are OK when inside arrays
+hosts = [
+  \\"alpha\\",
+  \\"omega\\"
+]
+
+count = { a = 1, b=2   , c = 3 }
+
+# Products
+
+  [[products]]
+  name = \\"Hammer\\"
+  sku = 738594937
+
+  [[products]]
+  name = \\"Nail\\"
+  sku = 284758393
+  color = \\"gray\\"
+"
+`;
+
+exports[`it should add to inline array 1`] = `
+"# This is a TOML document. Boom.
+
+title = \\"TOML Example\\"
+
+[owner]
+name = \\"Tom Preston-Werner\\"
+organization = \\"GitHub\\"
+bio = \\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"
+dob = 1979-05-27T07:32:00Z # First class dates? Why not?
+
+[database]
+server = \\"192.168.1.1\\"
+ports = [ 8001, 8001, 8002 ]
+connection_max = 5000
+enabled = true
+
+[servers]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [servers.alpha]
+  ip = \\"10.0.0.1\\"
+  dc = \\"eqdc10\\"                d   4
+
+  [servers.beta]
+  ip = \\"10.0.0.2\\"
+  dc = \\"eqdc10\\"
+  country = \\"中国\\" # This should be parsed as UTF-8
+
+[clients]
+data = [ [\\"gamma\\", \\"delta\\"], [1, 2] ] # just an update to make sure parsers support it
+
+# Line breaks are OK when inside arrays
+hosts = [
+  \\"alpha\\",
+  \\"omega\\"
+]
+
+count = { a = 1, b=2   , c = 3,  =  }
+
+# Products
+
+  [[products]]
+  name = \\"Hammer\\"
+  sku = 738594937
+
+  [[products]]
+  name = \\"Nail\\"
+  sku = 284758393
+  color = \\"gray\\"
+"
+`;
+
 exports[`it should apply edit to key-value 1`] = `
 "# This is a TOML document. Boom.
 
@@ -50,5 +209,217 @@ count = { a = 1, b=2   , c = 3 }
   name = \\"Nail\\"
   sku = 284758393
   color = \\"gray\\"
+"
+`;
+
+exports[`should key-value from table 1`] = `
+"# This is a TOML document. Boom.
+
+title = \\"TOML Example\\"
+
+[owner]
+name = \\"Tom Preston-Werner\\"
+organization = \\"GitHub\\"
+bio = \\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"
+dob = 1979-05-27T07:32:00Z # First class dates? Why not?
+
+[database]
+server = \\"192.168.1.1\\"
+ports = [ 8001, 8001, 8002 ]
+connection_max = 5000
+
+
+[servers]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [servers.alpha]
+  ip = \\"10.0.0.1\\"
+  dc = \\"eqdc10\\"
+
+  [servers.beta]
+  ip = \\"10.0.0.2\\"
+  dc = \\"eqdc10\\"
+  country = \\"中国\\" # This should be parsed as UTF-8
+
+[clients]
+data = [ [\\"gamma\\", \\"delta\\"], [1, 2] ] # just an update to make sure parsers support it
+
+# Line breaks are OK when inside arrays
+hosts = [
+  \\"alpha\\",
+  \\"omega\\"
+]
+
+count = { a = 1, b=2   , c = 3 }
+
+# Products
+
+  [[products]]
+  name = \\"Hammer\\"
+  sku = 738594937
+
+  [[products]]
+  name = \\"Nail\\"
+  sku = 284758393
+  color = \\"gray\\"
+"
+`;
+
+exports[`should move elements in inline array 1`] = `
+"# This is a TOML document. Boom.
+
+title = \\"TOML Example\\"
+
+[owner]
+name = \\"Tom Preston-Werner\\"
+organization = \\"GitHub\\"
+bio = \\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"
+dob = 1979-05-27T07:32:00Z # First class dates? Why not?
+
+[database]
+server = \\"192.168.1.1\\"
+ports = [ 8001, 8001, 8002 ]
+connection_max = 5000
+enabled = true
+
+[servers]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [servers.alpha]
+  ip = \\"10.0.0.1\\"
+  dc = \\"eqdc10\\"
+
+  [servers.beta]
+  ip = \\"10.0.0.2\\"
+  dc = \\"eqdc10\\"
+  country = \\"中国\\" # This should be parsed as UTF-8
+
+[clients]
+data = [ [\\"gamma\\", \\"delta\\"], [   2   ] # just an update to make sure parsers support it
+
+# Line breaks are OK when inside arrays
+hosts = [
+  \\"alpha\\",
+  \\"omega\\"
+]
+
+count = { a = 1, b=2   , c = 3 }
+
+# Products
+
+  [[products]]
+  name = \\"Hammer\\"
+  sku = 738594937
+
+  [[products]]
+  name = \\"Nail\\"
+  sku = 284758393
+  color = \\"gray\\"
+"
+`;
+
+exports[`should remove element from inline array 1`] = `
+"# This is a TOML document. Boom.
+
+title = \\"TOML Example\\"
+
+[owner]
+name = \\"Tom Preston-Werner\\"
+organization = \\"GitHub\\"
+bio = \\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"
+dob = 1979-05-27T07:32:00Z # First class dates? Why not?
+
+[database]
+server = \\"192.168.1.1\\"
+ports = [ 8001,       8002
+connection_max = 5000
+enabled = true
+
+[servers]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [servers.alpha]
+  ip = \\"10.0.0.1\\"
+  dc = \\"eqdc10\\"
+
+  [servers.beta]
+  ip = \\"10.0.0.2\\"
+  dc = \\"eqdc10\\"
+  country = \\"中国\\" # This should be parsed as UTF-8
+
+[clients]
+data = [ [\\"gamma\\", \\"delta\\"], [1, 2] ] # just an update to make sure parsers support it
+
+# Line breaks are OK when inside arrays
+hosts = [
+  \\"alpha\\",
+  \\"omega\\"
+]
+
+count = { a = 1, b=2   , c = 3 }
+
+# Products
+
+  [[products]]
+  name = \\"Hammer\\"
+  sku = 738594937
+
+  [[products]]
+  name = \\"Nail\\"
+  sku = 284758393
+  color = \\"gray\\"
+"
+`;
+
+exports[`should rename key-value in table 1`] = `
+"# This is a TOML document. Boom.
+
+title = \\"TOML Example\\"
+
+[owner]
+name = \\"Tom Preston-Werner\\"
+organization = \\"GitHub\\"
+bio = \\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"
+dob = 1979-05-27T07:32:00Z # First class dates? Why not?
+
+[database]
+server = \\"192.168.1.1\\"
+ports = [ 8001, 8001, 8002 ]
+connection_max = 5000
+enabled = true
+
+[servers]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [servers.alpha]
+  ip = \\"10.0.0.1\\"
+  dc = \\"eqdc10\\"
+
+  [servers.beta]
+  ip = \\"10.0.0.2\\"
+  dc = \\"eqdc10\\"
+  country = \\"中国\\" # This should be parsed as UTF-8
+
+[clients]
+data = [ [\\"gamma\\", \\"delta\\"], [1, 2] ] # just an update to make sure parsers support it
+
+# Line breaks are OK when inside arrays
+hosts = [
+  \\"alpha\\",
+  \\"omega\\"
+]
+
+count = { a = 1, b=2   , c = 3 }
+
+# Products
+
+  [[products]]
+  name = \\"Hammer\\"
+  sku = 738594937
+
+  [[products]]
+  name = \\"Nail\\"
+  sku = 284758393
+  product_\\"gray\\"=
 "
 `;
