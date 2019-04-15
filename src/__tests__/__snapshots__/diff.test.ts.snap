@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`it should add, move, and remove in arrays 1`] = `
+Array [
+  Object {
+    "from": 2,
+    "path": Array [],
+    "to": 1,
+    "type": "Move",
+  },
+  Object {
+    "item": 3,
+    "path": Array [
+      2,
+    ],
+    "type": "Add",
+  },
+  Object {
+    "path": Array [
+      3,
+    ],
+    "type": "Remove",
+  },
+]
+`;
+
 exports[`it should attempt to find moved array items 1`] = `
 Array [
   Object {

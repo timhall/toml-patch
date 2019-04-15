@@ -39,12 +39,21 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
       change.type === ChangeType.Add || change.type === ChangeType.Remove
         ? change.path.slice(0, -1)
         : change.path;
-    const node = findByPath(original, path);
+    let node = findByPath(original, path);
+
+    // For key-values, point to value for Add, Remove, and Move
+    if (
+      node.type === NodeType.KeyValue &&
+      (change.type === ChangeType.Add ||
+        change.type === ChangeType.Remove ||
+        change.type === ChangeType.Move)
+    ) {
+      node = (node as KeyValue).value;
+    }
 
     if (!search.has(node)) {
       search.set(node, []);
     }
-
     search.get(node)!.push(change);
   });
 

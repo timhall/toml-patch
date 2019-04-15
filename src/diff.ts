@@ -1,5 +1,5 @@
 import { isObject, datesEqual, stableStringify } from './utils';
-import { Path } from './traverse';
+import { Path } from './find-by-path';
 
 export enum ChangeType {
   Add = 'Add',
@@ -154,6 +154,7 @@ function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
       path: path.concat(index),
       item: after[index]
     });
+    before_stable.splice(index, 0, value);
   });
 
   // Remove any remaining overflow items
