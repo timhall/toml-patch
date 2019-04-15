@@ -71,3 +71,17 @@ export function flatMap<TValue, TResult>(
 
   return flattened;
 }
+
+export function stableStringify(object: any): string {
+  if (isObject(object)) {
+    const key_values = Object.keys(object)
+      .sort()
+      .map(key => `${JSON.stringify(key)}:${stableStringify(object[key])}`);
+
+    return `{${key_values.join(',')}}`;
+  } else if (Array.isArray(object)) {
+    return `[${object.map(stableStringify).join(',')}]`;
+  } else {
+    return JSON.stringify(object);
+  }
+}

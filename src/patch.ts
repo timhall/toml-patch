@@ -5,8 +5,8 @@ import toTOML from './to-toml';
 import { Format } from './format';
 import { AST, Node, NodeType, KeyValue } from './ast';
 import diff, { Change, ChangeType } from './diff';
-import traverse, { Path, findByPath } from './traverse';
-import { clonePosition, Location } from './location';
+import traverse, { findByPath } from './traverse';
+import { Location } from './location';
 import { Position } from 'estree';
 
 export default function patch(existing: string, updated: any, format?: Format): string {

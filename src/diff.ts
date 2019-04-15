@@ -1,4 +1,4 @@
-import { isObject, datesEqual } from './utils';
+import { isObject, datesEqual, stableStringify } from './utils';
 import { Path } from './traverse';
 
 export enum ChangeType {
@@ -165,18 +165,4 @@ function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
   }
 
   return changes;
-}
-
-function stableStringify(object: any): string {
-  if (isObject(object)) {
-    const key_values = Object.keys(object)
-      .sort()
-      .map(key => `${JSON.stringify(key)}:${stableStringify(object[key])}`);
-
-    return `{${key_values.join(',')}}`;
-  } else if (Array.isArray(object)) {
-    return `[${object.map(stableStringify).join(',')}]`;
-  } else {
-    return JSON.stringify(object);
-  }
 }
