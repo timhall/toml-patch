@@ -1372,14 +1372,240 @@ Likes tater tots and beer.",
           },
         },
         Object {
+          "equals": 6,
+          "key": Object {
+            "loc": Object {
+              "end": Object {
+                "column": 5,
+                "line": 38,
+              },
+              "start": Object {
+                "column": 0,
+                "line": 38,
+              },
+            },
+            "raw": "count",
+            "type": "Key",
+            "value": Array [
+              "count",
+            ],
+          },
           "loc": Object {
             "end": Object {
-              "column": 10,
+              "column": 32,
               "line": 38,
             },
             "start": Object {
               "column": 0,
               "line": 38,
+            },
+          },
+          "type": "KeyValue",
+          "value": Object {
+            "items": Array [
+              Object {
+                "comma": true,
+                "item": Object {
+                  "equals": 12,
+                  "key": Object {
+                    "loc": Object {
+                      "end": Object {
+                        "column": 11,
+                        "line": 38,
+                      },
+                      "start": Object {
+                        "column": 10,
+                        "line": 38,
+                      },
+                    },
+                    "raw": "a",
+                    "type": "Key",
+                    "value": Array [
+                      "a",
+                    ],
+                  },
+                  "loc": Object {
+                    "end": Object {
+                      "column": 15,
+                      "line": 38,
+                    },
+                    "start": Object {
+                      "column": 10,
+                      "line": 38,
+                    },
+                  },
+                  "type": "KeyValue",
+                  "value": Object {
+                    "loc": Object {
+                      "end": Object {
+                        "column": 15,
+                        "line": 38,
+                      },
+                      "start": Object {
+                        "column": 14,
+                        "line": 38,
+                      },
+                    },
+                    "raw": "1",
+                    "type": "Integer",
+                    "value": 1,
+                  },
+                },
+                "loc": Object {
+                  "end": Object {
+                    "column": 15,
+                    "line": 38,
+                  },
+                  "start": Object {
+                    "column": 10,
+                    "line": 38,
+                  },
+                },
+                "type": "InlineTableItem",
+              },
+              Object {
+                "comma": true,
+                "item": Object {
+                  "equals": 18,
+                  "key": Object {
+                    "loc": Object {
+                      "end": Object {
+                        "column": 18,
+                        "line": 38,
+                      },
+                      "start": Object {
+                        "column": 17,
+                        "line": 38,
+                      },
+                    },
+                    "raw": "b",
+                    "type": "Key",
+                    "value": Array [
+                      "b",
+                    ],
+                  },
+                  "loc": Object {
+                    "end": Object {
+                      "column": 20,
+                      "line": 38,
+                    },
+                    "start": Object {
+                      "column": 17,
+                      "line": 38,
+                    },
+                  },
+                  "type": "KeyValue",
+                  "value": Object {
+                    "loc": Object {
+                      "end": Object {
+                        "column": 20,
+                        "line": 38,
+                      },
+                      "start": Object {
+                        "column": 19,
+                        "line": 38,
+                      },
+                    },
+                    "raw": "2",
+                    "type": "Integer",
+                    "value": 2,
+                  },
+                },
+                "loc": Object {
+                  "end": Object {
+                    "column": 23,
+                    "line": 38,
+                  },
+                  "start": Object {
+                    "column": 17,
+                    "line": 38,
+                  },
+                },
+                "type": "InlineTableItem",
+              },
+              Object {
+                "comma": false,
+                "item": Object {
+                  "equals": 27,
+                  "key": Object {
+                    "loc": Object {
+                      "end": Object {
+                        "column": 26,
+                        "line": 38,
+                      },
+                      "start": Object {
+                        "column": 25,
+                        "line": 38,
+                      },
+                    },
+                    "raw": "c",
+                    "type": "Key",
+                    "value": Array [
+                      "c",
+                    ],
+                  },
+                  "loc": Object {
+                    "end": Object {
+                      "column": 30,
+                      "line": 38,
+                    },
+                    "start": Object {
+                      "column": 25,
+                      "line": 38,
+                    },
+                  },
+                  "type": "KeyValue",
+                  "value": Object {
+                    "loc": Object {
+                      "end": Object {
+                        "column": 30,
+                        "line": 38,
+                      },
+                      "start": Object {
+                        "column": 29,
+                        "line": 38,
+                      },
+                    },
+                    "raw": "3",
+                    "type": "Integer",
+                    "value": 3,
+                  },
+                },
+                "loc": Object {
+                  "end": Object {
+                    "column": 30,
+                    "line": 38,
+                  },
+                  "start": Object {
+                    "column": 25,
+                    "line": 38,
+                  },
+                },
+                "type": "InlineTableItem",
+              },
+            ],
+            "loc": Object {
+              "end": Object {
+                "column": 32,
+                "line": 38,
+              },
+              "start": Object {
+                "column": 8,
+                "line": 38,
+              },
+            },
+            "type": "InlineTable",
+          },
+        },
+        Object {
+          "loc": Object {
+            "end": Object {
+              "column": 10,
+              "line": 40,
+            },
+            "start": Object {
+              "column": 0,
+              "line": 40,
             },
           },
           "raw": "# Products",
@@ -1419,7 +1645,7 @@ Likes tater tots and beer.",
       "loc": Object {
         "end": Object {
           "column": 10,
-          "line": 38,
+          "line": 40,
         },
         "start": Object {
           "column": 0,
@@ -1436,11 +1662,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 6,
-                "line": 41,
+                "line": 43,
               },
               "start": Object {
                 "column": 2,
-                "line": 41,
+                "line": 43,
               },
             },
             "raw": "name",
@@ -1452,11 +1678,11 @@ Likes tater tots and beer.",
           "loc": Object {
             "end": Object {
               "column": 17,
-              "line": 41,
+              "line": 43,
             },
             "start": Object {
               "column": 2,
-              "line": 41,
+              "line": 43,
             },
           },
           "type": "KeyValue",
@@ -1464,11 +1690,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 17,
-                "line": 41,
+                "line": 43,
               },
               "start": Object {
                 "column": 9,
-                "line": 41,
+                "line": 43,
               },
             },
             "raw": "\\"Hammer\\"",
@@ -1482,11 +1708,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 5,
-                "line": 42,
+                "line": 44,
               },
               "start": Object {
                 "column": 2,
-                "line": 42,
+                "line": 44,
               },
             },
             "raw": "sku",
@@ -1498,11 +1724,11 @@ Likes tater tots and beer.",
           "loc": Object {
             "end": Object {
               "column": 17,
-              "line": 42,
+              "line": 44,
             },
             "start": Object {
               "column": 2,
-              "line": 42,
+              "line": 44,
             },
           },
           "type": "KeyValue",
@@ -1510,11 +1736,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 17,
-                "line": 42,
+                "line": 44,
               },
               "start": Object {
                 "column": 8,
-                "line": 42,
+                "line": 44,
               },
             },
             "raw": "738594937",
@@ -1527,11 +1753,11 @@ Likes tater tots and beer.",
         "loc": Object {
           "end": Object {
             "column": 14,
-            "line": 40,
+            "line": 42,
           },
           "start": Object {
             "column": 2,
-            "line": 40,
+            "line": 42,
           },
         },
         "type": "TableArrayKey",
@@ -1539,11 +1765,11 @@ Likes tater tots and beer.",
           "loc": Object {
             "end": Object {
               "column": 12,
-              "line": 40,
+              "line": 42,
             },
             "start": Object {
               "column": 4,
-              "line": 40,
+              "line": 42,
             },
           },
           "raw": "products",
@@ -1556,11 +1782,11 @@ Likes tater tots and beer.",
       "loc": Object {
         "end": Object {
           "column": 17,
-          "line": 42,
+          "line": 44,
         },
         "start": Object {
           "column": 2,
-          "line": 40,
+          "line": 42,
         },
       },
       "type": "TableArray",
@@ -1573,11 +1799,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 6,
-                "line": 45,
+                "line": 47,
               },
               "start": Object {
                 "column": 2,
-                "line": 45,
+                "line": 47,
               },
             },
             "raw": "name",
@@ -1589,11 +1815,11 @@ Likes tater tots and beer.",
           "loc": Object {
             "end": Object {
               "column": 15,
-              "line": 45,
+              "line": 47,
             },
             "start": Object {
               "column": 2,
-              "line": 45,
+              "line": 47,
             },
           },
           "type": "KeyValue",
@@ -1601,11 +1827,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 15,
-                "line": 45,
+                "line": 47,
               },
               "start": Object {
                 "column": 9,
-                "line": 45,
+                "line": 47,
               },
             },
             "raw": "\\"Nail\\"",
@@ -1619,11 +1845,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 5,
-                "line": 46,
+                "line": 48,
               },
               "start": Object {
                 "column": 2,
-                "line": 46,
+                "line": 48,
               },
             },
             "raw": "sku",
@@ -1635,11 +1861,11 @@ Likes tater tots and beer.",
           "loc": Object {
             "end": Object {
               "column": 17,
-              "line": 46,
+              "line": 48,
             },
             "start": Object {
               "column": 2,
-              "line": 46,
+              "line": 48,
             },
           },
           "type": "KeyValue",
@@ -1647,11 +1873,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 17,
-                "line": 46,
+                "line": 48,
               },
               "start": Object {
                 "column": 8,
-                "line": 46,
+                "line": 48,
               },
             },
             "raw": "284758393",
@@ -1665,11 +1891,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 7,
-                "line": 47,
+                "line": 49,
               },
               "start": Object {
                 "column": 2,
-                "line": 47,
+                "line": 49,
               },
             },
             "raw": "color",
@@ -1681,11 +1907,11 @@ Likes tater tots and beer.",
           "loc": Object {
             "end": Object {
               "column": 16,
-              "line": 47,
+              "line": 49,
             },
             "start": Object {
               "column": 2,
-              "line": 47,
+              "line": 49,
             },
           },
           "type": "KeyValue",
@@ -1693,11 +1919,11 @@ Likes tater tots and beer.",
             "loc": Object {
               "end": Object {
                 "column": 16,
-                "line": 47,
+                "line": 49,
               },
               "start": Object {
                 "column": 10,
-                "line": 47,
+                "line": 49,
               },
             },
             "raw": "\\"gray\\"",
@@ -1710,11 +1936,11 @@ Likes tater tots and beer.",
         "loc": Object {
           "end": Object {
             "column": 14,
-            "line": 44,
+            "line": 46,
           },
           "start": Object {
             "column": 2,
-            "line": 44,
+            "line": 46,
           },
         },
         "type": "TableArrayKey",
@@ -1722,11 +1948,11 @@ Likes tater tots and beer.",
           "loc": Object {
             "end": Object {
               "column": 12,
-              "line": 44,
+              "line": 46,
             },
             "start": Object {
               "column": 4,
-              "line": 44,
+              "line": 46,
             },
           },
           "raw": "products",
@@ -1739,11 +1965,11 @@ Likes tater tots and beer.",
       "loc": Object {
         "end": Object {
           "column": 16,
-          "line": 47,
+          "line": 49,
         },
         "start": Object {
           "column": 2,
-          "line": 44,
+          "line": 46,
         },
       },
       "type": "TableArray",
@@ -1752,7 +1978,7 @@ Likes tater tots and beer.",
   "loc": Object {
     "end": Object {
       "column": 0,
-      "line": 48,
+      "line": 50,
     },
     "start": Object {
       "column": 0,

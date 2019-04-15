@@ -3,6 +3,11 @@
 exports[`it should convert examples to js 1`] = `
 Object {
   "clients": Object {
+    "count": Object {
+      "a": 1,
+      "b": 2,
+      "c": 3,
+    },
     "data": Array [
       Array [
         "gamma",

@@ -372,7 +372,7 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
         });
 
         shiftStart(node);
-        node.equals += offset.column[node.loc.start.line] + equals_shift;
+        node.equals += (offset.column[node.loc.start.line] || 0) + equals_shift;
       },
       exit: shiftEnd
     },

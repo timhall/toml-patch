@@ -1377,7 +1377,7 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 10,
+        "column": 5,
         "line": 38,
       },
       "start": Object {
@@ -1385,102 +1385,18 @@ Array [
         "line": 38,
       },
     },
-    "raw": "# Products",
-    "type": "Comment",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 3,
-        "line": 40,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 40,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 4,
-        "line": 40,
-      },
-      "start": Object {
-        "column": 3,
-        "line": 40,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 12,
-        "line": 40,
-      },
-      "start": Object {
-        "column": 4,
-        "line": 40,
-      },
-    },
-    "raw": "products",
+    "raw": "count",
     "type": "String",
   },
   Object {
     "loc": Object {
       "end": Object {
-        "column": 13,
-        "line": 40,
-      },
-      "start": Object {
-        "column": 12,
-        "line": 40,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 14,
-        "line": 40,
-      },
-      "start": Object {
-        "column": 13,
-        "line": 40,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 41,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 41,
-      },
-    },
-    "raw": "name",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 8,
-        "line": 41,
-      },
-      "start": Object {
         "column": 7,
-        "line": 41,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 38,
       },
     },
     "raw": "=",
@@ -1489,152 +1405,40 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 17,
-        "line": 41,
-      },
-      "start": Object {
         "column": 9,
-        "line": 41,
-      },
-    },
-    "raw": "\\"Hammer\\"",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 5,
-        "line": 42,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 42,
-      },
-    },
-    "raw": "sku",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 7,
-        "line": 42,
-      },
-      "start": Object {
-        "column": 6,
-        "line": 42,
-      },
-    },
-    "raw": "=",
-    "type": "Equal",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 17,
-        "line": 42,
+        "line": 38,
       },
       "start": Object {
         "column": 8,
-        "line": 42,
+        "line": 38,
       },
     },
-    "raw": "738594937",
-    "type": "String",
+    "raw": "{",
+    "type": "Curly",
   },
   Object {
     "loc": Object {
       "end": Object {
-        "column": 3,
-        "line": 44,
+        "column": 11,
+        "line": 38,
       },
       "start": Object {
-        "column": 2,
-        "line": 44,
+        "column": 10,
+        "line": 38,
       },
     },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 4,
-        "line": 44,
-      },
-      "start": Object {
-        "column": 3,
-        "line": 44,
-      },
-    },
-    "raw": "[",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 12,
-        "line": 44,
-      },
-      "start": Object {
-        "column": 4,
-        "line": 44,
-      },
-    },
-    "raw": "products",
+    "raw": "a",
     "type": "String",
   },
   Object {
     "loc": Object {
       "end": Object {
         "column": 13,
-        "line": 44,
+        "line": 38,
       },
       "start": Object {
         "column": 12,
-        "line": 44,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 14,
-        "line": 44,
-      },
-      "start": Object {
-        "column": 13,
-        "line": 44,
-      },
-    },
-    "raw": "]",
-    "type": "Bracket",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 6,
-        "line": 45,
-      },
-      "start": Object {
-        "column": 2,
-        "line": 45,
-      },
-    },
-    "raw": "name",
-    "type": "String",
-  },
-  Object {
-    "loc": Object {
-      "end": Object {
-        "column": 8,
-        "line": 45,
-      },
-      "start": Object {
-        "column": 7,
-        "line": 45,
+        "line": 38,
       },
     },
     "raw": "=",
@@ -1644,39 +1448,249 @@ Array [
     "loc": Object {
       "end": Object {
         "column": 15,
-        "line": 45,
+        "line": 38,
       },
       "start": Object {
-        "column": 9,
-        "line": 45,
+        "column": 14,
+        "line": 38,
       },
     },
-    "raw": "\\"Nail\\"",
+    "raw": "1",
     "type": "String",
   },
   Object {
     "loc": Object {
       "end": Object {
-        "column": 5,
-        "line": 46,
+        "column": 16,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 15,
+        "line": 38,
+      },
+    },
+    "raw": ",",
+    "type": "Comma",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 18,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 17,
+        "line": 38,
+      },
+    },
+    "raw": "b",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 19,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 18,
+        "line": 38,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 20,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 19,
+        "line": 38,
+      },
+    },
+    "raw": "2",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 24,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 23,
+        "line": 38,
+      },
+    },
+    "raw": ",",
+    "type": "Comma",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 26,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 25,
+        "line": 38,
+      },
+    },
+    "raw": "c",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 28,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 27,
+        "line": 38,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 30,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 29,
+        "line": 38,
+      },
+    },
+    "raw": "3",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 32,
+        "line": 38,
+      },
+      "start": Object {
+        "column": 31,
+        "line": 38,
+      },
+    },
+    "raw": "}",
+    "type": "Curly",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 10,
+        "line": 40,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 40,
+      },
+    },
+    "raw": "# Products",
+    "type": "Comment",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 42,
       },
       "start": Object {
         "column": 2,
-        "line": 46,
+        "line": 42,
       },
     },
-    "raw": "sku",
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 42,
+      },
+      "start": Object {
+        "column": 3,
+        "line": 42,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 12,
+        "line": 42,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 42,
+      },
+    },
+    "raw": "products",
     "type": "String",
   },
   Object {
     "loc": Object {
       "end": Object {
-        "column": 7,
-        "line": 46,
+        "column": 13,
+        "line": 42,
       },
       "start": Object {
+        "column": 12,
+        "line": 42,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 14,
+        "line": 42,
+      },
+      "start": Object {
+        "column": 13,
+        "line": 42,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
         "column": 6,
-        "line": 46,
+        "line": 43,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 43,
+      },
+    },
+    "raw": "name",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 43,
+      },
+      "start": Object {
+        "column": 7,
+        "line": 43,
       },
     },
     "raw": "=",
@@ -1686,20 +1700,132 @@ Array [
     "loc": Object {
       "end": Object {
         "column": 17,
-        "line": 46,
+        "line": 43,
       },
       "start": Object {
-        "column": 8,
-        "line": 46,
+        "column": 9,
+        "line": 43,
       },
     },
-    "raw": "284758393",
+    "raw": "\\"Hammer\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 44,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 44,
+      },
+    },
+    "raw": "sku",
     "type": "String",
   },
   Object {
     "loc": Object {
       "end": Object {
         "column": 7,
+        "line": 44,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 44,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 44,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 44,
+      },
+    },
+    "raw": "738594937",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 46,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 46,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 4,
+        "line": 46,
+      },
+      "start": Object {
+        "column": 3,
+        "line": 46,
+      },
+    },
+    "raw": "[",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 12,
+        "line": 46,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 46,
+      },
+    },
+    "raw": "products",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 13,
+        "line": 46,
+      },
+      "start": Object {
+        "column": 12,
+        "line": 46,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 14,
+        "line": 46,
+      },
+      "start": Object {
+        "column": 13,
+        "line": 46,
+      },
+    },
+    "raw": "]",
+    "type": "Bracket",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 6,
         "line": 47,
       },
       "start": Object {
@@ -1707,17 +1833,17 @@ Array [
         "line": 47,
       },
     },
-    "raw": "color",
+    "raw": "name",
     "type": "String",
   },
   Object {
     "loc": Object {
       "end": Object {
-        "column": 9,
+        "column": 8,
         "line": 47,
       },
       "start": Object {
-        "column": 8,
+        "column": 7,
         "line": 47,
       },
     },
@@ -1727,12 +1853,96 @@ Array [
   Object {
     "loc": Object {
       "end": Object {
-        "column": 16,
+        "column": 15,
         "line": 47,
       },
       "start": Object {
-        "column": 10,
+        "column": 9,
         "line": 47,
+      },
+    },
+    "raw": "\\"Nail\\"",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 5,
+        "line": 48,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 48,
+      },
+    },
+    "raw": "sku",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 48,
+      },
+      "start": Object {
+        "column": 6,
+        "line": 48,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 17,
+        "line": 48,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 48,
+      },
+    },
+    "raw": "284758393",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 7,
+        "line": 49,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 49,
+      },
+    },
+    "raw": "color",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 9,
+        "line": 49,
+      },
+      "start": Object {
+        "column": 8,
+        "line": 49,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 16,
+        "line": 49,
+      },
+      "start": Object {
+        "column": 10,
+        "line": 49,
       },
     },
     "raw": "\\"gray\\"",
