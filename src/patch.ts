@@ -13,7 +13,8 @@ import {
   InlineArrayItem,
   InlineArray,
   Document,
-  TableArray
+  TableArray,
+  isKeyValue
 } from './ast';
 import diff, { Change, ChangeType } from './diff';
 import traverse from './traverse';
@@ -55,7 +56,7 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
 
     // For key-values, point to value for Add, Remove, and Move
     if (
-      node.type === NodeType.KeyValue &&
+      isKeyValue(node) &&
       (change.type === ChangeType.Add ||
         change.type === ChangeType.Remove ||
         change.type === ChangeType.Move)

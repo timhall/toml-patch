@@ -8,7 +8,9 @@ import {
   TableKey,
   TableArray,
   TableArrayKey,
-  InlineArray
+  InlineArray,
+  isInlineTable,
+  isInlineArray
 } from './ast';
 import traverse from './traverse';
 import { clonePosition, Position } from './location';
@@ -26,11 +28,11 @@ export function formatTopLevel(body: Block[]): Block[] {
   const top_level: KeyValue[] = [];
   let line = 1;
   const inline: Block[] = (body as KeyValue[]).filter(key_value => {
-    const is_inline_table = key_value.value.type === NodeType.InlineTable;
+    const is_inline_table = isInlineTable(key_value.value);
     const is_inline_array =
-      key_value.value.type === NodeType.InlineArray &&
+      isInlineArray(key_value.value) &&
       key_value.value.items.length &&
-      key_value.value.items[0].item.type === NodeType.InlineTable;
+      isInlineTable(key_value.value.items[0]);
 
     if (is_inline_table || is_inline_array) {
       top_level.push(key_value);
@@ -48,7 +50,7 @@ export function formatTopLevel(body: Block[]): Block[] {
     top_level,
     key_value => {
       let table: Table | TableArray[];
-      if (key_value.value.type === NodeType.InlineTable) {
+      if (isInlineTable(key_value.value)) {
         table = formatTable(key_value, start);
         start = { line: table.loc.end.line + 2, column: 0 };
       } else {

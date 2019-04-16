@@ -1,4 +1,4 @@
-import { Document, Value, NodeType, Node, AST } from './ast';
+import { Document, Value, NodeType, Node, AST, isValue, isInlineTable } from './ast';
 import traverse from './traverse';
 import { last, blank, isDate, has, arraysEqual } from './utils';
 import ParseError from './parse-error';
@@ -54,13 +54,13 @@ export default function toJS(document: AST, input: string = ''): any {
 
         target[last(key)!] = value;
 
-        if (node.value.type === NodeType.InlineTable) {
+        if (isInlineTable(node.value)) {
           previous_active = active;
           active = value;
         }
       },
       exit(node) {
-        if (node.value.type === NodeType.InlineTable) {
+        if (isInlineTable(node.value)) {
           active = previous_active;
         }
       }
@@ -173,18 +173,6 @@ function ensure(object: any, keys: string[]): any {
     }
     return Array.isArray(active[subkey]) ? last(active[subkey]) : active[subkey];
   }, object);
-}
-
-export function isValue(node: Node): node is Value {
-  return (
-    node.type === NodeType.String ||
-    node.type === NodeType.Integer ||
-    node.type === NodeType.Float ||
-    node.type === NodeType.Boolean ||
-    node.type === NodeType.DateTime ||
-    node.type === NodeType.InlineArray ||
-    node.type === NodeType.InlineTable
-  );
 }
 
 function isPrimitive(value: any) {
