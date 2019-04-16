@@ -62,7 +62,7 @@ export default function traverse(node: Node, visitor: Visitor) {
 
     switch (node.type) {
       case NodeType.Document:
-        traverseArray((node as Document).body, node);
+        traverseArray((node as Document).items, node);
         break;
 
       case NodeType.Table:
@@ -70,7 +70,7 @@ export default function traverse(node: Node, visitor: Visitor) {
         traverseArray((node as Table).items, node);
         break;
       case NodeType.TableKey:
-        traverseNode((node as TableKey).value, node);
+        traverseNode((node as TableKey).item, node);
         break;
 
       case NodeType.TableArray:
@@ -78,7 +78,7 @@ export default function traverse(node: Node, visitor: Visitor) {
         traverseArray((node as TableArray).items, node);
         break;
       case NodeType.TableArrayKey:
-        traverseNode((node as TableArrayKey).value, node);
+        traverseNode((node as TableArrayKey).item, node);
         break;
 
       case NodeType.KeyValue:

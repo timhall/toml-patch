@@ -14,7 +14,7 @@ export default function toJS(document: AST, input: string = ''): any {
 
   traverse(document, {
     [NodeType.Table](node) {
-      const key = node.key.value.value;
+      const key = node.key.item.value;
       try {
         validateKey(result, key, node.type, { table_arrays });
       } catch (err) {
@@ -25,7 +25,7 @@ export default function toJS(document: AST, input: string = ''): any {
     },
 
     [NodeType.TableArray](node) {
-      const key = node.key.value.value;
+      const key = node.key.item.value;
 
       try {
         validateKey(result, key, node.type, { table_arrays });
@@ -87,7 +87,7 @@ export function toValue(node: Value): any {
       const placeholder: Document = {
         type: NodeType.Document,
         loc: node.loc,
-        body: node.items.map(item => item.item)
+        items: node.items.map(item => item.item)
       };
 
       return toJS(placeholder);

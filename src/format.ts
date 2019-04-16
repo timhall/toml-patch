@@ -71,7 +71,7 @@ function formatTable(key_value: KeyValue, start: Position): Table {
       start: clonePosition(start),
       end: { line: start.line, column: start.column + key_width + 2 }
     },
-    value: {
+    item: {
       type: NodeType.Key,
       loc: {
         start: { line: start.line, column: start.column + 1 },
@@ -113,7 +113,7 @@ function formatTableArray(key_value: KeyValue, start: Position): TableArray[] {
         start: { line, column: 0 },
         end: { line, column: key_width + 4 }
       },
-      value: {
+      item: {
         type: NodeType.Key,
         loc: {
           start: { line, column: 2 },

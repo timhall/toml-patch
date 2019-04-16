@@ -62,11 +62,14 @@ export default function diff(before: any, after: any, path: Path = []): Change[]
 function compareObjects(before: any, after: any, path: Path = []): Change[] {
   let changes: Change[] = [];
 
+  // 1. Get keys and stable values
   const before_keys = Object.keys(before);
   const before_stable = before_keys.map(key => stableStringify(before[key]));
   const after_keys = Object.keys(after);
   const after_stable = after_keys.map(key => stableStringify(after[key]));
 
+  // Check for rename by seeing if object is in both before and after
+  // and that key is no longer used in after
   const isRename = (stable: string, search: string[]) => {
     const index = search.indexOf(stable);
     if (index < 0) return false;
@@ -75,6 +78,7 @@ function compareObjects(before: any, after: any, path: Path = []): Change[] {
     return !after_keys.includes(before_key);
   };
 
+  // 2. Check for changes, rename, and removed
   before_keys.forEach((key, index) => {
     const sub_path = path.concat(key);
     if (after_keys.includes(key)) {
@@ -94,6 +98,7 @@ function compareObjects(before: any, after: any, path: Path = []): Change[] {
     }
   });
 
+  // 3. Check for additions
   after_keys.forEach((key, index) => {
     if (!before_keys.includes(key) && !isRename(after_stable[index], before_stable)) {
       changes.push({
@@ -157,7 +162,7 @@ function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
     before_stable.splice(index, 0, value);
   });
 
-  // Remove any remaining overflow items
+  // 3. Remove any remaining overflow items
   for (let i = after_stable.length; i < before_stable.length; i++) {
     changes.push({
       type: ChangeType.Remove,

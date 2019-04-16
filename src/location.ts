@@ -9,8 +9,19 @@ export interface Position {
   column: number;
 }
 
-export type Locator = (start: number, end: number) => Location;
+export interface Span {
+  lines: number;
+  columns: number;
+}
 
+export function getSpan(location: Location): Span {
+  return {
+    lines: location.end.line - location.start.line + 1,
+    columns: location.end.column - location.start.column
+  };
+}
+
+export type Locator = (start: number, end: number) => Location;
 export function createLocate(input: string): Locator {
   const lines = findLines(input);
 

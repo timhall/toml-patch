@@ -68,11 +68,11 @@ export default function parseTOML(input: string): AST {
   const document: Document = {
     type: NodeType.Document,
     loc: { start: { line: 1, column: 0 }, end: findPosition(input, input.length) },
-    body: first_blocks ? first_blocks : []
+    items: first_blocks ? first_blocks : []
   };
 
   while (!cursor.done) {
-    document.body = document.body.concat(walkBlock(cursor, input));
+    document.items = document.items.concat(walkBlock(cursor, input));
     cursor.step();
   }
 
@@ -194,7 +194,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
     throw new ParseError(input, key.loc!.start, `Expected table key, reached end of file`);
   }
 
-  key.value = {
+  key.item = {
     type: NodeType.Key,
     loc: cursor.item.loc,
     raw: cursor.item.raw,
@@ -206,12 +206,12 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
     const dot = cursor.item;
 
     cursor.step(1);
-    const before = ' '.repeat(dot.loc.start.column - key.value.loc.end.column);
+    const before = ' '.repeat(dot.loc.start.column - key.item.loc.end.column);
     const after = ' '.repeat(cursor.item.loc.start.column - dot.loc.end.column);
 
-    key.value.loc.end = cursor.item.loc.end;
-    key.value.raw += `${before}.${after}${cursor.item.raw}`;
-    key.value.value.push(parseString(cursor.item.raw));
+    key.item.loc.end = cursor.item.loc.end;
+    key.item.raw += `${before}.${after}${cursor.item.raw}`;
+    key.item.value.push(parseString(cursor.item.raw));
   }
 
   cursor.step();
@@ -219,7 +219,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   if (cursor.done || (is_table && cursor.item.raw !== ']')) {
     throw new ParseError(
       input,
-      cursor.done ? key.value.loc.end : cursor.item.loc.start,
+      cursor.done ? key.item.loc.end : cursor.item.loc.start,
       `Expected table closing "]", found ${cursor.done ? 'end of file' : cursor.item.raw}`
     );
   }
@@ -230,7 +230,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   ) {
     throw new ParseError(
       input,
-      cursor.done || cursor.peekDone() ? key.value.loc.end : cursor.item.loc.start,
+      cursor.done || cursor.peekDone() ? key.item.loc.end : cursor.item.loc.start,
       `Expected array of tables closing "]]", found ${
         cursor.done || cursor.peekDone() ? 'end of file' : cursor.item.raw + cursor.peek()!.raw
       }`

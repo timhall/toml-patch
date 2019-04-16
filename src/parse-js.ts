@@ -41,16 +41,16 @@ export default function parseJS(value: any, format: Format = {}): AST {
   // Heuristics:
   // 1. Top-level objects/arrays should be tables/table arrays
   // 2. Convert objects/arrays to tables/table arrays based on print width
-  let body = pipe(
+  let items = pipe(
     walkObject(value, { start: zero(), format }) as Array<Block>,
     formatTopLevel,
-    body => formatPrintWidth(body, format)
+    items => formatPrintWidth(items, format)
   );
 
   return {
     type: NodeType.Document,
-    loc: { start: zero(), end: body.length ? last(body)!.loc.end : zero() },
-    body
+    loc: { start: zero(), end: items.length ? last(items)!.loc.end : zero() },
+    items
   };
 }
 

@@ -24,7 +24,7 @@ export type AST = Document | Value;
 
 export interface Document extends Node {
   type: NodeType.Document;
-  body: Array<Block>;
+  items: Array<Block>;
 }
 
 export type Block = KeyValue | Table | TableArray | Comment;
@@ -48,7 +48,7 @@ export interface Table extends Node {
 // ^-------^
 export interface TableKey extends Node {
   type: NodeType.TableKey;
-  value: Key;
+  item: Key;
 }
 
 // v---------|
@@ -70,7 +70,7 @@ export interface TableArray extends Node {
 // ^---------^
 export interface TableArrayKey extends Node {
   type: NodeType.TableArrayKey;
-  value: Key;
+  item: Key;
 }
 
 // key="value" # note

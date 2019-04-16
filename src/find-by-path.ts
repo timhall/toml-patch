@@ -22,14 +22,14 @@ export default function findByPath(ast: AST, path: Path): Node {
       // -> find KeyValue and Table by Key
       // -> find TableArray by key and index
       const indexes: { [key: string]: number } = {};
-      return (node as Document).body.find(block => {
+      return (node as Document).items.find(block => {
         let key: Path = [];
         if (block.type === NodeType.KeyValue) {
           key = block.key.value;
         } else if (block.type === NodeType.Table) {
-          key = block.key.value.value;
+          key = block.key.item.value;
         } else if (block.type === NodeType.TableArray) {
-          key = block.key.value.value;
+          key = block.key.item.value;
 
           const key_string = stableStringify(key);
           if (!indexes[key_string]) {

@@ -15,7 +15,7 @@ test('it should parse kitchen sink', () => {
   const parsed = parseTOML(kitchen_sink) as Document;
 
   // Normalize local dates and times
-  const date_local = (parsed.body[2] as Table).items[5] as KeyValue;
+  const date_local = (parsed.items[2] as Table).items[5] as KeyValue;
   const array_items = (date_local.value as InlineArray<DateTime>).items;
   array_items.forEach(array_item => {
     // @ts-ignore Type 'string' is not assignable to type 'Date'
