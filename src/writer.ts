@@ -149,16 +149,27 @@ export function remove(ast: AST, parent: Node, node: Node) {
     throw new Error('Could not find node in parent for removal');
   }
 
-  const span = getSpan(node.loc);
   const previous = parent.items[index - 1];
+  const next = parent.items[index + 1];
   parent.items.splice(index, 1);
+
+  // Apply offsets after preceding node or before children of parent node
+  const removed_span = getSpan(node.loc);
+  const keep_line =
+    (previous && previous.loc.end.line === node.loc.start.line) ||
+    (next && next.loc.start.line === node.loc.end.line);
+
+  const offset = {
+    lines: removed_span.lines - (keep_line ? 1 : 0),
+    columns: removed_span.columns
+  };
 
   if (previous) {
     const offsets = getExit(ast);
-    offsets.set(previous, span);
+    offsets.set(previous, offset);
   } else {
     const offsets = getEnter(ast);
-    offsets.set(parent, span);
+    offsets.set(parent, offset);
   }
 }
 
