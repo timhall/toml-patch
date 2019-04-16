@@ -1,58 +1,49 @@
 import {
   AST,
   Node,
-  NodeType,
   isKeyValue,
-  isDocument,
   isTable,
   isTableArray,
   isInlineTable,
   isInlineArray,
-  isTableKey,
-  isTableArrayKey,
-  isInlineTableItem,
-  isInlineArrayItem,
+  hasItems,
+  hasItem,
   Key,
   Value,
   InlineArray,
   InlineArrayItem,
-  InlineTableItem
+  InlineTableItem,
+  NodeType
 } from './ast';
 import { Span, getSpan, clonePosition } from './location';
 import { last } from './utils';
+import traverse from './traverse';
 
+// Store line and column offsets per node
+//
+// Some offsets are applied on enter (e.g. shift child items and next items)
+// Others are applied on exit (e.g. shift next items)
 type Offsets = WeakMap<Node, Span>;
-const staged_offsets: WeakMap<AST, Offsets> = new WeakMap();
-const getStaged = (ast: AST) => {
-  if (!staged_offsets.has(ast)) {
-    staged_offsets.set(ast, new WeakMap());
+
+const enter_offsets: WeakMap<AST, Offsets> = new WeakMap();
+const getEnter = (ast: AST) => {
+  if (!enter_offsets.has(ast)) {
+    enter_offsets.set(ast, new WeakMap());
   }
-  return staged_offsets.get(ast)!;
+  return enter_offsets.get(ast)!;
 };
 
-export interface WithItems extends Node {
-  items: Node[];
-}
-function hasItems(node: Node): node is WithItems {
-  return (
-    isDocument(node) ||
-    isTable(node) ||
-    isTableArray(node) ||
-    isInlineTable(node) ||
-    isInlineArray(node)
-  );
-}
-
-export interface WithItem extends Node {
-  item: Node;
-}
-function hasItem(node: Node): node is WithItem {
-  return (
-    isTableKey(node) || isTableArrayKey(node) || isInlineTableItem(node) || isInlineArrayItem(node)
-  );
-}
+const exit_offsets: WeakMap<AST, Offsets> = new WeakMap();
+const getExit = (ast: AST) => {
+  if (!exit_offsets.has(ast)) {
+    exit_offsets.set(ast, new WeakMap());
+  }
+  return exit_offsets.get(ast)!;
+};
 
 export function replace(ast: AST, parent: Node, existing: Node, replacement: Node) {
+  // First, replace existing node
+  // (by index for items, item, or key/value)
   if (hasItems(parent)) {
     const index = parent.items.indexOf(existing);
     if (index < 0) throw new Error(`Could not find existing item in parent node`);
@@ -70,20 +61,23 @@ export function replace(ast: AST, parent: Node, existing: Node, replacement: Nod
     throw new Error(`Unsupported parent type "${parent.type}" for replace.`);
   }
 
+  // Shift the replacement node into the same start position as existing
+  const shift = {
+    lines: replacement.loc.start.line - existing.loc.start.line,
+    columns: replacement.loc.start.column - existing.loc.start.column
+  };
+  shiftNode(replacement, shift);
+
+  // Apply offsets after replacement node
   const existing_span = getSpan(existing.loc);
   const replacement_span = getSpan(replacement.loc);
-
-  replacement.loc.start = clonePosition(existing.loc.start);
-  replacement.loc.end = {
-    line: replacement.loc.start.line + replacement_span.lines - 1,
-    column: replacement.loc.start.column + replacement_span.columns
+  const offset = {
+    lines: replacement_span.lines - existing_span.lines,
+    columns: replacement_span.columns - existing_span.columns
   };
 
-  const lines = replacement_span.lines - existing_span.lines;
-  const columns = replacement_span.columns - existing_span.columns;
-
-  const offsets = getStaged(ast);
-  offsets.set(replacement, { lines, columns });
+  const offsets = getExit(ast);
+  offsets.set(replacement, offset);
 }
 
 export function insert(ast: AST, parent: Node, child: Node, index?: number) {
@@ -132,7 +126,7 @@ export function insert(ast: AST, parent: Node, child: Node, index?: number) {
     parent.items.push(child);
   }
 
-  const offsets = getStaged(ast);
+  const offsets = getExit(ast);
   offsets.set(child, {
     lines: child_span.lines - (use_new_line ? 0 : 1),
     columns: child_span.columns
@@ -140,23 +134,67 @@ export function insert(ast: AST, parent: Node, child: Node, index?: number) {
 }
 
 export function remove(ast: AST, parent: Node, node: Node) {
-  const offsets = getStaged(ast);
-  if (hasItems(parent)) {
-    //
-  } else if (hasItem(parent)) {
-    //
-  } else if (isKeyValue(parent)) {
-    //
+  if (!hasItems(parent)) {
+    throw new Error(`Unsupported parent type "${parent.type}" for remove.`);
+  }
+
+  const index = parent.items.indexOf(node);
+  if (index < 0) {
+    throw new Error('Could not find node in parent for removal');
+  }
+
+  const span = getSpan(node.loc);
+  const previous = parent.items[index - 1];
+  parent.items.splice(index, 1);
+
+  if (previous) {
+    const offsets = getExit(ast);
+    offsets.set(previous, span);
   } else {
-    throw new Error(`Unsupported parent type "${parent.type}" for replace.`);
+    const offsets = getEnter(ast);
+    offsets.set(parent, span);
   }
 }
 
 export function applyWrites(ast: AST) {
-  const offsets = getStaged(ast);
-  staged_offsets.delete(ast);
+  const enter = getEnter(ast);
+  const exit = getExit(ast);
 
-  //
+  // TODO Visitor
+}
+
+export function shiftNode(node: Node, span: Span): Node {
+  const { lines, columns } = span;
+  const move = (node: Node) => {
+    node.loc.start.column += columns;
+    node.loc.end.column += columns;
+    node.loc.start.line += lines;
+    node.loc.end.line += lines;
+  };
+
+  traverse(node, {
+    [NodeType.Table]: move,
+    [NodeType.TableKey]: move,
+    [NodeType.TableArray]: move,
+    [NodeType.TableArrayKey]: move,
+    [NodeType.KeyValue](node) {
+      move(node);
+      node.equals += columns;
+    },
+    [NodeType.Key]: move,
+    [NodeType.String]: move,
+    [NodeType.Integer]: move,
+    [NodeType.Float]: move,
+    [NodeType.Boolean]: move,
+    [NodeType.DateTime]: move,
+    [NodeType.InlineArray]: move,
+    [NodeType.InlineArrayItem]: move,
+    [NodeType.InlineTable]: move,
+    [NodeType.InlineTableItem]: move,
+    [NodeType.Comment]: move
+  });
+
+  return node;
 }
 
 function perLine(array: InlineArray): boolean {

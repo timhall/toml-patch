@@ -3,7 +3,6 @@ import {
   Block,
   KeyValue,
   Table,
-  Node,
   InlineTable,
   TableKey,
   TableArray,
@@ -12,9 +11,9 @@ import {
   isInlineTable,
   isInlineArray
 } from './ast';
-import traverse from './traverse';
 import { clonePosition, Position } from './location';
 import { last, flatMap } from './utils';
+import { shiftNode as shift } from './writer';
 
 export interface Format {
   printWidth?: number;
@@ -39,7 +38,7 @@ export function formatTopLevel(body: Block[]): Block[] {
       return false;
     }
 
-    shift(key_value, { y: line - key_value.loc.start.line });
+    shift(key_value, { lines: line - key_value.loc.start.line, columns: 0 });
     line += 1;
 
     return true;
@@ -87,8 +86,8 @@ function formatTable(key_value: KeyValue, start: Position): Table {
   let item_start = { line: start.line + 1, column: 0 };
   const items: KeyValue[] = (key_value.value as InlineTable).items.map(item => {
     shift(item.item, {
-      x: item_start.column - item.loc.start.column,
-      y: item_start.line - item.loc.start.line
+      columns: item_start.column - item.loc.start.column,
+      lines: item_start.line - item.loc.start.line
     });
 
     item_start = { line: item.item.loc.end.line + 1, column: 0 };
@@ -129,8 +128,8 @@ function formatTableArray(key_value: KeyValue, start: Position): TableArray[] {
     let item_start = { line: line + 1, column: 0 };
     const items: KeyValue[] = (item.item as InlineTable).items.map(item => {
       shift(item.item, {
-        x: item_start.column - item.loc.start.column,
-        y: item_start.line - item.loc.start.line
+        columns: item_start.column - item.loc.start.column,
+        lines: item_start.line - item.loc.start.line
       });
 
       item_start = { line: item.item.loc.end.line + 1, column: 0 };
@@ -151,38 +150,4 @@ function formatTableArray(key_value: KeyValue, start: Position): TableArray[] {
 
 export function formatPrintWidth(body: Block[], format: Format): Block[] {
   return body;
-}
-
-function shift(node: Node, distance: { y?: number; x?: number }): Node {
-  const { x = 0, y = 0 } = distance;
-  const move = (node: Node) => {
-    node.loc.start.column += x;
-    node.loc.end.column += x;
-    node.loc.start.line += y;
-    node.loc.end.line += y;
-  };
-
-  traverse(node, {
-    [NodeType.Table]: move,
-    [NodeType.TableKey]: move,
-    [NodeType.TableArray]: move,
-    [NodeType.TableArrayKey]: move,
-    [NodeType.KeyValue](node) {
-      move(node);
-      node.equals += x;
-    },
-    [NodeType.Key]: move,
-    [NodeType.String]: move,
-    [NodeType.Integer]: move,
-    [NodeType.Float]: move,
-    [NodeType.Boolean]: move,
-    [NodeType.DateTime]: move,
-    [NodeType.InlineArray]: move,
-    [NodeType.InlineArrayItem]: move,
-    [NodeType.InlineTable]: move,
-    [NodeType.InlineTableItem]: move,
-    [NodeType.Comment]: move
-  });
-
-  return node;
 }

@@ -243,6 +243,28 @@ export function isComment(node: Node): node is Comment {
   return node.type === NodeType.Comment;
 }
 
+export interface WithItems extends Node {
+  items: Node[];
+}
+export function hasItems(node: Node): node is WithItems {
+  return (
+    isDocument(node) ||
+    isTable(node) ||
+    isTableArray(node) ||
+    isInlineTable(node) ||
+    isInlineArray(node)
+  );
+}
+
+export interface WithItem extends Node {
+  item: Node;
+}
+export function hasItem(node: Node): node is WithItem {
+  return (
+    isTableKey(node) || isTableArrayKey(node) || isInlineTableItem(node) || isInlineArrayItem(node)
+  );
+}
+
 export interface Node {
   type: NodeType;
   loc: Location;
