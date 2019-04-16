@@ -85,7 +85,14 @@ export function insert(ast: AST, parent: Node, child: Node, index?: number) {
     throw new Error(`Unsupported parent type "${parent.type}" for replace.`);
   }
 
+  // Store preceding node and insert
   const previous = index != null ? parent.items[index - 1] : last(parent.items);
+
+  if (index != null) {
+    parent.items.splice(index, 0, child);
+  } else {
+    parent.items.push(child);
+  }
 
   // Add commas as-needed
   const is_inline = isInlineArray(parent) || isInlineTable(parent);
@@ -98,16 +105,15 @@ export function insert(ast: AST, parent: Node, child: Node, index?: number) {
 
   // Set start location from previous item or start of array
   // (previous is undefined for empty array or inserting at first item)
-  const child_span = getSpan(child.loc);
   const use_new_line =
     isTable(parent) || isTableArray(parent) || (isInlineArray(parent) && perLine(parent));
 
-  child.loc.start = previous
+  const start = previous
     ? {
         line: previous.loc.start.line,
         column: use_new_line ? previous.loc.start.column : previous.loc.end.column
       }
-    : clonePosition(parent.loc.start);
+    : parent.loc.start;
 
   if (use_new_line) {
     child.loc.start.line += 1;
@@ -115,22 +121,22 @@ export function insert(ast: AST, parent: Node, child: Node, index?: number) {
     child.loc.start.column += previous ? 2 : 1;
   }
 
-  child.loc.end = {
-    line: child.loc.start.line + child_span.lines - 1,
-    column: child.loc.start.column + child_span.columns
+  const shift = {
+    lines: child.loc.start.line - start.line,
+    columns: child.loc.start.column - start.column
   };
 
-  if (index != null) {
-    parent.items.splice(index, 0, child);
-  } else {
-    parent.items.push(child);
-  }
+  shiftNode(child, shift);
 
-  const offsets = getExit(ast);
-  offsets.set(child, {
+  // Apply offsets after child node
+  const child_span = getSpan(child.loc);
+  const offset = {
     lines: child_span.lines - (use_new_line ? 0 : 1),
     columns: child_span.columns
-  });
+  };
+
+  const offsets = getExit(ast);
+  offsets.set(child, offset);
 }
 
 export function remove(ast: AST, parent: Node, node: Node) {
