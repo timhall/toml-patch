@@ -31,7 +31,7 @@ export function formatTopLevel(body: Block[]): Block[] {
     const is_inline_array =
       isInlineArray(key_value.value) &&
       key_value.value.items.length &&
-      isInlineTable(key_value.value.items[0]);
+      isInlineTable(key_value.value.items[0].item);
 
     if (is_inline_table || is_inline_array) {
       top_level.push(key_value);
