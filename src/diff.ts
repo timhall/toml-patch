@@ -14,26 +14,46 @@ export interface Add {
   path: Path;
   item: any;
 }
+export function isAdd(change: Change): change is Add {
+  return change.type === ChangeType.Add;
+}
+
 export interface Edit {
   type: ChangeType.Edit;
   path: Path;
   before: any;
   after: any;
 }
+export function isEdit(change: Change): change is Edit {
+  return change.type === ChangeType.Edit;
+}
+
 export interface Remove {
   type: ChangeType.Remove;
   path: Path;
 }
+export function isRemove(change: Change): change is Remove {
+  return change.type === ChangeType.Remove;
+}
+
 export interface Move {
   type: ChangeType.Move;
   path: Path;
   from: number;
   to: number;
 }
+export function isMove(change: Change): change is Move {
+  return change.type === ChangeType.Move;
+}
+
 export interface Rename {
   type: ChangeType.Rename;
   path: Path;
+  from: string;
   to: string;
+}
+export function isRename(change: Change): change is Rename {
+  return change.type === ChangeType.Rename;
 }
 
 export type Change = Add | Edit | Remove | Move | Rename;
@@ -87,7 +107,8 @@ function compareObjects(before: any, after: any, path: Path = []): Change[] {
       const to = after_keys[after_stable.indexOf(before_stable[index])];
       changes.push({
         type: ChangeType.Rename,
-        path: path.concat(key),
+        path,
+        from: key,
         to
       });
     } else {

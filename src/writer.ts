@@ -1,5 +1,4 @@
 import {
-  AST,
   Node,
   isKeyValue,
   isTable,
@@ -13,7 +12,8 @@ import {
   InlineArray,
   InlineArrayItem,
   InlineTableItem,
-  NodeType
+  NodeType,
+  isComment
 } from './ast';
 import { Span, getSpan, clonePosition } from './location';
 import { last } from './utils';
@@ -121,7 +121,11 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   const start = previous
     ? {
         line: previous.loc.end.line,
-        column: use_new_line ? previous.loc.start.column : previous.loc.end.column
+        column: use_new_line
+          ? !isComment(previous)
+            ? previous.loc.start.column
+            : parent.loc.start.column
+          : previous.loc.end.column
       }
     : clonePosition(parent.loc.start);
 
