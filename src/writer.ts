@@ -177,7 +177,68 @@ export function applyWrites(ast: AST) {
   const enter = getEnter(ast);
   const exit = getExit(ast);
 
-  // TODO Visitor
+  const offset: { lines: number; columns: { [index: number]: number } } = {
+    lines: 0,
+    columns: {}
+  };
+
+  function shiftStart(node: Node) {
+    node.loc.start.line += offset.lines;
+    node.loc.start.column += offset.columns[node.loc.start.line] || 0;
+
+    const entering = enter.get(node);
+    if (entering) {
+      offset.lines += entering.lines;
+      offset.columns[node.loc.start.line] =
+        (offset.columns[node.loc.start.line] || 0) + entering.columns;
+    }
+  }
+  function shiftEnd(node: Node) {
+    node.loc.end.line += offset.lines;
+    node.loc.end.column += offset.columns[node.loc.end.line] || 0;
+
+    const exiting = exit.get(node);
+    if (exiting) {
+      offset.lines += exiting.lines;
+      offset.columns[node.loc.end.line] =
+        (offset.columns[node.loc.end.line] || 0) + exiting.columns;
+    }
+  }
+  const shiftLocation = {
+    enter: shiftStart,
+    exit: shiftEnd
+  };
+
+  traverse(ast, {
+    [NodeType.Document]: shiftLocation,
+    [NodeType.Table]: shiftLocation,
+    [NodeType.TableArray]: shiftLocation,
+    [NodeType.InlineTable]: shiftLocation,
+    [NodeType.InlineArray]: shiftLocation,
+
+    [NodeType.InlineArrayItem]: shiftLocation,
+    [NodeType.InlineTableItem]: shiftLocation,
+    [NodeType.TableKey]: shiftLocation,
+    [NodeType.TableArrayKey]: shiftLocation,
+
+    [NodeType.KeyValue]: {
+      enter(node) {
+        const start_line = node.loc.start.line + offset.lines;
+        node.equals += offset.columns[start_line] || 0;
+
+        shiftStart(node);
+      },
+      exit: shiftEnd
+    },
+
+    [NodeType.Key]: shiftLocation,
+    [NodeType.String]: shiftLocation,
+    [NodeType.Integer]: shiftLocation,
+    [NodeType.Float]: shiftLocation,
+    [NodeType.Boolean]: shiftLocation,
+    [NodeType.DateTime]: shiftLocation,
+    [NodeType.Comment]: shiftLocation
+  });
 }
 
 export function shiftNode(node: Node, span: Span): Node {
