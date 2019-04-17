@@ -2,7 +2,7 @@
 
 exports[`it should parse examples 1`] = `
 Object {
-  "body": Array [
+  "items": Array [
     Object {
       "loc": Object {
         "end": Object {
@@ -266,18 +266,7 @@ Likes tater tots and beer.",
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 7,
-            "line": 5,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 5,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 6,
@@ -294,6 +283,17 @@ Likes tater tots and beer.",
             "owner",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 7,
+            "line": 5,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 5,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -581,18 +581,7 @@ Likes tater tots and beer.",
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 10,
-            "line": 11,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 11,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 9,
@@ -609,6 +598,17 @@ Likes tater tots and beer.",
             "database",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 10,
+            "line": 11,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 11,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -640,18 +640,7 @@ Likes tater tots and beer.",
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 9,
-            "line": 17,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 17,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 8,
@@ -668,6 +657,17 @@ Likes tater tots and beer.",
             "servers",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 9,
+            "line": 17,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 17,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -777,18 +777,7 @@ Likes tater tots and beer.",
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 17,
-            "line": 20,
-          },
-          "start": Object {
-            "column": 2,
-            "line": 20,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 16,
@@ -806,6 +795,17 @@ Likes tater tots and beer.",
             "alpha",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 17,
+            "line": 20,
+          },
+          "start": Object {
+            "column": 2,
+            "line": 20,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -975,18 +975,7 @@ Likes tater tots and beer.",
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 16,
-            "line": 24,
-          },
-          "start": Object {
-            "column": 2,
-            "line": 24,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 15,
@@ -1004,6 +993,17 @@ Likes tater tots and beer.",
             "beta",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 16,
+            "line": 24,
+          },
+          "start": Object {
+            "column": 2,
+            "line": 24,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -1613,18 +1613,7 @@ Likes tater tots and beer.",
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 9,
-            "line": 29,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 29,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 8,
@@ -1641,6 +1630,17 @@ Likes tater tots and beer.",
             "clients",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 9,
+            "line": 29,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 29,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -1750,18 +1750,7 @@ Likes tater tots and beer.",
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 14,
-            "line": 42,
-          },
-          "start": Object {
-            "column": 2,
-            "line": 42,
-          },
-        },
-        "type": "TableArrayKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 12,
@@ -1778,6 +1767,17 @@ Likes tater tots and beer.",
             "products",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 14,
+            "line": 42,
+          },
+          "start": Object {
+            "column": 2,
+            "line": 42,
+          },
+        },
+        "type": "TableArrayKey",
       },
       "loc": Object {
         "end": Object {
@@ -1933,18 +1933,7 @@ Likes tater tots and beer.",
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 14,
-            "line": 46,
-          },
-          "start": Object {
-            "column": 2,
-            "line": 46,
-          },
-        },
-        "type": "TableArrayKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 12,
@@ -1961,6 +1950,17 @@ Likes tater tots and beer.",
             "products",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 14,
+            "line": 46,
+          },
+          "start": Object {
+            "column": 2,
+            "line": 46,
+          },
+        },
+        "type": "TableArrayKey",
       },
       "loc": Object {
         "end": Object {
@@ -1991,7 +1991,7 @@ Likes tater tots and beer.",
 
 exports[`it should parse examples 2`] = `
 Object {
-  "body": Array [
+  "items": Array [
     Object {
       "items": Array [
         Object {
@@ -2042,18 +2042,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 14,
-            "line": 1,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 1,
-          },
-        },
-        "type": "TableArrayKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 12,
@@ -2071,6 +2060,17 @@ Object {
             "blah",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 14,
+            "line": 1,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 1,
+          },
+        },
+        "type": "TableArrayKey",
       },
       "loc": Object {
         "end": Object {
@@ -2180,18 +2180,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 23,
-            "line": 4,
-          },
-          "start": Object {
-            "column": 2,
-            "line": 4,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 22,
@@ -2210,6 +2199,17 @@ Object {
             "physical",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 23,
+            "line": 4,
+          },
+          "start": Object {
+            "column": 2,
+            "line": 4,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -2273,18 +2273,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 14,
-            "line": 8,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 8,
-          },
-        },
-        "type": "TableArrayKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 12,
@@ -2302,6 +2291,17 @@ Object {
             "blah",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 14,
+            "line": 8,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 8,
+          },
+        },
+        "type": "TableArrayKey",
       },
       "loc": Object {
         "end": Object {
@@ -2411,18 +2411,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 23,
-            "line": 11,
-          },
-          "start": Object {
-            "column": 2,
-            "line": 11,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 22,
@@ -2441,6 +2430,17 @@ Object {
             "physical",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 23,
+            "line": 11,
+          },
+          "start": Object {
+            "column": 2,
+            "line": 11,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -2471,7 +2471,7 @@ Object {
 
 exports[`it should parse hard examples 1`] = `
 Object {
-  "body": Array [
+  "items": Array [
     Object {
       "loc": Object {
         "end": Object {
@@ -2578,18 +2578,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 5,
-            "line": 5,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 5,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 4,
@@ -2606,6 +2595,17 @@ Object {
             "the",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 5,
+            "line": 5,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 5,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -2979,18 +2979,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 14,
-            "line": 8,
-          },
-          "start": Object {
-            "column": 4,
-            "line": 8,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 13,
@@ -3008,6 +2997,17 @@ Object {
             "hard",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 14,
+            "line": 8,
+          },
+          "start": Object {
+            "column": 4,
+            "line": 8,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -3300,18 +3300,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 25,
-            "line": 16,
-          },
-          "start": Object {
-            "column": 8,
-            "line": 16,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 24,
@@ -3330,6 +3319,17 @@ Object {
             "bit#",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 25,
+            "line": 16,
+          },
+          "start": Object {
+            "column": 8,
+            "line": 16,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -3360,7 +3360,7 @@ Object {
 
 exports[`it should parse hard examples 2`] = `
 Object {
-  "body": Array [
+  "items": Array [
     Object {
       "loc": Object {
         "end": Object {
@@ -3467,18 +3467,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 5,
-            "line": 6,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 6,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 4,
@@ -3495,6 +3484,17 @@ Object {
             "the",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 5,
+            "line": 6,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 6,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -3868,18 +3868,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 14,
-            "line": 10,
-          },
-          "start": Object {
-            "column": 4,
-            "line": 10,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 13,
@@ -3897,6 +3886,17 @@ Object {
             "hard",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 14,
+            "line": 10,
+          },
+          "start": Object {
+            "column": 4,
+            "line": 10,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -4189,18 +4189,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 25,
-            "line": 18,
-          },
-          "start": Object {
-            "column": 8,
-            "line": 18,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 24,
@@ -4219,6 +4208,17 @@ Object {
             "βïƭ#",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 25,
+            "line": 18,
+          },
+          "start": Object {
+            "column": 8,
+            "line": 18,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -4249,7 +4249,7 @@ Object {
 
 exports[`it should parse inline table 1`] = `
 Object {
-  "body": Array [
+  "items": Array [
     Object {
       "equals": 4,
       "key": Object {
@@ -4372,7 +4372,7 @@ Object {
 
 exports[`it should parse kitchen sink 1`] = `
 Object {
-  "body": Array [
+  "items": Array [
     Object {
       "loc": Object {
         "end": Object {
@@ -5812,18 +5812,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 8,
-            "line": 5,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 5,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 7,
@@ -5840,6 +5829,17 @@ Object {
             "values",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 8,
+            "line": 5,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 5,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -5932,18 +5932,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 21,
-            "line": 33,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 33,
-          },
-        },
-        "type": "TableKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 20,
@@ -5961,6 +5950,17 @@ Object {
             "tater.man",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 21,
+            "line": 33,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 33,
+          },
+        },
+        "type": "TableKey",
       },
       "loc": Object {
         "end": Object {
@@ -6070,18 +6070,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 12,
-            "line": 39,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 39,
-          },
-        },
-        "type": "TableArrayKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 10,
@@ -6098,6 +6087,17 @@ Object {
             "products",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 12,
+            "line": 39,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 39,
+          },
+        },
+        "type": "TableArrayKey",
       },
       "loc": Object {
         "end": Object {
@@ -6114,18 +6114,7 @@ Object {
     Object {
       "items": Array [],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 12,
-            "line": 43,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 43,
-          },
-        },
-        "type": "TableArrayKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 10,
@@ -6142,6 +6131,17 @@ Object {
             "products",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 12,
+            "line": 43,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 43,
+          },
+        },
+        "type": "TableArrayKey",
       },
       "loc": Object {
         "end": Object {
@@ -6297,18 +6297,7 @@ Object {
         },
       ],
       "key": Object {
-        "loc": Object {
-          "end": Object {
-            "column": 12,
-            "line": 45,
-          },
-          "start": Object {
-            "column": 0,
-            "line": 45,
-          },
-        },
-        "type": "TableArrayKey",
-        "value": Object {
+        "item": Object {
           "loc": Object {
             "end": Object {
               "column": 10,
@@ -6325,6 +6314,17 @@ Object {
             "products",
           ],
         },
+        "loc": Object {
+          "end": Object {
+            "column": 12,
+            "line": 45,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 45,
+          },
+        },
+        "type": "TableArrayKey",
       },
       "loc": Object {
         "end": Object {

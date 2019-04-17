@@ -32,7 +32,7 @@ test('it should attempt to find moved array items', () => {
   ).toMatchSnapshot();
 });
 
-test.only('it should add, move, and remove in arrays', () => {
+test('it should add, move, and remove in arrays', () => {
   expect(diff([1, 1, 2], [1, 2, 3])).toMatchSnapshot();
 });
 
