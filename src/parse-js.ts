@@ -13,7 +13,8 @@ import {
   InlineTableItem,
   Key,
   String as StringNode,
-  AST
+  AST,
+  Document
 } from './ast';
 import { Position, clonePosition, cloneLocation } from './location';
 import { Format, formatTopLevel, formatPrintWidth } from './format';
@@ -38,20 +39,23 @@ export default function parseJS(value: any, format: Format = {}): AST {
   value = toJSON(value);
   if (!isObject(value)) return walkValue(value, { start: zero(), format });
 
-  // Heuristics:
-  // 1. Top-level objects/arrays should be tables/table arrays
-  // 2. Convert objects/arrays to tables/table arrays based on print width
-  let items = pipe(
-    walkObject(value, { start: zero(), format }) as Array<Block>,
-    formatTopLevel,
-    items => formatPrintWidth(items, format)
-  );
-
-  return {
+  const items = walkObject(value, { start: zero(), format }) as Array<Block>;
+  let document: Document = {
     type: NodeType.Document,
     loc: { start: zero(), end: items.length ? last(items)!.loc.end : zero() },
     items
   };
+
+  // Heuristics:
+  // 1. Top-level objects/arrays should be tables/table arrays
+  // 2. Convert objects/arrays to tables/table arrays based on print width
+  document = pipe(
+    document,
+    formatTopLevel,
+    document => formatPrintWidth(document, format)
+  );
+
+  return document;
 }
 
 function walkObject(value: any, options: Options): KeyValue[] {

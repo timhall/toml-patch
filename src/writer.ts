@@ -25,23 +25,23 @@ import traverse from './traverse';
 // Others are applied on exit (e.g. shift next items)
 type Offsets = WeakMap<Node, Span>;
 
-const enter_offsets: WeakMap<AST, Offsets> = new WeakMap();
-const getEnter = (ast: AST) => {
-  if (!enter_offsets.has(ast)) {
-    enter_offsets.set(ast, new WeakMap());
+const enter_offsets: WeakMap<Node, Offsets> = new WeakMap();
+const getEnter = (root: Node) => {
+  if (!enter_offsets.has(root)) {
+    enter_offsets.set(root, new WeakMap());
   }
-  return enter_offsets.get(ast)!;
+  return enter_offsets.get(root)!;
 };
 
-const exit_offsets: WeakMap<AST, Offsets> = new WeakMap();
-const getExit = (ast: AST) => {
-  if (!exit_offsets.has(ast)) {
-    exit_offsets.set(ast, new WeakMap());
+const exit_offsets: WeakMap<Node, Offsets> = new WeakMap();
+const getExit = (root: Node) => {
+  if (!exit_offsets.has(root)) {
+    exit_offsets.set(root, new WeakMap());
   }
-  return exit_offsets.get(ast)!;
+  return exit_offsets.get(root)!;
 };
 
-export function replace(ast: AST, parent: Node, existing: Node, replacement: Node) {
+export function replace(root: Node, parent: Node, existing: Node, replacement: Node) {
   // First, replace existing node
   // (by index for items, item, or key/value)
   if (hasItems(parent)) {
@@ -63,8 +63,8 @@ export function replace(ast: AST, parent: Node, existing: Node, replacement: Nod
 
   // Shift the replacement node into the same start position as existing
   const shift = {
-    lines: replacement.loc.start.line - existing.loc.start.line,
-    columns: replacement.loc.start.column - existing.loc.start.column
+    lines: existing.loc.start.line - replacement.loc.start.line,
+    columns: existing.loc.start.column - replacement.loc.start.column
   };
   shiftNode(replacement, shift);
 
@@ -76,11 +76,17 @@ export function replace(ast: AST, parent: Node, existing: Node, replacement: Nod
     columns: replacement_span.columns - existing_span.columns
   };
 
-  const offsets = getExit(ast);
+  const offsets = getExit(root);
+  const existing_offsets = offsets.get(existing);
+  if (existing_offsets) {
+    offset.lines += existing_offsets.lines;
+    offset.columns += existing_offsets.columns;
+  }
+
   offsets.set(replacement, offset);
 }
 
-export function insert(ast: AST, parent: Node, child: Node, index?: number) {
+export function insert(root: Node, parent: Node, child: Node, index?: number) {
   if (!hasItems(parent)) {
     throw new Error(`Unsupported parent type "${parent.type}" for replace.`);
   }
@@ -96,34 +102,40 @@ export function insert(ast: AST, parent: Node, child: Node, index?: number) {
 
   // Add commas as-needed
   const is_inline = isInlineArray(parent) || isInlineTable(parent);
-  if (previous && is_inline) {
+  if (is_inline && previous) {
     (previous as InlineArrayItem | InlineTableItem).comma = true;
   }
-  if (index != null && parent.items.length >= index + 1 && is_inline) {
+  if (is_inline && index != null && parent.items.length >= index + 1) {
     (child as InlineArrayItem | InlineTableItem).comma = true;
   }
 
   // Set start location from previous item or start of array
   // (previous is undefined for empty array or inserting at first item)
   const use_new_line =
-    isTable(parent) || isTableArray(parent) || (isInlineArray(parent) && perLine(parent));
+    isTable(child) ||
+    isTableArray(child) ||
+    isTable(parent) ||
+    isTableArray(parent) ||
+    (isInlineArray(parent) && perLine(parent));
 
   const start = previous
     ? {
-        line: previous.loc.start.line,
+        line: previous.loc.end.line,
         column: use_new_line ? previous.loc.start.column : previous.loc.end.column
       }
-    : parent.loc.start;
+    : clonePosition(parent.loc.start);
 
-  if (use_new_line) {
-    child.loc.start.line += 1;
+  if (isTable(child) || isTableArray(child)) {
+    start.line += 2;
+  } else if (use_new_line) {
+    start.line += 1;
   } else {
-    child.loc.start.column += previous ? 2 : 1;
+    start.column += previous ? 2 : 1;
   }
 
   const shift = {
-    lines: child.loc.start.line - start.line,
-    columns: child.loc.start.column - start.column
+    lines: start.line - child.loc.start.line,
+    columns: start.column - child.loc.start.column
   };
 
   shiftNode(child, shift);
@@ -135,11 +147,22 @@ export function insert(ast: AST, parent: Node, child: Node, index?: number) {
     columns: child_span.columns
   };
 
-  const offsets = getExit(ast);
+  // The child element is placed relative to the previous element,
+  // if the previous element has an offset, need to position relative to that
+  // -> Move previous offset to child's offset
+  const previous_offset = previous && getExit(root).get(previous);
+  if (previous_offset) {
+    offset.lines += previous_offset.lines;
+    offset.columns += previous_offset.columns;
+
+    getExit(root).delete(previous!);
+  }
+
+  const offsets = getExit(root);
   offsets.set(child, offset);
 }
 
-export function remove(ast: AST, parent: Node, node: Node) {
+export function remove(root: Node, parent: Node, node: Node) {
   if (!hasItems(parent)) {
     throw new Error(`Unsupported parent type "${parent.type}" for remove.`);
   }
@@ -160,22 +183,34 @@ export function remove(ast: AST, parent: Node, node: Node) {
     (next && next.loc.start.line === node.loc.end.line);
 
   const offset = {
-    lines: removed_span.lines - (keep_line ? 1 : 0),
-    columns: removed_span.columns
+    lines: -(removed_span.lines - (keep_line ? 1 : 0)),
+    columns: -removed_span.columns
   };
 
   if (previous) {
-    const offsets = getExit(ast);
+    const offsets = getExit(root);
+    const existing = offsets.get(previous);
+    if (existing) {
+      offset.lines += existing.lines;
+      offset.columns += existing.columns;
+    }
+
     offsets.set(previous, offset);
   } else {
-    const offsets = getEnter(ast);
+    const offsets = getEnter(root);
+    const existing = offsets.get(parent);
+    if (existing) {
+      offset.lines += existing.lines;
+      offset.columns += existing.columns;
+    }
+
     offsets.set(parent, offset);
   }
 }
 
-export function applyWrites(ast: AST) {
-  const enter = getEnter(ast);
-  const exit = getExit(ast);
+export function applyWrites(root: Node) {
+  const enter = getEnter(root);
+  const exit = getExit(root);
 
   const offset: { lines: number; columns: { [index: number]: number } } = {
     lines: 0,
@@ -209,7 +244,7 @@ export function applyWrites(ast: AST) {
     exit: shiftEnd
   };
 
-  traverse(ast, {
+  traverse(root, {
     [NodeType.Document]: shiftLocation,
     [NodeType.Table]: shiftLocation,
     [NodeType.TableArray]: shiftLocation,
