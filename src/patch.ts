@@ -3,7 +3,7 @@ import parseJS from './parse-js';
 import toJS from './to-js';
 import toTOML from './to-toml';
 import { Format } from './format';
-import { AST, isTableArray, isInlineArray, isKeyValue, isInlineTable } from './ast';
+import { AST, isTableArray, isInlineArray, isKeyValue, isInlineTable, WithItems } from './ast';
 import diff, { Change, isAdd, isEdit, isRemove, isMove, isRename } from './diff';
 import findByPath from './find-by-path';
 import { last } from './utils';
@@ -51,13 +51,17 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
 
       replace(original, parent, existing, replacement);
     } else if (isRemove(change)) {
-      const parent = findByPath(original, change.path.slice(0, -1));
+      let parent = findByPath(original, change.path.slice(0, -1));
+      if (isKeyValue(parent)) parent = parent.value;
+
       const node = findByPath(original, change.path);
 
       remove(original, parent, node);
     } else if (isMove(change)) {
-      const parent = findByPath(original, change.path);
-      const node = findByPath(original, change.path.concat(change.from));
+      let parent = findByPath(original, change.path);
+      if (isKeyValue(parent)) parent = parent.value;
+
+      const node = (parent as WithItems).items[change.from];
 
       remove(original, parent, node);
       insert(original, parent, node, change.to);

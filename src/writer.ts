@@ -13,7 +13,10 @@ import {
   InlineArrayItem,
   InlineTableItem,
   NodeType,
-  isComment
+  isComment,
+  isInlineTableItem,
+  isInlineArrayItem,
+  isDocument
 } from './ast';
 import { Span, getSpan, clonePosition } from './location';
 import { last } from './utils';
@@ -91,8 +94,20 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
     throw new Error(`Unsupported parent type "${parent.type}" for insert`);
   }
 
+  // Determine bracket spacing from existing before inserting child
+  const is_inline = isInlineArray(parent) || isInlineTable(parent);
+  let bracket_spacing = 0;
+  if (is_inline && parent.items.length) {
+    // TODO this doesn't take into account any offsets waiting to be applied
+    const leading_spacing = parent.items[0].loc.start.column - (parent.loc.start.column + 1);
+    const trailing_spacing = parent.loc.end.column - 1 - last(parent.items)!.loc.end.column;
+    bracket_spacing = Math.min(leading_spacing, trailing_spacing);
+  }
+
   // Store preceding node and insert
   const previous = index != null ? parent.items[index - 1] : last(parent.items);
+  const is_first = !previous;
+  const is_last = index == null || index === parent.items.length;
 
   if (index != null) {
     parent.items.splice(index, 0, child);
@@ -101,25 +116,27 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   }
 
   // Add commas as-needed
-  // TODO 2 similar/competing approaches here: is_inline and use_new_line -> unify
-  const is_inline = isInlineArray(parent) || isInlineTable(parent);
+
   const leading_comma = is_inline && previous;
+  const has_trailing_items = index != null && parent.items.length >= index + 1;
+  const trailing_comma = is_inline && has_trailing_items;
   if (leading_comma) {
     (previous as InlineArrayItem | InlineTableItem).comma = true;
   }
-  if (is_inline && index != null && parent.items.length >= index + 1) {
+  if (trailing_comma) {
     (child as InlineArrayItem | InlineTableItem).comma = true;
   }
 
-  // Set start location from previous item or start of array
-  // (previous is undefined for empty array or inserting at first item)
+  // Use a new line for documents, children of Table/TableArray,
+  // and if an inline table is using new lines
   const use_new_line =
-    isTable(child) ||
-    isTableArray(child) ||
+    isDocument(parent) ||
     isTable(parent) ||
     isTableArray(parent) ||
     (isInlineArray(parent) && perLine(parent));
 
+  // Set start location from previous item or start of array
+  // (previous is undefined for empty array or inserting at first item)
   const start = previous
     ? {
         line: previous.loc.end.line,
@@ -135,8 +152,10 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
     start.line += 2;
   } else if (use_new_line) {
     start.line += 1;
-  } else {
-    start.column += previous ? 2 : 0;
+  } else if (is_inline) {
+    const skip_comma = 2;
+    const skip_bracket = 1;
+    start.column += leading_comma ? skip_comma : skip_bracket + bracket_spacing;
   }
 
   const shift = {
@@ -150,7 +169,10 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   const child_span = getSpan(child.loc);
   const offset = {
     lines: child_span.lines - (use_new_line ? 0 : 1),
-    columns: child_span.columns + (leading_comma ? 2 : 0)
+    columns:
+      child_span.columns +
+      (leading_comma || trailing_comma ? 2 : 0) +
+      (is_first || is_last ? bracket_spacing : 0)
   };
 
   // The child element is placed relative to the previous element,
@@ -169,30 +191,82 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
 }
 
 export function remove(root: Node, parent: Node, node: Node) {
+  // Remove an element from the parent's items
+  // (supports Document, Table, TableArray, InlineTable, and InlineArray
+  //
+  //      X
+  // [ 1, 2, 3 ]
+  //    ^-^
+  // -> Remove element 2 and apply 0,-3 offset to 1
+  //
+  // [table]
+  // a = 1
+  // b = 2 # X
+  // c = 3
+  // -> Remove element 2 and apply -1,0 offset to 1
   if (!hasItems(parent)) {
     throw new Error(`Unsupported parent type "${parent.type}" for remove`);
   }
 
-  const index = parent.items.indexOf(node);
+  let index = parent.items.indexOf(node);
   if (index < 0) {
-    throw new Error('Could not find node in parent for removal');
+    // Try again, looking at child items for nodes like InlineArrayItem
+    index = parent.items.findIndex(item => hasItem(item) && item.item === node);
+
+    if (index < 0) {
+      throw new Error('Could not find node in parent for removal');
+    }
+
+    node = parent.items[index];
   }
 
   const previous = parent.items[index - 1];
-  const next = parent.items[index + 1];
-  parent.items.splice(index, 1);
+  let next = parent.items[index + 1];
 
-  // Apply offsets after preceding node or before children of parent node
-  const removed_span = getSpan(node.loc);
-  const keep_line =
-    (previous && previous.loc.end.line === node.loc.start.line) ||
-    (next && next.loc.start.line === node.loc.end.line);
+  // Remove node
+  parent.items.splice(index, 1);
+  let removed_span = getSpan(node.loc);
+
+  // Remove an associated comment that appears on the same line
+  //
+  // [table]
+  // a = 1
+  // b = 2 # remove this too
+  // c = 3
+  //
+  // TODO InlineTable - this only applies to comments in Table/TableArray
+  if (next && isComment(next) && next.loc.start.line === node.loc.end.line) {
+    // Add comment to removed
+    removed_span = getSpan({ start: node.loc.start, end: next.loc.end });
+
+    // Shift to next item
+    // (use same index since node has already been removed)
+    next = parent.items[index + 1];
+
+    // Remove comment
+    parent.items.splice(index, 1);
+  }
+
+  // For inline tables and arrays, check whether the line should be kept
+  const is_inline = isInlineArrayItem(previous) || isInlineTableItem(previous);
+  const previous_on_same_line = previous && previous.loc.end.line === node.loc.start.line;
+  const next_on_sameLine = next && next.loc.start.line === node.loc.end.line;
+  const keep_line = is_inline && (previous_on_same_line || next_on_sameLine);
 
   const offset = {
     lines: -(removed_span.lines - (keep_line ? 1 : 0)),
     columns: -removed_span.columns
   };
 
+  // Offset for comma and remove comma from previous (if-needed)
+  if (is_inline && previous_on_same_line) {
+    offset.columns -= 2;
+  }
+  if (is_inline && previous && !next) {
+    (previous as InlineArrayItem | InlineTableItem).comma = false;
+  }
+
+  // Apply offsets after preceding node or before children of parent node
   if (previous) {
     const offsets = getExit(root);
     const existing = offsets.get(previous);

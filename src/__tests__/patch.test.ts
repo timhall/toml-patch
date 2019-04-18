@@ -23,12 +23,11 @@ test('it should add key-value to inline table', () => {
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.skip('it should add to inline array', () => {
+test('it should add to inline array', () => {
   const value = parse(example);
-  value.clients.count.d = 4;
+  value.database.ports.push(8003);
 
   expect(patch(example, value)).toMatchSnapshot();
-  value.database.ports.push(8003);
 });
 
 test.skip('it should add to table array', () => {
@@ -38,21 +37,21 @@ test.skip('it should add to table array', () => {
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.skip('should key-value from table', () => {
+test.skip('should remove key-value from table', () => {
   const value = parse(example);
   delete value.database.enabled;
 
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.skip('should remove element from inline array', () => {
+test('should remove element from inline array', () => {
   const value = parse(example);
   value.database.ports.splice(1, 1);
 
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.skip('should move elements in inline array', () => {
+test.only('should move elements in inline array', () => {
   const value = parse(example);
   value.clients.data[1][0] = 2;
   value.clients.data[1][1] = 1;
