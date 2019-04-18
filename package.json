@@ -14,9 +14,9 @@
     "encoder",
     "decoder"
   ],
-  "main": "lib/toml.cjs.js",
-  "module": "lib/toml.es.js",
-  "browser": "lib/toml.umd.min.js",
+  "main": "dist/toml.cjs.js",
+  "module": "dist/toml.es.js",
+  "browser": "dist/toml.umd.min.js",
   "scripts": {
     "test": "jest",
     "typecheck": "tsc",
