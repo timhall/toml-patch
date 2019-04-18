@@ -1,11 +1,18 @@
 {
-  "name": "@timhall/toml",
+  "name": "toml-patch",
   "version": "0.0.0",
   "author": "Tim Hall <tim.hall.engr@gmail.com>",
   "license": "MIT",
-  "description": "TODO",
+  "description": "Patch, parse, and stringify TOML",
+  "homepage": "https://github.com/timhall/toml-patch",
   "keywords": [
-    "toml"
+    "toml",
+    "patch",
+    "parse",
+    "stringify",
+    "parser",
+    "encoder",
+    "decoder"
   ],
   "main": "lib/toml.cjs.js",
   "module": "lib/toml.es.js",
@@ -13,7 +20,8 @@
   "scripts": {
     "test": "jest",
     "typecheck": "tsc",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/jest": "^24.0.11",
