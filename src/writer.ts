@@ -116,7 +116,6 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   }
 
   // Add commas as-needed
-
   const leading_comma = is_inline && previous;
   const has_trailing_items = index != null && parent.items.length >= index + 1;
   const trailing_comma = is_inline && has_trailing_items;

@@ -30,7 +30,7 @@ test('it should add to inline array', () => {
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.skip('it should add to table array', () => {
+test('it should add to table array', () => {
   const value = parse(example);
   value.products.splice(1, 0, { name: 'Screwdriver', sku: 123456 });
 

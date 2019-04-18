@@ -96,3 +96,9 @@ export default function findByPath(ast: AST, path: Path): Node {
 
   return found;
 }
+
+export function tryFindByPath(ast: AST, path: Path): Node | undefined {
+  try {
+    return findByPath(ast, path);
+  } catch (err) {}
+}

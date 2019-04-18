@@ -8,13 +8,19 @@ import {
   isTableArray,
   isInlineArray,
   isKeyValue,
-  isInlineTable,
   WithItems,
-  KeyValue
+  KeyValue,
+  isTable,
+  Node,
+  Document,
+  isDocument,
+  Table,
+  TableArray,
+  Block
 } from './ast';
 import diff, { Change, isAdd, isEdit, isRemove, isMove, isRename } from './diff';
-import findByPath from './find-by-path';
-import { last } from './utils';
+import findByPath, { tryFindByPath } from './find-by-path';
+import { last, arraysEqual, isInteger } from './utils';
 import { insert, replace, remove, applyWrites } from './writer';
 
 export default function patch(existing: string, updated: any, format?: Format): string {
@@ -41,13 +47,42 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
 
   changes.forEach(change => {
     if (isAdd(change)) {
-      let parent = findByPath(original, change.path.slice(0, -1));
-      if (isKeyValue(parent)) parent = parent.value;
-
       const child = findByPath(updated, change.path);
-      const index = last(change.path)! as number;
+      const parent_path = change.path.slice(0, -1);
+      let index = last(change.path)! as number;
 
-      if (isTableArray(parent) || isInlineArray(parent)) {
+      let is_table_array = isTableArray(child);
+      if (isInteger(index) && !parent_path.some(isInteger)) {
+        const sibling = tryFindByPath(original, parent_path.concat(0));
+        if (sibling && isTableArray(sibling)) {
+          is_table_array = true;
+        }
+      }
+
+      let parent: Node;
+      if (isTable(child)) {
+        parent = original;
+      } else if (is_table_array) {
+        parent = original;
+
+        // The index needs to be updated to top-level items
+        // to properly account for other items, comments, and nesting
+        const document = original as Document;
+        const before = tryFindByPath(document, parent_path.concat(index - 1)) as Block | undefined;
+        const after = tryFindByPath(document, parent_path.concat(index)) as Block | undefined;
+        if (after) {
+          index = document.items.indexOf(after);
+        } else if (before) {
+          index = document.items.indexOf(before) + 1;
+        } else {
+          index = document.items.length;
+        }
+      } else {
+        parent = findByPath(original, change.path.slice(0, -1));
+        if (isKeyValue(parent)) parent = parent.value;
+      }
+
+      if (isTableArray(parent) || isInlineArray(parent) || isDocument(parent)) {
         insert(original, parent, child, index);
       } else {
         insert(original, parent, child);
