@@ -1,0 +1,6 @@
+[submodule "submodules/spec-tests"]
+	path = submodules/spec-tests
+	url = https://github.com/iarna/toml-spec-tests.git
+[submodule "submodules/toml-test"]
+	path = submodules/toml-test
+	url = https://github.com/BurntSushi/toml-test.git
