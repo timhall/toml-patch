@@ -43,5 +43,8 @@
   "prettier": {
     "singleQuote": true,
     "printWidth": 100
-  }
+  },
+  "files": [
+    "dist/"
+  ]
 }

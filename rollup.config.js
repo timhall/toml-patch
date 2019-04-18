@@ -13,13 +13,11 @@ export default [
       {
         file: 'dist/toml.es.js',
         format: 'es',
-        sourcemap: true,
         banner
       },
       {
         file: 'dist/toml.cjs.js',
         format: 'cjs',
-        sourcemap: true,
         banner
       }
     ],
