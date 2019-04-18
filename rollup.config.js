@@ -11,12 +11,12 @@ export default [
     input: 'src/index.ts',
     output: [
       {
-        file: 'dist/toml.es.js',
+        file: 'dist/toml-patch.es.js',
         format: 'es',
         banner
       },
       {
-        file: 'dist/toml.cjs.js',
+        file: 'dist/toml-patch.cjs.js',
         format: 'cjs',
         banner
       }
@@ -26,9 +26,9 @@ export default [
   {
     input: 'src/index.ts',
     output: {
-      file: 'dist/toml.umd.min.js',
+      file: 'dist/toml-patch.umd.min.js',
       format: 'umd',
-      name: 'toml',
+      name: 'TOML',
       sourcemap: true,
       banner
     },
@@ -37,7 +37,7 @@ export default [
   {
     input: 'src/index.ts',
     output: {
-      file: 'dist/toml.d.ts',
+      file: 'dist/toml-patch.d.ts',
       format: 'es',
       banner
     },

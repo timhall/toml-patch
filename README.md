@@ -10,6 +10,12 @@ toml-patch is dependency-free and can be installed via npm or yarn.
 $ npm install --save toml-patch
 ```
 
+For browser usage, you can use unpkg:
+
+```html
+<script src="https://unpkg.com/toml-patch"></script>
+```
+
 ## API
 
 <a href="#patch" name="patch">#</a> <b>patch</b>(<i>existing</i>, <i>updated</i>)
