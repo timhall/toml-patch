@@ -99,9 +99,9 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   let bracket_spacing = 0;
   if (is_inline && parent.items.length) {
     // TODO this doesn't take into account any offsets waiting to be applied
-    const leading_spacing = parent.items[0].loc.start.column - (parent.loc.start.column + 1);
-    const trailing_spacing = parent.loc.end.column - 1 - last(parent.items)!.loc.end.column;
-    bracket_spacing = Math.min(leading_spacing, trailing_spacing);
+    // const leading_spacing = parent.items[0].loc.start.column - (parent.loc.start.column + 1);
+    // const trailing_spacing = parent.loc.end.column - 1 - last(parent.items)!.loc.end.column;
+    // bracket_spacing = Math.min(leading_spacing, trailing_spacing);
   }
 
   // Store preceding node and insert
@@ -269,21 +269,9 @@ export function remove(root: Node, parent: Node, node: Node) {
   // Apply offsets after preceding node or before children of parent node
   if (previous) {
     const offsets = getExit(root);
-    const existing = offsets.get(previous);
-    if (existing) {
-      offset.lines += existing.lines;
-      offset.columns += existing.columns;
-    }
-
     offsets.set(previous, offset);
   } else {
     const offsets = getEnter(root);
-    const existing = offsets.get(parent);
-    if (existing) {
-      offset.lines += existing.lines;
-      offset.columns += existing.columns;
-    }
-
     offsets.set(parent, offset);
   }
 }

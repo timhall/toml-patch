@@ -37,7 +37,7 @@ test.skip('it should add to table array', () => {
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.skip('should remove key-value from table', () => {
+test('should remove key-value from table', () => {
   const value = parse(example);
   delete value.database.enabled;
 
@@ -51,7 +51,7 @@ test('should remove element from inline array', () => {
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.only('should move elements in inline array', () => {
+test('should move elements in inline array', () => {
   const value = parse(example);
   value.clients.data[1][0] = 2;
   value.clients.data[1][1] = 1;
