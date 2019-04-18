@@ -86,6 +86,13 @@ export default function toTOML(value: AST, newline: string = '\n'): string {
 
 function write(lines: string[], loc: Location, raw: string) {
   const raw_lines = raw.split(BY_NEW_LINE);
+  const expected_lines = loc.end.line - loc.start.line + 1;
+
+  if (raw_lines.length !== expected_lines) {
+    throw new Error(
+      `Mismatch between location and raw string, expected ${expected_lines} lines for "${raw}"`
+    );
+  }
 
   for (let i = loc.start.line; i <= loc.end.line; i++) {
     const line = getLine(lines, i);

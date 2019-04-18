@@ -3,11 +3,11 @@ import parseJS from './parse-js';
 import toJS from './to-js';
 import toTOML from './to-toml';
 import { Format } from './format';
-import { AST, KeyValue, isTableArray, isInlineArray } from './ast';
+import { AST, isTableArray, isInlineArray, isKeyValue, isInlineTable } from './ast';
 import diff, { Change, isAdd, isEdit, isRemove, isMove, isRename } from './diff';
 import findByPath from './find-by-path';
 import { last } from './utils';
-import { insert, replace, remove } from './writer';
+import { insert, replace, remove, applyWrites } from './writer';
 
 export default function patch(existing: string, updated: any, format?: Format): string {
   const existing_ast = parseTOML(existing);
@@ -33,7 +33,9 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
 
   changes.forEach(change => {
     if (isAdd(change)) {
-      const parent = findByPath(original, change.path.slice(0, -1));
+      let parent = findByPath(original, change.path.slice(0, -1));
+      if (isKeyValue(parent)) parent = parent.value;
+
       const child = findByPath(updated, change.path);
       const index = last(change.path)! as number;
 
@@ -68,5 +70,6 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
     }
   });
 
+  applyWrites(original);
   return original;
 }

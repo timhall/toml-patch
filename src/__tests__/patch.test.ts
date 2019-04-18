@@ -16,7 +16,7 @@ test('it should add key-value to table', () => {
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.skip('it should add key-value to inline table', () => {
+test('it should add key-value to inline table', () => {
   const value = parse(example);
   value.clients.count.d = 4;
 

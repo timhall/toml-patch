@@ -101,8 +101,10 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   }
 
   // Add commas as-needed
+  // TODO 2 similar/competing approaches here: is_inline and use_new_line -> unify
   const is_inline = isInlineArray(parent) || isInlineTable(parent);
-  if (is_inline && previous) {
+  const leading_comma = is_inline && previous;
+  if (leading_comma) {
     (previous as InlineArrayItem | InlineTableItem).comma = true;
   }
   if (is_inline && index != null && parent.items.length >= index + 1) {
@@ -134,7 +136,7 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   } else if (use_new_line) {
     start.line += 1;
   } else {
-    start.column += previous ? 2 : 1;
+    start.column += previous ? 2 : 0;
   }
 
   const shift = {
@@ -148,7 +150,7 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   const child_span = getSpan(child.loc);
   const offset = {
     lines: child_span.lines - (use_new_line ? 0 : 1),
-    columns: child_span.columns
+    columns: child_span.columns + (leading_comma ? 2 : 0)
   };
 
   // The child element is placed relative to the previous element,

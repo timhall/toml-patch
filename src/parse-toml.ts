@@ -23,7 +23,7 @@ import {
 import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokenizer';
 import { parseString } from './parse-string';
 import Cursor from './cursor';
-import { findPosition } from './location';
+import { findPosition, clonePosition, cloneLocation } from './location';
 import ParseError, { isParseError } from './parse-error';
 
 const TRUE = 'true';
@@ -196,7 +196,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
 
   key.item = {
     type: NodeType.Key,
-    loc: cursor.item.loc,
+    loc: cloneLocation(cursor.item.loc),
     raw: cursor.item.raw,
     value: [parseString(cursor.item.raw)]
   };
@@ -251,8 +251,10 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   return {
     type: is_table ? NodeType.Table : NodeType.TableArray,
     loc: {
-      start: key.loc!.start,
-      end: items.length ? items[items.length - 1].loc.end : key.loc!.end
+      start: clonePosition(key.loc!.start),
+      end: items.length
+        ? clonePosition(items[items.length - 1].loc.end)
+        : clonePosition(key.loc!.end)
     },
     key: key as TableKey | TableArrayKey,
     items
@@ -268,7 +270,7 @@ function keyValue(cursor: Cursor<Token>, input: string): [KeyValue, Comment[]] {
   //       ^---^  value
   const key: Key = {
     type: NodeType.Key,
-    loc: cursor.item.loc,
+    loc: cloneLocation(cursor.item.loc),
     raw: cursor.item.raw,
     value: [parseString(cursor.item.raw)]
   };
@@ -307,8 +309,8 @@ function keyValue(cursor: Cursor<Token>, input: string): [KeyValue, Comment[]] {
       key,
       value,
       loc: {
-        start: key.loc.start,
-        end: value.loc.end
+        start: clonePosition(key.loc.start),
+        end: clonePosition(value.loc.end)
       },
       equals
     },
@@ -473,7 +475,7 @@ function inlineTable(cursor: Cursor<Token>, input: string): InlineTable {
   // 6. InlineTable
   const value: InlineTable = {
     type: NodeType.InlineTable,
-    loc: cursor.item.loc,
+    loc: cloneLocation(cursor.item.loc),
     items: []
   };
 
@@ -511,7 +513,7 @@ function inlineTable(cursor: Cursor<Token>, input: string): InlineTable {
 
     const inline_item: InlineTableItem = {
       type: NodeType.InlineTableItem,
-      loc: { start: item.loc.start, end: item.loc.end },
+      loc: cloneLocation(item.loc),
       item,
       comma: false
     };
@@ -545,7 +547,7 @@ function inlineArray(cursor: Cursor<Token>, input: string): [InlineArray, Commen
 
   const value: InlineArray = {
     type: NodeType.InlineArray,
-    loc: cursor.item.loc,
+    loc: cloneLocation(cursor.item.loc),
     items: []
   };
   let comments: Comment[] = [];
@@ -574,7 +576,7 @@ function inlineArray(cursor: Cursor<Token>, input: string): [InlineArray, Commen
       const [item, additional_comments] = walkValue(cursor, input);
       const inline_item: InlineArrayItem = {
         type: NodeType.InlineArrayItem,
-        loc: { start: item.loc.start, end: item.loc.end },
+        loc: cloneLocation(item.loc),
         item,
         comma: false
       };
