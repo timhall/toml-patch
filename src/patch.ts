@@ -3,7 +3,15 @@ import parseJS from './parse-js';
 import toJS from './to-js';
 import toTOML from './to-toml';
 import { Format } from './format';
-import { AST, isTableArray, isInlineArray, isKeyValue, isInlineTable, WithItems } from './ast';
+import {
+  AST,
+  isTableArray,
+  isInlineArray,
+  isKeyValue,
+  isInlineTable,
+  WithItems,
+  KeyValue
+} from './ast';
 import diff, { Change, isAdd, isEdit, isRemove, isMove, isRename } from './diff';
 import findByPath from './find-by-path';
 import { last } from './utils';
@@ -66,11 +74,10 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
       remove(original, parent, node);
       insert(original, parent, node, change.to);
     } else if (isRename(change)) {
-      // TODO
-      // const parent = findByPath(original, change.path.concat(change.from)) as KeyValue;
-      // const replacement = findByPath(updated, change.path.concat(change.to)) as KeyValue;
-      //
-      // replace(original, parent, parent.key, replacement.key);
+      const parent = findByPath(original, change.path.concat(change.from)) as KeyValue;
+      const replacement = findByPath(updated, change.path.concat(change.to)) as KeyValue;
+
+      replace(original, parent, parent.key, replacement.key);
     }
   });
 

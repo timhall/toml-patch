@@ -327,7 +327,8 @@ export function applyWrites(root: Node) {
     [NodeType.KeyValue]: {
       enter(node) {
         const start_line = node.loc.start.line + offset.lines;
-        node.equals += offset.columns[start_line] || 0;
+        const key_offset = exit.get(node.key);
+        node.equals += (offset.columns[start_line] || 0) + (key_offset ? key_offset.columns : 0);
 
         shiftStart(node);
       },

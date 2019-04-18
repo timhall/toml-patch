@@ -59,7 +59,7 @@ test('should move elements in inline array', () => {
   expect(patch(example, value)).toMatchSnapshot();
 });
 
-test.skip('should rename key-value in table', () => {
+test('should rename key-value in table', () => {
   const value = parse(example);
   delete value.products[1].color;
   value.products[1].product_color = 'gray';
