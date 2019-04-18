@@ -66,3 +66,25 @@ test('should rename key-value in table', () => {
 
   expect(patch(example, value)).toMatchSnapshot();
 });
+
+test('should patch readme example', () => {
+  const existing = `
+# This is a TOML document
+
+title = "TOML example"
+owner.name = "Bob"
+`;
+  const patched = patch(existing, {
+    title: 'TOML example',
+    owner: {
+      name: 'Tim'
+    }
+  });
+
+  expect(patched).toEqual(`
+# This is a TOML document
+
+title = "TOML example"
+owner.name = "Tim"
+`);
+});

@@ -14,13 +14,11 @@ import {
   Node,
   Document,
   isDocument,
-  Table,
-  TableArray,
   Block
 } from './ast';
 import diff, { Change, isAdd, isEdit, isRemove, isMove, isRename } from './diff';
-import findByPath, { tryFindByPath } from './find-by-path';
-import { last, arraysEqual, isInteger } from './utils';
+import findByPath, { tryFindByPath, findParent } from './find-by-path';
+import { last, isInteger } from './utils';
 import { insert, replace, remove, applyWrites } from './writer';
 
 export default function patch(existing: string, updated: any, format?: Format): string {
@@ -78,7 +76,7 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
           index = document.items.length;
         }
       } else {
-        parent = findByPath(original, change.path.slice(0, -1));
+        parent = findParent(original, change.path);
         if (isKeyValue(parent)) parent = parent.value;
       }
 
@@ -88,13 +86,22 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
         insert(original, parent, child);
       }
     } else if (isEdit(change)) {
-      const parent = findByPath(original, change.path.slice(0, -1));
-      const existing = findByPath(original, change.path);
-      const replacement = findByPath(updated, change.path);
+      let existing = findByPath(original, change.path);
+      let replacement = findByPath(updated, change.path);
+      let parent;
+
+      if (isKeyValue(existing) && isKeyValue(replacement)) {
+        // Edit for key-value means value changes
+        parent = existing;
+        existing = existing.value;
+        replacement = replacement.value;
+      } else {
+        parent = findParent(original, change.path);
+      }
 
       replace(original, parent, existing, replacement);
     } else if (isRemove(change)) {
-      let parent = findByPath(original, change.path.slice(0, -1));
+      let parent = findParent(original, change.path);
       if (isKeyValue(parent)) parent = parent.value;
 
       const node = findByPath(original, change.path);
