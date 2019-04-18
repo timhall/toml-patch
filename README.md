@@ -98,3 +98,7 @@ assert.strictEqual(toml,
 [owner]
 name = "Tim"`);
 ```
+
+## Development
+
+[![Build Status](https://dev.azure.com/timhallengr/toml-patch/_apis/build/status/timhall.toml-patch?branchName=master)](https://dev.azure.com/timhallengr/toml-patch/_build/latest?definitionId=1&branchName=master)
