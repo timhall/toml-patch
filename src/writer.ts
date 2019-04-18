@@ -147,15 +147,18 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
       }
     : clonePosition(parent.loc.start);
 
-  if (isTable(child) || isTableArray(child)) {
-    start.line += 2;
+  const is_block = isTable(child) || isTableArray(child);
+  let leading_lines = 0;
+  if (is_block) {
+    leading_lines = 2;
   } else if (use_new_line) {
-    start.line += 1;
+    leading_lines = 1;
   } else if (is_inline) {
     const skip_comma = 2;
     const skip_bracket = 1;
     start.column += leading_comma ? skip_comma : skip_bracket + bracket_spacing;
   }
+  start.line += leading_lines;
 
   const shift = {
     lines: start.line - child.loc.start.line,
@@ -167,7 +170,7 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
   // Apply offsets after child node
   const child_span = getSpan(child.loc);
   const offset = {
-    lines: child_span.lines - (use_new_line ? 0 : 1),
+    lines: child_span.lines + (leading_lines - 1),
     columns:
       child_span.columns +
       (leading_comma || trailing_comma ? 2 : 0) +
