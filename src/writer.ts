@@ -269,13 +269,20 @@ export function remove(root: Node, parent: Node, node: Node) {
   }
 
   // Apply offsets after preceding node or before children of parent node
-  if (previous) {
-    const offsets = getExit(root);
-    offsets.set(previous, offset);
-  } else {
-    const offsets = getEnter(root);
-    offsets.set(parent, offset);
+  const target = previous || parent;
+  const offsets = getExit(root);
+  const previous_offset = offsets.get(target);
+  if (previous_offset) {
+    offset.lines += previous_offset.lines;
+    offset.columns += previous_offset.columns;
   }
+  const removed_offset = offsets.get(node);
+  if (removed_offset) {
+    offset.lines += removed_offset.lines;
+    offset.columns += removed_offset.columns;
+  }
+
+  offsets.set(target, offset);
 }
 
 export function applyWrites(root: Node) {

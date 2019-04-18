@@ -209,6 +209,7 @@ count = { a = 1, b=2   , c = 3 }
   [[products]]
   name = \\"Screwdriver\\"
   sku = 123456
+
   [[products]]
   name = \\"Nail\\"
   sku = 284758393
