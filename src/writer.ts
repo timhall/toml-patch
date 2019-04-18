@@ -46,7 +46,7 @@ export function replace(root: Node, parent: Node, existing: Node, replacement: N
   // (by index for items, item, or key/value)
   if (hasItems(parent)) {
     const index = parent.items.indexOf(existing);
-    if (index < 0) throw new Error(`Could not find existing item in parent node`);
+    if (index < 0) throw new Error(`Could not find existing item in parent node for replace`);
 
     parent.items.splice(index, 1, replacement);
   } else if (hasItem(parent)) {
@@ -58,7 +58,7 @@ export function replace(root: Node, parent: Node, existing: Node, replacement: N
       parent.value = replacement as Value;
     }
   } else {
-    throw new Error(`Unsupported parent type "${parent.type}" for replace.`);
+    throw new Error(`Unsupported parent type "${parent.type}" for replace`);
   }
 
   // Shift the replacement node into the same start position as existing
@@ -88,7 +88,7 @@ export function replace(root: Node, parent: Node, existing: Node, replacement: N
 
 export function insert(root: Node, parent: Node, child: Node, index?: number) {
   if (!hasItems(parent)) {
-    throw new Error(`Unsupported parent type "${parent.type}" for replace.`);
+    throw new Error(`Unsupported parent type "${parent.type}" for insert`);
   }
 
   // Store preceding node and insert
@@ -168,7 +168,7 @@ export function insert(root: Node, parent: Node, child: Node, index?: number) {
 
 export function remove(root: Node, parent: Node, node: Node) {
   if (!hasItems(parent)) {
-    throw new Error(`Unsupported parent type "${parent.type}" for remove.`);
+    throw new Error(`Unsupported parent type "${parent.type}" for remove`);
   }
 
   const index = parent.items.indexOf(node);

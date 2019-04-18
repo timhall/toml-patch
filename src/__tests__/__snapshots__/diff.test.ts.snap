@@ -109,9 +109,8 @@ Array [
 exports[`it should find object rename 1`] = `
 Array [
   Object {
-    "path": Array [
-      "a",
-    ],
+    "from": "a",
+    "path": Array [],
     "to": "b",
     "type": "Rename",
   },
