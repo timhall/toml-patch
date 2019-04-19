@@ -1,6 +1,6 @@
-import { Document, Value, NodeType, Node, AST, isInlineTable } from './ast';
+import { Value, NodeType, Node, AST, isInlineTable } from './ast';
 import traverse from './traverse';
-import { last, blank, isDate, has, arraysEqual, stableStringify, isObject } from './utils';
+import { last, blank, isDate, has } from './utils';
 import ParseError from './parse-error';
 
 export default function toJS(document: AST, input: string = ''): any {
@@ -90,14 +90,17 @@ export default function toJS(document: AST, input: string = ''): any {
 export function toValue(node: Value): any {
   switch (node.type) {
     case NodeType.InlineTable:
-      // Use a placeholder document so that items aren't filtered
-      const placeholder: Document = {
-        type: NodeType.Document,
-        loc: node.loc,
-        items: node.items.map(item => item.item)
-      };
+      const result = blank();
 
-      return toJS(placeholder);
+      node.items.forEach(({ item }) => {
+        const key = item.key.value;
+        const value = toValue(item.value);
+
+        const target = key.length > 1 ? ensureTable(result, key.slice(0, -1)) : result;
+        target[last(key)!] = value;
+      });
+
+      return result;
 
     case NodeType.InlineArray:
       return node.items.map(item => toValue(item.item as Value));
