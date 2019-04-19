@@ -78,6 +78,11 @@ const table_array_table = `
     name = "granny smith"
 `;
 
+const inline_array_key = `
+a = [1, 2, 3]
+a.b = 4
+`;
+
 describe('validation', () => {
   test("it shouldn't allow writing to the same key multiple times", () => {
     expect(() => toJS(parseTOML(multiple_keys))).toThrow(
@@ -93,19 +98,25 @@ describe('validation', () => {
 
   test("it shouldn't allow appending to static array", () => {
     expect(() => toJS(parseTOML(static_array))).toThrow(
-      /Invalid key\, cannot add an array of tables to a static array or table/
+      /Invalid key\, cannot add to a static array/
     );
   });
 
   test("it shouldn't allow appending table array to table", () => {
     expect(() => toJS(parseTOML(table_table_array))).toThrow(
-      /Invalid key\, cannot add an array of tables to a static array or table/
+      /Invalid key\, cannot add an array of tables to a table/
     );
   });
 
   test("it shouldn't allow appending table to table array", () => {
     expect(() => toJS(parseTOML(table_array_table))).toThrow(
       /Invalid key\, a table has already been defined named/
+    );
+  });
+
+  test("it shouldn't allow appending key to inline array", () => {
+    expect(() => toJS(parseTOML(inline_array_key))).toThrow(
+      /Invalid key\, cannot add to a static array/
     );
   });
 });

@@ -165,6 +165,17 @@ Object {
   "title": "TOML Example",
   "values": Object {
     "array": Object {
+      "nested": Array [
+        Array [
+          1,
+          2,
+        ],
+        Array [
+          "a",
+          "b",
+          "c",
+        ],
+      ],
       "trailing": Array [
         1,
         2,
@@ -172,6 +183,12 @@ Object {
     },
     "boolean": true,
     "date": Object {
+      "datetime": Array [
+        1979-05-27T07:32:00.000Z,
+        1979-05-27T07:32:00.000Z,
+        1979-05-27T07:32:00.999Z,
+        1979-05-27T07:32:00.000Z,
+      ],
       "local": Array [
         "[object Date]",
         "[object Date]",

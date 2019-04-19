@@ -37,3 +37,16 @@ test('it should parse table key', () => {
 test('it should parse table array key', () => {
   expect(parseTOML(`[[a.b.c]]`)).toMatchSnapshot();
 });
+
+test('it should parse -0', () => {
+  expect(parseTOML(`a = -0`)).toMatchSnapshot();
+});
+
+test('should parse newlines in string', () => {
+  expect(
+    parseTOML(`
+    a = "val\\nue"
+    b = """value\\n"""
+  `)
+  ).toMatchSnapshot();
+});
