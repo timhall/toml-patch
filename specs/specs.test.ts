@@ -33,9 +33,6 @@ const spec_test = spec_test_input
   })
   .filter(Boolean) as Array<string[]>;
 
-console.log(toml_test_dir, toml_test_input, toml_test);
-console.log(spec_test_dir, spec_test_input, spec_test);
-
 test.each(toml_test)('toml-test - %s', async (_name, input_file, expected_file) => {
   const input = await readFile(input_file, 'utf8');
   const expected = expandJSON(JSON.parse(await readFile(expected_file, 'utf8')));
