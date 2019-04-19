@@ -173,6 +173,9 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
       if (cursor.peek() === DOUBLE_QUOTE) {
         raw += ESCAPE + DOUBLE_QUOTE;
         cursor.step(2);
+      } else if (cursor.peek() === ESCAPE) {
+        raw += ESCAPE + ESCAPE;
+        cursor.step(2);
       }
     }
 

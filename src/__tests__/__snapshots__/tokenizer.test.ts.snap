@@ -1,5 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`should handle escaped solidus 1`] = `
+Array [
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 1,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 0,
+        "line": 1,
+      },
+    },
+    "raw": "a",
+    "type": "String",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 3,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 2,
+        "line": 1,
+      },
+    },
+    "raw": "=",
+    "type": "Equal",
+  },
+  Object {
+    "loc": Object {
+      "end": Object {
+        "column": 8,
+        "line": 1,
+      },
+      "start": Object {
+        "column": 4,
+        "line": 1,
+      },
+    },
+    "raw": "\\"\\\\\\\\\\"",
+    "type": "String",
+  },
+]
+`;
+
 exports[`should tokenize complex input 1`] = `
 Array [
   Object {
