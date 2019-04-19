@@ -15,5 +15,6 @@ steps:
     npm install
     npm run typecheck
     npm test
+    npm run specs
     npm run build
-  displayName: 'Install, typecheck, test, and build toml-patch'
+  displayName: 'Install, typecheck, test, validate, and build toml-patch'
