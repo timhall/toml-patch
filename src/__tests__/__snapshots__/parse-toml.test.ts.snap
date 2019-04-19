@@ -5060,11 +5060,11 @@ Object {
           },
         },
         Object {
-          "equals": 5,
+          "equals": 14,
           "key": Object {
             "loc": Object {
               "end": Object {
-                "column": 4,
+                "column": 13,
                 "line": 10,
               },
               "start": Object {
@@ -5072,10 +5072,11 @@ Object {
                 "line": 10,
               },
             },
-            "raw": "date",
+            "raw": "date.datetime",
             "type": "Key",
             "value": Array [
               "date",
+              "datetime",
             ],
           },
           "loc": Object {
@@ -5214,7 +5215,7 @@ Object {
                 "line": 16,
               },
               "start": Object {
-                "column": 7,
+                "column": 16,
                 "line": 10,
               },
             },

@@ -1,11 +1,12 @@
 import { Document, Value, NodeType, Node, AST, isInlineTable } from './ast';
 import traverse from './traverse';
-import { last, blank, isDate, has, arraysEqual, stableStringify } from './utils';
+import { last, blank, isDate, has, arraysEqual, stableStringify, isObject } from './utils';
 import ParseError from './parse-error';
 
 export default function toJS(document: AST, input: string = ''): any {
   const result = blank();
-  const table_arrays: Array<string[]> = [];
+  const tables: Set<string> = new Set();
+  const table_arrays: Set<string> = new Set();
   const defined: Set<string> = new Set();
   let active: any = result;
   let previous_active: any;
@@ -15,12 +16,14 @@ export default function toJS(document: AST, input: string = ''): any {
     [NodeType.Table](node) {
       const key = node.key.item.value;
       try {
-        validateKey(result, key, node.type, { table_arrays, defined });
+        validateKey(result, key, node.type, { tables, table_arrays, defined });
       } catch (err) {
         throw new ParseError(input, node.key.loc.start, err.message);
       }
 
-      defined.add(key.join('.'));
+      const joined_key = joinKey(key);
+      tables.add(joined_key);
+      defined.add(joined_key);
 
       active = ensureTable(result, key);
     },
@@ -29,13 +32,14 @@ export default function toJS(document: AST, input: string = ''): any {
       const key = node.key.item.value;
 
       try {
-        validateKey(result, key, node.type, { table_arrays, defined });
+        validateKey(result, key, node.type, { tables, table_arrays, defined });
       } catch (err) {
         throw new ParseError(input, node.key.loc.start, err.message);
       }
 
-      table_arrays.push(key);
-      defined.add(key.join('.'));
+      const joined_key = joinKey(key);
+      table_arrays.add(joined_key);
+      defined.add(joined_key);
 
       active = ensureTableArray(result, key);
     },
@@ -46,7 +50,7 @@ export default function toJS(document: AST, input: string = ''): any {
 
         const key = node.key.value;
         try {
-          validateKey(active, key, node.type, { table_arrays, defined });
+          validateKey(active, key, node.type, { tables, table_arrays, defined });
         } catch (err) {
           throw new ParseError(input, node.key.loc.start, err.message);
         }
@@ -55,7 +59,7 @@ export default function toJS(document: AST, input: string = ''): any {
         const target = key.length > 1 ? ensureTable(active, key.slice(0, -1)) : active;
 
         target[last(key)!] = value;
-        defined.add(key.join('.'));
+        defined.add(joinKey(key));
 
         if (isInlineTable(node.value)) {
           previous_active = active;
@@ -114,7 +118,7 @@ function validateKey(
   object: any,
   key: string[],
   type: NodeType.Table | NodeType.TableArray | NodeType.KeyValue,
-  state: { table_arrays: Array<string[]>; defined: Set<string> }
+  state: { tables: Set<string>; table_arrays: Set<string>; defined: Set<string> }
 ) {
   // 1. Cannot override primitive value
   let parts: string[] = [];
@@ -127,24 +131,25 @@ function validateKey(
       throw new Error(`Invalid key, a value has already been defined for ${parts.join('.')}`);
     }
 
+    const joined_parts = joinKey(parts);
+    if (Array.isArray(object[part]) && !state.table_arrays.has(joined_parts)) {
+      throw new Error(`Invalid key, cannot add to a static array at ${joined_parts}`);
+    }
+
     const next_is_last = index++ < key.length - 1;
     object = Array.isArray(object[part]) && next_is_last ? last(object[part]) : object[part];
   }
 
+  const joined_key = joinKey(key);
+
   // 2. Cannot override table
-  if (object && type === NodeType.Table && state.defined.has(key.join('.'))) {
-    throw new Error(`Invalid key, a table has already been defined named ${parts.join('.')}`);
+  if (object && type === NodeType.Table && state.defined.has(joined_key)) {
+    throw new Error(`Invalid key, a table has already been defined named ${joined_key}`);
   }
 
   // 3. Cannot add table array to static array or table
-  if (
-    object &&
-    type === NodeType.TableArray &&
-    !state.table_arrays.find(existing => arraysEqual(existing, key))
-  ) {
-    throw new Error(
-      `Invalid key, cannot add an array of tables to a static array or table at ${parts.join('.')}`
-    );
+  if (object && type === NodeType.TableArray && !state.table_arrays.has(joined_key)) {
+    throw new Error(`Invalid key, cannot add an array of tables to a table at ${joined_key}`);
   }
 }
 
@@ -182,4 +187,8 @@ function ensure(object: any, keys: string[]): any {
 
 function isPrimitive(value: any) {
   return typeof value !== 'object' && !isDate(value);
+}
+
+function joinKey(key: string[]): string {
+  return key.join('.');
 }
