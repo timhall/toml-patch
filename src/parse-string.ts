@@ -8,7 +8,7 @@ const CRLF = '\\r\\n';
 const IS_CRLF = /\r\n/g;
 const IS_LF = /\n/g;
 const IS_LEADING_NEW_LINE = /^(\r\n|\n)/;
-const IS_LINE_ENDING_BACKSLASH = /\\[\s,\n,\r\n]*/g;
+const IS_LINE_ENDING_BACKSLASH = /\\\s*[\n\r\n]\s*/g;
 
 export function parseString(raw: string): string {
   if (raw.startsWith(TRIPLE_SINGLE_QUOTE)) {

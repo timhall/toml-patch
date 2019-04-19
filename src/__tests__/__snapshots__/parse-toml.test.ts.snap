@@ -6544,3 +6544,115 @@ Object {
   "type": "Document",
 }
 `;
+
+exports[`should parse newlines in string 1`] = `
+Object {
+  "items": Array [
+    Object {
+      "equals": 6,
+      "key": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 5,
+            "line": 2,
+          },
+          "start": Object {
+            "column": 4,
+            "line": 2,
+          },
+        },
+        "raw": "a",
+        "type": "Key",
+        "value": Array [
+          "a",
+        ],
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 17,
+          "line": 2,
+        },
+        "start": Object {
+          "column": 4,
+          "line": 2,
+        },
+      },
+      "type": "KeyValue",
+      "value": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 17,
+            "line": 2,
+          },
+          "start": Object {
+            "column": 8,
+            "line": 2,
+          },
+        },
+        "raw": "\\"val\\\\nue\\"",
+        "type": "String",
+        "value": "val
+ue",
+      },
+    },
+    Object {
+      "equals": 6,
+      "key": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 5,
+            "line": 3,
+          },
+          "start": Object {
+            "column": 4,
+            "line": 3,
+          },
+        },
+        "raw": "b",
+        "type": "Key",
+        "value": Array [
+          "b",
+        ],
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 21,
+          "line": 3,
+        },
+        "start": Object {
+          "column": 4,
+          "line": 3,
+        },
+      },
+      "type": "KeyValue",
+      "value": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 21,
+            "line": 3,
+          },
+          "start": Object {
+            "column": 8,
+            "line": 3,
+          },
+        },
+        "raw": "\\"\\"\\"value\\\\n\\"\\"\\"",
+        "type": "String",
+        "value": "value
+",
+      },
+    },
+  ],
+  "loc": Object {
+    "end": Object {
+      "column": 2,
+      "line": 4,
+    },
+    "start": Object {
+      "column": 0,
+      "line": 1,
+    },
+  },
+  "type": "Document",
+}
+`;
