@@ -1,11 +1,12 @@
 import { Document, Value, NodeType, Node, AST, isInlineTable } from './ast';
 import traverse from './traverse';
-import { last, blank, isDate, has, arraysEqual } from './utils';
+import { last, blank, isDate, has, arraysEqual, stableStringify } from './utils';
 import ParseError from './parse-error';
 
 export default function toJS(document: AST, input: string = ''): any {
   const result = blank();
   const table_arrays: Array<string[]> = [];
+  const defined: Set<string> = new Set();
   let active: any = result;
   let previous_active: any;
   let skip = false;
@@ -14,10 +15,12 @@ export default function toJS(document: AST, input: string = ''): any {
     [NodeType.Table](node) {
       const key = node.key.item.value;
       try {
-        validateKey(result, key, node.type, { table_arrays });
+        validateKey(result, key, node.type, { table_arrays, defined });
       } catch (err) {
         throw new ParseError(input, node.key.loc.start, err.message);
       }
+
+      defined.add(key.join('.'));
 
       active = ensureTable(result, key);
     },
@@ -26,12 +29,13 @@ export default function toJS(document: AST, input: string = ''): any {
       const key = node.key.item.value;
 
       try {
-        validateKey(result, key, node.type, { table_arrays });
+        validateKey(result, key, node.type, { table_arrays, defined });
       } catch (err) {
         throw new ParseError(input, node.key.loc.start, err.message);
       }
 
       table_arrays.push(key);
+      defined.add(key.join('.'));
 
       active = ensureTableArray(result, key);
     },
@@ -42,7 +46,7 @@ export default function toJS(document: AST, input: string = ''): any {
 
         const key = node.key.value;
         try {
-          validateKey(active, key, node.type, { table_arrays });
+          validateKey(active, key, node.type, { table_arrays, defined });
         } catch (err) {
           throw new ParseError(input, node.key.loc.start, err.message);
         }
@@ -51,6 +55,7 @@ export default function toJS(document: AST, input: string = ''): any {
         const target = key.length > 1 ? ensureTable(active, key.slice(0, -1)) : active;
 
         target[last(key)!] = value;
+        defined.add(key.join('.'));
 
         if (isInlineTable(node.value)) {
           previous_active = active;
@@ -109,7 +114,7 @@ function validateKey(
   object: any,
   key: string[],
   type: NodeType.Table | NodeType.TableArray | NodeType.KeyValue,
-  state: { table_arrays: Array<string[]> }
+  state: { table_arrays: Array<string[]>; defined: Set<string> }
 ) {
   // 1. Cannot override primitive value
   let parts: string[] = [];
@@ -127,7 +132,7 @@ function validateKey(
   }
 
   // 2. Cannot override table
-  if (object && type === NodeType.Table) {
+  if (object && type === NodeType.Table && state.defined.has(key.join('.'))) {
     throw new Error(`Invalid key, a table has already been defined named ${parts.join('.')}`);
   }
 
