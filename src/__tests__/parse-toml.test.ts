@@ -29,3 +29,11 @@ test('it should parse hard examples', () => {
   expect(parseTOML(hard_example)).toMatchSnapshot();
   expect(parseTOML(hard_example_unicode)).toMatchSnapshot();
 });
+
+test('it should parse table key', () => {
+  expect(parseTOML(`[a.b.c]`)).toMatchSnapshot();
+});
+
+test('it should parse table array key', () => {
+  expect(parseTOML(`[[a.b.c]]`)).toMatchSnapshot();
+});

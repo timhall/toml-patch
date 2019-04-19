@@ -1,11 +1,9 @@
-import { Document, Value, NodeType, Node, AST, isValue, isInlineTable } from './ast';
+import { Document, Value, NodeType, Node, AST, isInlineTable } from './ast';
 import traverse from './traverse';
 import { last, blank, isDate, has, arraysEqual } from './utils';
 import ParseError from './parse-error';
 
 export default function toJS(document: AST, input: string = ''): any {
-  if (isValue(document)) return toValue(document);
-
   const result = blank();
   const table_arrays: Array<string[]> = [];
   let active: any = result;

@@ -6352,3 +6352,131 @@ Object {
   "type": "Document",
 }
 `;
+
+exports[`it should parse table array key 1`] = `
+Object {
+  "items": Array [
+    Object {
+      "items": Array [],
+      "key": Object {
+        "item": Object {
+          "loc": Object {
+            "end": Object {
+              "column": 7,
+              "line": 1,
+            },
+            "start": Object {
+              "column": 2,
+              "line": 1,
+            },
+          },
+          "raw": "a.b.c",
+          "type": "Key",
+          "value": Array [
+            "a",
+            "b",
+            "c",
+          ],
+        },
+        "loc": Object {
+          "end": Object {
+            "column": 9,
+            "line": 1,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 1,
+          },
+        },
+        "type": "TableArrayKey",
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 9,
+          "line": 1,
+        },
+        "start": Object {
+          "column": 0,
+          "line": 1,
+        },
+      },
+      "type": "TableArray",
+    },
+  ],
+  "loc": Object {
+    "end": Object {
+      "column": 9,
+      "line": 1,
+    },
+    "start": Object {
+      "column": 0,
+      "line": 1,
+    },
+  },
+  "type": "Document",
+}
+`;
+
+exports[`it should parse table key 1`] = `
+Object {
+  "items": Array [
+    Object {
+      "items": Array [],
+      "key": Object {
+        "item": Object {
+          "loc": Object {
+            "end": Object {
+              "column": 6,
+              "line": 1,
+            },
+            "start": Object {
+              "column": 1,
+              "line": 1,
+            },
+          },
+          "raw": "a.b.c",
+          "type": "Key",
+          "value": Array [
+            "a",
+            "b",
+            "c",
+          ],
+        },
+        "loc": Object {
+          "end": Object {
+            "column": 7,
+            "line": 1,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 1,
+          },
+        },
+        "type": "TableKey",
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 7,
+          "line": 1,
+        },
+        "start": Object {
+          "column": 0,
+          "line": 1,
+        },
+      },
+      "type": "Table",
+    },
+  ],
+  "loc": Object {
+    "end": Object {
+      "column": 7,
+      "line": 1,
+    },
+    "start": Object {
+      "column": 0,
+      "line": 1,
+    },
+  },
+  "type": "Document",
+}
+`;

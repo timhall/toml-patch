@@ -24,7 +24,7 @@ import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokeni
 import { parseString } from './parse-string';
 import Cursor from './cursor';
 import { findPosition, clonePosition, cloneLocation } from './location';
-import ParseError, { isParseError } from './parse-error';
+import ParseError from './parse-error';
 
 const TRUE = 'true';
 const FALSE = 'false';
@@ -42,33 +42,10 @@ export default function parseTOML(input: string): AST {
   const tokens = tokenize(input);
   const cursor = new Cursor(tokens);
 
-  // Best way to determine if block or value is to try
-  // -> Try to walk initial block and if that fails try walking as value
-  let first_blocks: Block[] | undefined;
-  if (!cursor.done) {
-    try {
-      first_blocks = walkBlock(cursor, input);
-      cursor.step();
-    } catch (block_err) {
-      // Only try to walk value if parser failed to find desired tokens
-      if (!isParseError(block_err)) throw block_err;
-
-      try {
-        // Reset cursor and retry as value
-        cursor.index = 0;
-        const [value] = walkValue(cursor, input);
-        return value;
-      } catch (value_err) {
-        // Throw underlying block error since document mode is considered default
-        throw block_err;
-      }
-    }
-  }
-
   const document: Document = {
     type: NodeType.Document,
     loc: { start: { line: 1, column: 0 }, end: findPosition(input, input.length) },
-    items: first_blocks ? first_blocks : []
+    items: []
   };
 
   while (!cursor.done) {
@@ -216,7 +193,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
 
   cursor.step();
 
-  if (cursor.done || (is_table && cursor.item.raw !== ']')) {
+  if (is_table && (cursor.done || cursor.item.raw !== ']')) {
     throw new ParseError(
       input,
       cursor.done ? key.item.loc.end : cursor.item.loc.start,
@@ -224,9 +201,8 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
     );
   }
   if (
-    cursor.done ||
-    cursor.peekDone() ||
-    (!is_table && (cursor.item.raw !== ']' || cursor.peek()!.raw !== ']'))
+    !is_table &&
+    (cursor.done || cursor.peekDone() || cursor.item.raw !== ']' || cursor.peek()!.raw !== ']')
   ) {
     throw new ParseError(
       input,

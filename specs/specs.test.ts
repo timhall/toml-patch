@@ -3,7 +3,7 @@ import { join, basename } from 'path';
 import { readFile as _readFile, existsSync } from 'fs';
 import { sync as glob } from 'glob';
 import { safeLoad } from 'js-yaml';
-import { parse } from '../';
+import { parse } from '../src/';
 
 const readFile = promisify(_readFile);
 
