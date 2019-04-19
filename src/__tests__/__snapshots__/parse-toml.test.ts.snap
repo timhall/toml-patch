@@ -1,5 +1,69 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`it should parse -0 1`] = `
+Object {
+  "items": Array [
+    Object {
+      "equals": 2,
+      "key": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 1,
+            "line": 1,
+          },
+          "start": Object {
+            "column": 0,
+            "line": 1,
+          },
+        },
+        "raw": "a",
+        "type": "Key",
+        "value": Array [
+          "a",
+        ],
+      },
+      "loc": Object {
+        "end": Object {
+          "column": 6,
+          "line": 1,
+        },
+        "start": Object {
+          "column": 0,
+          "line": 1,
+        },
+      },
+      "type": "KeyValue",
+      "value": Object {
+        "loc": Object {
+          "end": Object {
+            "column": 6,
+            "line": 1,
+          },
+          "start": Object {
+            "column": 4,
+            "line": 1,
+          },
+        },
+        "raw": "-0",
+        "type": "Integer",
+        "value": 0,
+      },
+    },
+  ],
+  "loc": Object {
+    "end": Object {
+      "column": 6,
+      "line": 1,
+    },
+    "start": Object {
+      "column": 0,
+      "line": 1,
+    },
+  },
+  "type": "Document",
+}
+`;
+
 exports[`it should parse examples 1`] = `
 Object {
   "items": Array [

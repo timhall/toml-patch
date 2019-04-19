@@ -414,6 +414,16 @@ function float(cursor: Cursor<Token>, input: string): Float {
 }
 
 function integer(cursor: Cursor<Token>): Integer {
+  // > Integer values -0 and +0 are valid and identical to an unprefixed zero
+  if (cursor.item!.raw === '-0' || cursor.item!.raw === '+0') {
+    return {
+      type: NodeType.Integer,
+      loc: cursor.item.loc,
+      raw: cursor.item.raw,
+      value: 0
+    };
+  }
+
   let radix = 10;
   if (IS_HEX.test(cursor.item.raw)) {
     radix = 16;
