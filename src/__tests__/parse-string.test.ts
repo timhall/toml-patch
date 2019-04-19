@@ -24,3 +24,7 @@ test('should parse double-quoted multiline string', () => {
 test('should parse single-quoted multiline string', () => {
   expect(parseString(multiline_literal)).toBe('a\\"b\\t\n');
 });
+
+test('should escape unicode expressions', () => {
+  expect(parseString('"\\U00000000"')).toEqual('\u0000');
+});

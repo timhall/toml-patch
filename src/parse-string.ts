@@ -1,5 +1,6 @@
 import { SINGLE_QUOTE, DOUBLE_QUOTE } from './tokenizer';
 import { pipe } from './utils';
+import Cursor from './cursor';
 
 const TRIPLE_DOUBLE_QUOTE = `"""`;
 const TRIPLE_SINGLE_QUOTE = `'''`;
@@ -37,7 +38,17 @@ export function parseString(raw: string): string {
 }
 
 export function unescape(escaped: string): string {
-  return JSON.parse(`"${escaped}"`);
+  // JSON.parse handles everything except \UXXXXXXXX
+  // replace those instances with code point, escape that, and then parse
+  const LARGE_UNICODE = /\\U[a-fA-F0-9]{8}/g;
+  const json_escaped = escaped.replace(LARGE_UNICODE, value => {
+    const code_point = parseInt(value.replace('\\U', ''), 16);
+    const as_string = String.fromCodePoint(code_point);
+
+    return trim(JSON.stringify(as_string), 1);
+  });
+
+  return JSON.parse(`"${json_escaped}"`);
 }
 
 export function escape(value: string): string {
