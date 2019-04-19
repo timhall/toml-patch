@@ -8,6 +8,8 @@ a\\"b\\t
 const multiline_literal = `'''
 a\\"b\\t
 '''`;
+const line_ending_backslash = `"""abc\\   
+def"""`;
 
 test('should parse double-quoted string', () => {
   expect(parseString(double_quoted)).toBe('a._#"\t"\u1234');
@@ -27,4 +29,8 @@ test('should parse single-quoted multiline string', () => {
 
 test('should escape unicode expressions', () => {
   expect(parseString('"\\U00000000"')).toEqual('\u0000');
+});
+
+test.only('should handle line-ending backslash', () => {
+  expect(parseString(line_ending_backslash)).toBe('abcdef');
 });

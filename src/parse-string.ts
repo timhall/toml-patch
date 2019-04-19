@@ -1,6 +1,5 @@
 import { SINGLE_QUOTE, DOUBLE_QUOTE } from './tokenizer';
 import { pipe } from './utils';
-import Cursor from './cursor';
 
 const TRIPLE_DOUBLE_QUOTE = `"""`;
 const TRIPLE_SINGLE_QUOTE = `'''`;
@@ -9,7 +8,7 @@ const CRLF = '\\r\\n';
 const IS_CRLF = /\r\n/g;
 const IS_LF = /\n/g;
 const IS_LEADING_NEW_LINE = /^(\r\n|\n)/;
-const IS_LINE_ENDING_BACKSLASH = /\\[\n,\r\n]\s*/g;
+const IS_LINE_ENDING_BACKSLASH = /\\[\s,\n,\r\n]*/g;
 
 export function parseString(raw: string): string {
   if (raw.startsWith(TRIPLE_SINGLE_QUOTE)) {
