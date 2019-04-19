@@ -11,10 +11,17 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
-- script: |
-    npm install
-    npm run typecheck
-    npm test
-    npm run specs
-    npm run build
-  displayName: 'Install, typecheck, test, validate, and build toml-patch'
+- script: npm install
+  displayName: 'Install'
+
+- script: npm run typecheck
+  displayName: 'Typecheck'
+
+- script: npm test
+  displayName: 'Test'
+
+- script: npm run specs
+  displayName: 'Validate'
+
+- script: npm run build
+  displayName: 'Build'
