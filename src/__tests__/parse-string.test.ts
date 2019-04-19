@@ -31,6 +31,6 @@ test('should escape unicode expressions', () => {
   expect(parseString('"\\U00000000"')).toEqual('\u0000');
 });
 
-test.only('should handle line-ending backslash', () => {
+test('should handle line-ending backslash', () => {
   expect(parseString(line_ending_backslash)).toBe('abcdef');
 });

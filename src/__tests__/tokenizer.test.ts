@@ -29,6 +29,6 @@ test('should tokenize complex input', () => {
   expect(tokenize(example)).toMatchSnapshot();
 });
 
-test.only('should handle escaped solidus', () => {
+test('should handle escaped solidus', () => {
   expect(tokenize(`a = "\\\\"`)).toMatchSnapshot();
 });

@@ -38,6 +38,6 @@ test('it should parse table array key', () => {
   expect(parseTOML(`[[a.b.c]]`)).toMatchSnapshot();
 });
 
-test.only('it should parse -0', () => {
+test('it should parse -0', () => {
   expect(parseTOML(`a = -0`)).toMatchSnapshot();
 });
