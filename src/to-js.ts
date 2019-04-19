@@ -150,10 +150,12 @@ function validateKey(
 
 function ensureTable(object: any, key: string[]): any {
   const target = ensure(object, key.slice(0, -1));
-  const next = blank();
-  target[last(key)!] = next;
+  const last_key = last(key)!;
+  if (!target[last_key]) {
+    target[last_key] = blank();
+  }
 
-  return next;
+  return target[last_key];
 }
 
 function ensureTableArray(object: any, key: string[]): any {
