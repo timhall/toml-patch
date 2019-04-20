@@ -1,35 +1,48 @@
-export interface Indexable<T> {
-  length: number;
-  [index: number]: T | undefined;
+export function iterator<T>(value: Iterable<T>): Iterator<T> {
+  return value[Symbol.iterator]();
 }
 
-export default class Cursor<T> {
-  items: Indexable<T>;
+export default class Cursor<T> implements Iterator<T | undefined> {
+  iterator: Iterator<T>;
   index: number;
+  value?: T;
+  done: boolean;
+  peeked: IteratorResult<T | undefined> | null;
 
-  constructor(items: Indexable<T>) {
-    this.items = items;
-    this.index = 0;
-  }
-
-  get item(): T {
-    if (this.done) {
-      throw new Error('Parsing could not complete, unexpectedly reached end of file');
-    }
-
-    return this.items[this.index]!;
-  }
-  get done(): boolean {
-    return this.index >= this.items.length;
+  constructor(iterator: Iterator<T>) {
+    this.iterator = iterator;
+    this.index = -1;
+    this.value = undefined;
+    this.done = false;
+    this.peeked = null;
   }
 
-  step(count: number = 1) {
-    this.index += count;
+  next(): IteratorResult<T | undefined> {
+    if (this.done) return done();
+
+    const result = this.peeked || this.iterator.next();
+
+    this.index += 1;
+    this.value = result.value;
+    this.done = result.done;
+    this.peeked = null;
+
+    return result;
   }
-  peek(): T | undefined {
-    return this.items[this.index + 1];
+
+  peek(): IteratorResult<T | undefined> {
+    if (this.done) return done();
+    if (this.peeked) return this.peeked;
+
+    this.peeked = this.iterator.next();
+    return this.peeked;
   }
-  peekDone(): boolean {
-    return this.index + 1 >= this.items.length;
+
+  [Symbol.iterator]() {
+    return this;
   }
+}
+
+function done(): IteratorResult<undefined> {
+  return { value: undefined, done: true };
 }

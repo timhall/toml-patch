@@ -1,4 +1,4 @@
-import Cursor from './cursor';
+import Cursor, { iterator } from './cursor';
 import { Location, Locator, createLocate, findPosition } from './location';
 import ParseError from './parse-error';
 
@@ -28,25 +28,27 @@ export const ESCAPE = '\\';
 const IS_VALID_LEADING_CHARACTER = /[\w,\d,\",\',\+,\-,\_]/;
 
 export function tokenize(input: string): Token[] {
-  const cursor = new Cursor(input);
+  const cursor = new Cursor(iterator(input));
+  cursor.next();
+
   const tokens: Token[] = [];
   const locate = createLocate(input);
 
   while (!cursor.done) {
-    if (IS_WHITESPACE.test(cursor.item)) {
+    if (IS_WHITESPACE.test(cursor.value!)) {
       // (skip whitespace)
-    } else if (cursor.item === '[' || cursor.item === ']') {
+    } else if (cursor.value === '[' || cursor.value === ']') {
       // Handle special characters: [, ], {, }, =, comma
       tokens.push(specialCharacter(cursor, locate, TokenType.Bracket));
-    } else if (cursor.item === '{' || cursor.item === '}') {
+    } else if (cursor.value === '{' || cursor.value === '}') {
       tokens.push(specialCharacter(cursor, locate, TokenType.Curly));
-    } else if (cursor.item === '=') {
+    } else if (cursor.value === '=') {
       tokens.push(specialCharacter(cursor, locate, TokenType.Equal));
-    } else if (cursor.item === ',') {
+    } else if (cursor.value === ',') {
       tokens.push(specialCharacter(cursor, locate, TokenType.Comma));
-    } else if (cursor.item === '.') {
+    } else if (cursor.value === '.') {
       tokens.push(specialCharacter(cursor, locate, TokenType.Dot));
-    } else if (cursor.item === '#') {
+    } else if (cursor.value === '#') {
       // Handle comments = # -> EOL
       tokens.push(comment(cursor, locate));
     } else {
@@ -62,22 +64,22 @@ export function tokenize(input: string): Token[] {
       }
     }
 
-    cursor.step();
+    cursor.next();
   }
 
   return tokens;
 }
 
 function specialCharacter(cursor: Cursor<string>, locate: Locator, type: TokenType): Token {
-  return { type, raw: cursor.item, loc: locate(cursor.index, cursor.index + 1) };
+  return { type, raw: cursor.value!, loc: locate(cursor.index, cursor.index + 1) };
 }
 
 function comment(cursor: Cursor<string>, locate: Locator): Token {
   const start = cursor.index;
-  let raw = cursor.item;
-  while (!cursor.peekDone() && !IS_NEW_LINE.test(cursor.peek()!)) {
-    cursor.step();
-    raw += cursor.item;
+  let raw = cursor.value!;
+  while (!cursor.peek().done && !IS_NEW_LINE.test(cursor.peek().value!)) {
+    cursor.next();
+    raw += cursor.value!;
   }
 
   // Early exit is ok for comment, no closing conditions
@@ -98,11 +100,15 @@ function multiline(
   const start = cursor.index;
   let quotes = multiline_char + multiline_char + multiline_char;
   let raw = quotes;
-  cursor.step(3);
 
-  while (!cursor.done && !checkThree(cursor.items as string, cursor.index, multiline_char)) {
-    raw += cursor.item;
-    cursor.step();
+  // Skip over quotes
+  cursor.next();
+  cursor.next();
+  cursor.next();
+
+  while (!cursor.done && !checkThree(input, cursor.index, multiline_char)) {
+    raw += cursor.value;
+    cursor.next();
   }
 
   if (cursor.done) {
@@ -114,7 +120,9 @@ function multiline(
   }
 
   raw += quotes;
-  cursor.step(2);
+
+  cursor.next();
+  cursor.next();
 
   return {
     type: TokenType.String,
@@ -145,50 +153,55 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
   // | (say) a space character.
 
   // First, check for invalid characters
-  if (!IS_VALID_LEADING_CHARACTER.test(cursor.item)) {
+  if (!IS_VALID_LEADING_CHARACTER.test(cursor.value!)) {
     throw new ParseError(
       input,
       findPosition(input, cursor.index),
-      `Unsupported character "${cursor.item}". Expected ALPHANUMERIC, ", ', +, -, or _`
+      `Unsupported character "${cursor.value}". Expected ALPHANUMERIC, ", ', +, -, or _`
     );
   }
 
   const start = cursor.index;
-  let raw = '';
-  let double_quoted = false;
-  let single_quoted = false;
+  let raw = cursor.value!;
+  let double_quoted = cursor.value === DOUBLE_QUOTE;
+  let single_quoted = cursor.value === SINGLE_QUOTE;
 
-  while (!cursor.done) {
-    if (cursor.item === DOUBLE_QUOTE) double_quoted = !double_quoted;
-    if (cursor.item === SINGLE_QUOTE && !double_quoted) single_quoted = !single_quoted;
+  const isFinished = (cursor: Cursor<string>) => {
+    if (cursor.peek().done) return true;
+    const next_item = cursor.peek().value!;
 
-    raw += cursor.item;
+    return (
+      !(double_quoted || single_quoted) &&
+      (IS_WHITESPACE.test(next_item) ||
+        next_item === ',' ||
+        next_item === '.' ||
+        next_item === ']' ||
+        next_item === '}' ||
+        next_item === '=')
+    );
+  };
 
-    cursor.step();
-    if (cursor.done) break;
+  while (!cursor.done && !isFinished(cursor)) {
+    cursor.next();
+
+    if (cursor.value === DOUBLE_QUOTE) double_quoted = !double_quoted;
+    if (cursor.value === SINGLE_QUOTE && !double_quoted) single_quoted = !single_quoted;
+
+    raw += cursor.value!;
+
+    if (cursor.peek().done) break;
+    let next_item = cursor.peek().value!;
 
     // If next character is escape and currently double-quoted,
     // check for escaped quote
-    if (double_quoted && cursor.item === ESCAPE) {
-      if (cursor.peek() === DOUBLE_QUOTE) {
-        raw += ESCAPE + DOUBLE_QUOTE;
-        cursor.step(2);
-      } else if (cursor.peek() === ESCAPE) {
-        raw += ESCAPE + ESCAPE;
-        cursor.step(2);
+    if (double_quoted && cursor.value === ESCAPE) {
+      if (next_item === DOUBLE_QUOTE) {
+        raw += DOUBLE_QUOTE;
+        cursor.next();
+      } else if (next_item === ESCAPE) {
+        raw += ESCAPE;
+        cursor.next();
       }
-    }
-
-    if (
-      !(double_quoted || single_quoted) &&
-      (IS_WHITESPACE.test(cursor.item) ||
-        cursor.item === ',' ||
-        cursor.item === '.' ||
-        cursor.item === ']' ||
-        cursor.item === '}' ||
-        cursor.item === '=')
-    ) {
-      break;
     }
   }
 
@@ -199,9 +212,6 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
       `Expected close of string with ${double_quoted ? DOUBLE_QUOTE : SINGLE_QUOTE}`
     );
   }
-
-  // Character loop has put cursor a step ahead, step back
-  cursor.step(-1);
 
   return {
     type: TokenType.String,
