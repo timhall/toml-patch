@@ -39,7 +39,7 @@ export const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
 export const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 
 export default function parseTOML(input: string): AST {
-  const tokens = tokenize(input);
+  const tokens = [...tokenize(input)];
   const cursor = new Cursor(iterator(tokens));
   cursor.next();
 

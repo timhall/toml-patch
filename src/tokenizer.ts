@@ -27,11 +27,10 @@ export const ESCAPE = '\\';
 
 const IS_VALID_LEADING_CHARACTER = /[\w,\d,\",\',\+,\-,\_]/;
 
-export function tokenize(input: string): Token[] {
+export function* tokenize(input: string): IterableIterator<Token> {
   const cursor = new Cursor(iterator(input));
   cursor.next();
 
-  const tokens: Token[] = [];
   const locate = createLocate(input);
 
   while (!cursor.done) {
@@ -39,18 +38,18 @@ export function tokenize(input: string): Token[] {
       // (skip whitespace)
     } else if (cursor.value === '[' || cursor.value === ']') {
       // Handle special characters: [, ], {, }, =, comma
-      tokens.push(specialCharacter(cursor, locate, TokenType.Bracket));
+      yield specialCharacter(cursor, locate, TokenType.Bracket);
     } else if (cursor.value === '{' || cursor.value === '}') {
-      tokens.push(specialCharacter(cursor, locate, TokenType.Curly));
+      yield specialCharacter(cursor, locate, TokenType.Curly);
     } else if (cursor.value === '=') {
-      tokens.push(specialCharacter(cursor, locate, TokenType.Equal));
+      yield specialCharacter(cursor, locate, TokenType.Equal);
     } else if (cursor.value === ',') {
-      tokens.push(specialCharacter(cursor, locate, TokenType.Comma));
+      yield specialCharacter(cursor, locate, TokenType.Comma);
     } else if (cursor.value === '.') {
-      tokens.push(specialCharacter(cursor, locate, TokenType.Dot));
+      yield specialCharacter(cursor, locate, TokenType.Dot);
     } else if (cursor.value === '#') {
       // Handle comments = # -> EOL
-      tokens.push(comment(cursor, locate));
+      yield comment(cursor, locate);
     } else {
       const multiline_char =
         checkThree(input, cursor.index, SINGLE_QUOTE) ||
@@ -58,16 +57,14 @@ export function tokenize(input: string): Token[] {
 
       if (multiline_char) {
         // Multi-line literals or strings = no escaping
-        tokens.push(multiline(cursor, locate, multiline_char, input));
+        yield multiline(cursor, locate, multiline_char, input);
       } else {
-        tokens.push(string(cursor, locate, input));
+        yield string(cursor, locate, input);
       }
     }
 
     cursor.next();
   }
-
-  return tokens;
 }
 
 function specialCharacter(cursor: Cursor<string>, locate: Locator, type: TokenType): Token {
