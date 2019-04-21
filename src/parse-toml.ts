@@ -18,11 +18,12 @@ import {
   InlineArray,
   InlineArrayItem,
   Comment,
-  AST
+  AST,
+  Block
 } from './ast';
 import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokenizer';
 import { parseString } from './parse-string';
-import Cursor, { iterator } from './cursor';
+import Cursor from './cursor';
 import { findPosition, clonePosition, cloneLocation } from './location';
 import ParseError from './parse-error';
 
@@ -46,18 +47,18 @@ export default function parseTOML(input: string): AST {
   const document: Document = {
     type: NodeType.Document,
     loc: { start: { line: 1, column: 0 }, end: findPosition(input, input.length) },
-    items: []
+    items: [...walkItems(cursor, input)]
   };
-
-  while (!cursor.done) {
-    document.items = document.items.concat(walkBlock(cursor, input));
-    cursor.next();
-  }
 
   return document;
 }
 
-type Block = KeyValue | Table | TableArray | Comment;
+function* walkItems(cursor: Cursor<Token>, input: string): IterableIterator<Block> {
+  while (!cursor.done) {
+    yield* walkBlock(cursor, input);
+    cursor.next();
+  }
+}
 
 function walkBlock(cursor: Cursor<Token>, input: string): Block[] {
   if (cursor.value!.type === TokenType.Comment) {

@@ -45,9 +45,9 @@ export type Visitor = {
 
 export default function traverse(node: Node, visitor: Visitor) {
   function traverseArray(array: Node[], parent: Node | null) {
-    array.forEach(node => {
+    for (const node of array) {
       traverseNode(node, parent);
-    });
+    }
   }
 
   function traverseNode(node: Node, parent: Node | null) {

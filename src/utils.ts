@@ -54,24 +54,6 @@ export function pipe<TValue>(value: TValue, ...fns: Array<(value: TValue) => TVa
   return fns.reduce((value, fn) => fn(value), value);
 }
 
-export function flatMap<TValue, TResult>(
-  values: TValue[],
-  iterator: (value: TValue, index: number, values: TValue[]) => TResult | TResult[],
-  context?: any
-): TResult[] {
-  const flattened: TResult[] = [];
-
-  values.forEach((value, index) => {
-    const result = context
-      ? iterator.call(context, value, index, values)
-      : iterator(value, index, values);
-
-    Array.isArray(result) ? flattened.push.apply(flattened, result) : flattened.push(result);
-  });
-
-  return flattened;
-}
-
 export function stableStringify(object: any): string {
   if (isObject(object)) {
     const key_values = Object.keys(object)
