@@ -1,6 +1,5 @@
 import {
   NodeType,
-  Document,
   KeyValue,
   Table,
   TableKey,
@@ -24,7 +23,7 @@ import {
 import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokenizer';
 import { parseString } from './parse-string';
 import Cursor from './cursor';
-import { findPosition, clonePosition, cloneLocation } from './location';
+import { clonePosition, cloneLocation } from './location';
 import ParseError from './parse-error';
 
 const TRUE = 'true';
@@ -39,35 +38,22 @@ const IS_BINARY = /^0b/;
 export const IS_FULL_DATE = /(\d{4})-(\d{2})-(\d{2})/;
 export const IS_FULL_TIME = /(\d{2}):(\d{2}):(\d{2})/;
 
-export default function parseTOML(input: string): AST {
+export default function* parseTOML(input: string): AST {
   const tokens = tokenize(input);
   const cursor = new Cursor(tokens);
-  cursor.next();
 
-  const document: Document = {
-    type: NodeType.Document,
-    loc: { start: { line: 1, column: 0 }, end: findPosition(input, input.length) },
-    items: [...walkItems(cursor, input)]
-  };
-
-  return document;
-}
-
-function* walkItems(cursor: Cursor<Token>, input: string): IterableIterator<Block> {
-  while (!cursor.done) {
+  while (!cursor.next().done) {
     yield* walkBlock(cursor, input);
-    cursor.next();
   }
 }
 
-function walkBlock(cursor: Cursor<Token>, input: string): Block[] {
+function* walkBlock(cursor: Cursor<Token>, input: string): IterableIterator<Block> {
   if (cursor.value!.type === TokenType.Comment) {
-    return [comment(cursor)];
+    yield comment(cursor);
   } else if (cursor.value!.type === TokenType.Bracket) {
-    return [table(cursor, input)];
+    yield table(cursor, input);
   } else if (cursor.value!.type === TokenType.String) {
-    const [value, comments] = keyValue(cursor, input);
-    return ([value] as Block[]).concat(comments);
+    yield* keyValue(cursor, input);
   } else {
     throw new ParseError(
       input,
@@ -77,28 +63,31 @@ function walkBlock(cursor: Cursor<Token>, input: string): Block[] {
   }
 }
 
-function walkValue(cursor: Cursor<Token>, input: string): [Value, Comment[]] {
+function* walkValue(cursor: Cursor<Token>, input: string): IterableIterator<Value | Comment> {
   if (cursor.value!.type === TokenType.String) {
     if (cursor.value!.raw[0] === DOUBLE_QUOTE || cursor.value!.raw[0] === SINGLE_QUOTE) {
-      return [string(cursor), []];
+      yield string(cursor);
     } else if (cursor.value!.raw === TRUE || cursor.value!.raw === FALSE) {
-      return [boolean(cursor), []];
+      yield boolean(cursor);
     } else if (IS_FULL_DATE.test(cursor.value!.raw) || IS_FULL_TIME.test(cursor.value!.raw)) {
-      return [datetime(cursor, input), []];
+      yield datetime(cursor, input);
     } else if (
       (!cursor.peek().done && cursor.peek().value!.type === TokenType.Dot) ||
       IS_INF.test(cursor.value!.raw) ||
       IS_NAN.test(cursor.value!.raw) ||
       (HAS_E.test(cursor.value!.raw) && !IS_HEX.test(cursor.value!.raw))
     ) {
-      return [float(cursor, input), []];
+      yield float(cursor, input);
     } else {
-      return [integer(cursor), []];
+      yield integer(cursor);
     }
   } else if (cursor.value!.type === TokenType.Curly) {
-    return [inlineTable(cursor, input), []];
+    yield inlineTable(cursor, input);
   } else if (cursor.value!.type === TokenType.Bracket) {
-    return inlineArray(cursor, input);
+    const [inline_array, comments] = inlineArray(cursor, input);
+
+    yield inline_array;
+    yield* comments;
   } else {
     throw new ParseError(
       input,
@@ -229,7 +218,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   let items: Array<KeyValue | Comment> = [];
   while (!cursor.peek().done && cursor.peek().value!.type !== TokenType.Bracket) {
     cursor.next();
-    items = items.concat(walkBlock(cursor, input) as Array<KeyValue | Comment>);
+    items = items.concat([...walkBlock(cursor, input)] as Array<KeyValue | Comment>);
   }
 
   return {
@@ -245,7 +234,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   } as Table | TableArray;
 }
 
-function keyValue(cursor: Cursor<Token>, input: string): [KeyValue, Comment[]] {
+function keyValue(cursor: Cursor<Token>, input: string): Array<KeyValue | Comment> {
   // 3. KeyValue
   //
   // key = value
@@ -286,20 +275,20 @@ function keyValue(cursor: Cursor<Token>, input: string): [KeyValue, Comment[]] {
     throw new ParseError(input, key.loc.start, `Expected value for key-value, reached end of file`);
   }
 
-  const [value, comments] = walkValue(cursor, input);
+  const [value, ...comments] = walkValue(cursor, input) as Iterable<Value | Comment>;
 
   return [
     {
       type: NodeType.KeyValue,
       key,
-      value,
+      value: value as Value,
       loc: {
         start: clonePosition(key.loc.start),
         end: clonePosition(value.loc.end)
       },
       equals
     },
-    comments
+    ...(comments as Comment[])
   ];
 }
 
@@ -572,7 +561,7 @@ function inlineArray(cursor: Cursor<Token>, input: string): [InlineArray, Commen
     } else if ((cursor.value as Token).type === TokenType.Comment) {
       comments.push(comment(cursor));
     } else {
-      const [item, additional_comments] = walkValue(cursor, input);
+      const [item, ...additional_comments] = walkValue(cursor, input);
       const inline_item: InlineArrayItem = {
         type: NodeType.InlineArrayItem,
         loc: cloneLocation(item.loc),
@@ -581,7 +570,7 @@ function inlineArray(cursor: Cursor<Token>, input: string): [InlineArray, Commen
       };
 
       value.items.push(inline_item);
-      comments = comments.concat(additional_comments);
+      comments = comments.concat(additional_comments as Comment[]);
     }
 
     cursor.next();

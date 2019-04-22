@@ -1,6 +1,5 @@
 import {
   NodeType,
-  Block,
   Value,
   KeyValue,
   Integer,
@@ -13,7 +12,6 @@ import {
   InlineTableItem,
   Key,
   String as StringNode,
-  AST,
   Document
 } from './ast';
 import { Position, clonePosition, cloneLocation } from './location';
@@ -33,41 +31,40 @@ const default_format = {
 
 const IS_BARE_KEY = /[\w,\d,\_,\-]+/;
 
-export default function parseJS(value: any, format: Format = {}): AST {
+export default function parseJS(value: any, format: Format = {}): Document {
   format = Object.assign({}, default_format, format);
-
   value = toJSON(value);
-  if (!isObject(value)) return walkValue(value, { start: zero(), format });
 
-  const items = walkObject(value, { start: zero(), format }) as Array<Block>;
-  let document: Document = {
+  const items = [...walkObject(value, { start: zero(), format })];
+
+  // Heuristics:
+  // 1. Top-level objects/arrays should be tables/table arrays
+  // 2. Convert objects/arrays to tables/table arrays based on print width
+  const document: Document = {
     type: NodeType.Document,
     loc: { start: zero(), end: items.length ? last(items)!.loc.end : zero() },
     items
   };
 
-  // Heuristics:
-  // 1. Top-level objects/arrays should be tables/table arrays
-  // 2. Convert objects/arrays to tables/table arrays based on print width
-  document = pipe(
+  const formatted = pipe(
     document,
     formatTopLevel,
     document => formatPrintWidth(document, format)
   );
 
-  return document;
+  return formatted;
 }
 
-function walkObject(value: any, options: Options): KeyValue[] {
+function* walkObject(value: any, options: Options): IterableIterator<KeyValue> {
   let { start, format } = options;
-  return Object.keys(value).map(key => {
+  for (const key of Object.keys(value)) {
     const key_value = asKeyValue(key, value[key], { start, format });
 
     // Move start position to start of next line
     start = { line: key_value.loc.end.line + 1, column: 0 };
 
-    return key_value;
-  });
+    yield key_value;
+  }
 }
 
 function walkObjectInline(value: any, options: Options): InlineTableItem[] {

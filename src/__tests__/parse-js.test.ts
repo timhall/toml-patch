@@ -25,6 +25,8 @@ const value = {
 };
 
 test('it should be properly formatted', () => {
-  expect(toTOML(parseJS(value))).toMatchSnapshot();
-  expect(toTOML(parseJS(value, { bracketSpacing: false, trailingComma: true }))).toMatchSnapshot();
+  expect(toTOML(parseJS(value).items)).toMatchSnapshot();
+  expect(
+    toTOML(parseJS(value, { bracketSpacing: false, trailingComma: true }).items)
+  ).toMatchSnapshot();
 });

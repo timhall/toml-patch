@@ -14,7 +14,8 @@ import {
   Node,
   Document,
   isDocument,
-  Block
+  Block,
+  NodeType
 } from './ast';
 import diff, { Change, isAdd, isEdit, isRemove, isMove, isRename } from './diff';
 import findByPath, { tryFindByPath, findParent } from './find-by-path';
@@ -23,16 +24,24 @@ import { insert, replace, remove, applyWrites } from './writer';
 
 export default function patch(existing: string, updated: any, format?: Format): string {
   const existing_ast = parseTOML(existing);
-  const existing_js = toJS(existing_ast);
-  const updated_ast = parseJS(updated, format);
+  const items = [...existing_ast];
 
+  const existing_js = toJS(items);
+  const existing_document: Document = {
+    type: NodeType.Document,
+    loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } },
+    items
+  };
+
+  const updated_document = parseJS(updated, format);
   const changes = diff(existing_js, updated);
-  const patched_ast = applyChanges(existing_ast, updated_ast, changes);
 
-  return toTOML(patched_ast);
+  const patched_document = applyChanges(existing_document, updated_document, changes);
+
+  return toTOML(patched_document.items);
 }
 
-function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
+function applyChanges(original: Document, updated: Document, changes: Change[]): Document {
   // Potential Changes:
   //
   // Add: Add key-value to object, add item to array

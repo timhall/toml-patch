@@ -32,6 +32,10 @@ export function isObject(value: any): boolean {
   return value && typeof value === 'object' && !isDate(value) && !Array.isArray(value);
 }
 
+export function isIterable<T>(value: any): value is Iterable<T> {
+  return value != null && typeof value[Symbol.iterator] === 'function';
+}
+
 export function has(object: any, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(object, key);
 }

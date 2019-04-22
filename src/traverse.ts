@@ -1,5 +1,6 @@
 import {
   NodeType,
+  AST,
   Node,
   Document,
   Table,
@@ -19,6 +20,7 @@ import {
   InlineTable,
   InlineTableItem
 } from './ast';
+import { isIterable } from './utils';
 
 export type Visit<TNode = Node> = (node: TNode, parent: TNode | null) => void;
 export type EnterExit<TNode = Node> = { enter?: Visit<TNode>; exit?: Visit<TNode> };
@@ -43,8 +45,14 @@ export type Visitor = {
   Comment?: Visit<Comment> | EnterExit<Comment>;
 };
 
-export default function traverse(node: Node, visitor: Visitor) {
-  function traverseArray(array: Node[], parent: Node | null) {
+export default function traverse(ast: AST | Node, visitor: Visitor) {
+  if (isIterable(ast)) {
+    traverseArray(ast, null);
+  } else {
+    traverseNode(ast, null);
+  }
+
+  function traverseArray(array: Iterable<Node>, parent: Node | null) {
     for (const node of array) {
       traverseNode(node, parent);
     }
@@ -117,6 +125,4 @@ export default function traverse(node: Node, visitor: Visitor) {
       (visit as EnterExit).exit!(node, parent);
     }
   }
-
-  traverseNode(node, null);
 }

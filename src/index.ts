@@ -4,12 +4,13 @@ import toTOML from './to-toml';
 import toJS from './to-js';
 import { Format } from './format';
 
-export function parse(value: string) {
+export function parse(value: string): any {
   return toJS(parseTOML(value), value);
 }
 
 export function stringify(value: any, format?: Format): string {
-  return toTOML(parseJS(value, format));
+  const document = parseJS(value, format);
+  return toTOML(document.items);
 }
 
 export { default as patch } from './patch';

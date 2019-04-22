@@ -1,5 +1,12 @@
 import {
+  NodeType,
   Node,
+  Document,
+  Key,
+  Value,
+  InlineArray,
+  InlineArrayItem,
+  InlineTableItem,
   isKeyValue,
   isTable,
   isTableArray,
@@ -7,12 +14,6 @@ import {
   isInlineArray,
   hasItems,
   hasItem,
-  Key,
-  Value,
-  InlineArray,
-  InlineArrayItem,
-  InlineTableItem,
-  NodeType,
   isComment,
   isInlineTableItem,
   isInlineArrayItem,
@@ -22,29 +23,31 @@ import { Span, getSpan, clonePosition } from './location';
 import { last } from './utils';
 import traverse from './traverse';
 
+export type Root = Document | Node;
+
 // Store line and column offsets per node
 //
 // Some offsets are applied on enter (e.g. shift child items and next items)
 // Others are applied on exit (e.g. shift next items)
 type Offsets = WeakMap<Node, Span>;
 
-const enter_offsets: WeakMap<Node, Offsets> = new WeakMap();
-const getEnter = (root: Node) => {
+const enter_offsets: WeakMap<Root, Offsets> = new WeakMap();
+const getEnter = (root: Root) => {
   if (!enter_offsets.has(root)) {
     enter_offsets.set(root, new WeakMap());
   }
   return enter_offsets.get(root)!;
 };
 
-const exit_offsets: WeakMap<Node, Offsets> = new WeakMap();
-const getExit = (root: Node) => {
+const exit_offsets: WeakMap<Root, Offsets> = new WeakMap();
+const getExit = (root: Root) => {
   if (!exit_offsets.has(root)) {
     exit_offsets.set(root, new WeakMap());
   }
   return exit_offsets.get(root)!;
 };
 
-export function replace(root: Node, parent: Node, existing: Node, replacement: Node) {
+export function replace(root: Root, parent: Node, existing: Node, replacement: Node) {
   // First, replace existing node
   // (by index for items, item, or key/value)
   if (hasItems(parent)) {
@@ -89,7 +92,7 @@ export function replace(root: Node, parent: Node, existing: Node, replacement: N
   offsets.set(replacement, offset);
 }
 
-export function insert(root: Node, parent: Node, child: Node, index?: number) {
+export function insert(root: Root, parent: Node, child: Node, index?: number) {
   if (!hasItems(parent)) {
     throw new Error(`Unsupported parent type "${parent.type}" for insert`);
   }

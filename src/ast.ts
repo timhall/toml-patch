@@ -20,7 +20,7 @@ export enum NodeType {
   Comment = 'Comment'
 }
 
-export type AST = Document | Value;
+export type AST = Iterable<Block>;
 
 export interface Document extends Node {
   type: NodeType.Document;

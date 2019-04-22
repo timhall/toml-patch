@@ -5,10 +5,10 @@ import { SPACE } from './tokenizer';
 
 const BY_NEW_LINE = /(\r\n|\n)/g;
 
-export default function toTOML(value: AST, newline: string = '\n'): string {
+export default function toTOML(ast: AST, newline: string = '\n'): string {
   const lines: string[] = [];
 
-  traverse(value, {
+  traverse(ast, {
     [NodeType.TableKey](node) {
       const { start, end } = node.loc;
 
