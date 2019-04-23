@@ -81,3 +81,7 @@ export function clonePosition(position: Position): Position {
 export function cloneLocation(location: Location): Location {
   return { start: clonePosition(location.start), end: clonePosition(location.end) };
 }
+
+export function zero(): Position {
+  return { line: 1, column: 0 };
+}

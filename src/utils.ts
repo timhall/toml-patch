@@ -32,6 +32,10 @@ export function isObject(value: any): boolean {
   return value && typeof value === 'object' && !isDate(value) && !Array.isArray(value);
 }
 
+export function isIterable<T>(value: any): value is Iterable<T> {
+  return value != null && typeof value[Symbol.iterator] === 'function';
+}
+
 export function has(object: any, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
@@ -52,24 +56,6 @@ export function datesEqual(a: any, b: any): boolean {
 
 export function pipe<TValue>(value: TValue, ...fns: Array<(value: TValue) => TValue>): TValue {
   return fns.reduce((value, fn) => fn(value), value);
-}
-
-export function flatMap<TValue, TResult>(
-  values: TValue[],
-  iterator: (value: TValue, index: number, values: TValue[]) => TResult | TResult[],
-  context?: any
-): TResult[] {
-  const flattened: TResult[] = [];
-
-  values.forEach((value, index) => {
-    const result = context
-      ? iterator.call(context, value, index, values)
-      : iterator(value, index, values);
-
-    Array.isArray(result) ? flattened.push.apply(flattened, result) : flattened.push(result);
-  });
-
-  return flattened;
 }
 
 export function stableStringify(object: any): string {

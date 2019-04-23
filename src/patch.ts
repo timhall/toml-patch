@@ -4,9 +4,6 @@ import toJS from './to-js';
 import toTOML from './to-toml';
 import { Format } from './format';
 import {
-  AST,
-  isTableArray,
-  isInlineArray,
   isKeyValue,
   WithItems,
   KeyValue,
@@ -14,7 +11,12 @@ import {
   Node,
   Document,
   isDocument,
-  Block
+  Block,
+  NodeType,
+  isTableArray,
+  isInlineArray,
+  hasItem,
+  InlineItem
 } from './ast';
 import diff, { Change, isAdd, isEdit, isRemove, isMove, isRename } from './diff';
 import findByPath, { tryFindByPath, findParent } from './find-by-path';
@@ -23,16 +25,24 @@ import { insert, replace, remove, applyWrites } from './writer';
 
 export default function patch(existing: string, updated: any, format?: Format): string {
   const existing_ast = parseTOML(existing);
-  const existing_js = toJS(existing_ast);
-  const updated_ast = parseJS(updated, format);
+  const items = [...existing_ast];
 
+  const existing_js = toJS(items);
+  const existing_document: Document = {
+    type: NodeType.Document,
+    loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } },
+    items
+  };
+
+  const updated_document = parseJS(updated, format);
   const changes = diff(existing_js, updated);
-  const patched_ast = applyChanges(existing_ast, updated_ast, changes);
 
-  return toTOML(patched_ast);
+  const patched_document = applyChanges(existing_document, updated_document, changes);
+
+  return toTOML(patched_document.items);
 }
 
-function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
+function applyChanges(original: Document, updated: Document, changes: Change[]): Document {
   // Potential Changes:
   //
   // Add: Add key-value to object, add item to array
@@ -109,6 +119,7 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
       remove(original, parent, node);
     } else if (isMove(change)) {
       let parent = findByPath(original, change.path);
+      if (hasItem(parent)) parent = parent.item;
       if (isKeyValue(parent)) parent = parent.value;
 
       const node = (parent as WithItems).items[change.from];
@@ -116,8 +127,15 @@ function applyChanges(original: AST, updated: AST, changes: Change[]): AST {
       remove(original, parent, node);
       insert(original, parent, node, change.to);
     } else if (isRename(change)) {
-      const parent = findByPath(original, change.path.concat(change.from)) as KeyValue;
-      const replacement = findByPath(updated, change.path.concat(change.to)) as KeyValue;
+      let parent = findByPath(original, change.path.concat(change.from)) as
+        | KeyValue
+        | InlineItem<KeyValue>;
+      let replacement = findByPath(updated, change.path.concat(change.to)) as
+        | KeyValue
+        | InlineItem<KeyValue>;
+
+      if (hasItem(parent)) parent = parent.item;
+      if (hasItem(replacement)) replacement = replacement.item;
 
       replace(original, parent, parent.key, replacement.key);
     }

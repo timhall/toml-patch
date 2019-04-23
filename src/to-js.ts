@@ -3,7 +3,7 @@ import traverse from './traverse';
 import { last, blank, isDate, has } from './utils';
 import ParseError from './parse-error';
 
-export default function toJS(document: AST, input: string = ''): any {
+export default function toJS(ast: AST, input: string = ''): any {
   const result = blank();
   const tables: Set<string> = new Set();
   const table_arrays: Set<string> = new Set();
@@ -12,7 +12,7 @@ export default function toJS(document: AST, input: string = ''): any {
   let previous_active: any;
   let skip = false;
 
-  traverse(document, {
+  traverse(ast, {
     [NodeType.Table](node) {
       const key = node.key.item.value;
       try {
