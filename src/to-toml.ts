@@ -57,19 +57,13 @@ export default function toTOML(ast: AST, newline: string = '\n'): string {
       write(lines, { start, end: { line: start.line, column: start.column + 1 } }, '[');
       write(lines, { start: { line: end.line, column: end.column - 1 }, end }, ']');
     },
-    [NodeType.InlineArrayItem](node) {
-      if (!node.comma) return;
-
-      const start = node.loc.end;
-      write(lines, { start, end: { line: start.line, column: start.column + 1 } }, ',');
-    },
 
     [NodeType.InlineTable](node) {
       const { start, end } = node.loc;
       write(lines, { start, end: { line: start.line, column: start.column + 1 } }, '{');
       write(lines, { start: { line: end.line, column: end.column - 1 }, end }, '}');
     },
-    [NodeType.InlineTableItem](node) {
+    [NodeType.InlineItem](node) {
       if (!node.comma) return;
 
       const start = node.loc.end;

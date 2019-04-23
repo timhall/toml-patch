@@ -15,9 +15,16 @@ import {
   hasItems,
   hasItem,
   isComment,
-  isInlineTableItem,
-  isInlineArrayItem,
-  isDocument
+  isDocument,
+  InlineTable,
+  TableArray,
+  Table,
+  KeyValue,
+  Comment,
+  InlineItem,
+  isInlineItem,
+  Block,
+  isBlock
 } from './ast';
 import { Span, getSpan, clonePosition } from './location';
 import { last } from './utils';
@@ -82,60 +89,135 @@ export function replace(root: Root, parent: Node, existing: Node, replacement: N
     columns: replacement_span.columns - existing_span.columns
   };
 
-  const offsets = getExit(root);
-  const existing_offsets = offsets.get(existing);
-  if (existing_offsets) {
-    offset.lines += existing_offsets.lines;
-    offset.columns += existing_offsets.columns;
-  }
-
-  offsets.set(replacement, offset);
+  addOffset(offset, getExit(root), replacement, existing);
 }
 
 export function insert(root: Root, parent: Node, child: Node, index?: number) {
   if (!hasItems(parent)) {
-    throw new Error(`Unsupported parent type "${parent.type}" for insert`);
+    throw new Error(`Unsupported parent type "${(parent as Node).type}" for insert`);
   }
 
-  // Determine bracket spacing from existing before inserting child
-  const is_inline = isInlineArray(parent) || isInlineTable(parent);
-  let bracket_spacing = 0;
-  if (is_inline && parent.items.length) {
-    // TODO this doesn't take into account any offsets waiting to be applied
-    // const leading_spacing = parent.items[0].loc.start.column - (parent.loc.start.column + 1);
-    // const trailing_spacing = parent.loc.end.column - 1 - last(parent.items)!.loc.end.column;
-    // bracket_spacing = Math.min(leading_spacing, trailing_spacing);
+  index = index != null ? index : parent.items.length;
+
+  let shift: Span;
+  let offset: Span;
+  if (isInlineArray(parent) || isInlineTable(parent)) {
+    ({ shift, offset } = insertInline(parent, child as InlineItem, index));
+  } else {
+    ({ shift, offset } = insertOnNewLine(
+      parent as Document | Table | TableArray,
+      child as KeyValue | Comment,
+      index
+    ));
+  }
+
+  shiftNode(child, shift);
+
+  // The child element is placed relative to the previous element,
+  // if the previous element has an offset, need to position relative to that
+  // -> Move previous offset to child's offset
+  const previous = parent.items[index - 1];
+  const previous_offset = previous && getExit(root).get(previous);
+  if (previous_offset) {
+    offset.lines += previous_offset.lines;
+    offset.columns += previous_offset.columns;
+
+    // Account for comma overlay
+    //
+    // a = [b, e]
+    // a = [b, c, e]
+    //       ^---^
+    // a = [b, c, d, e]
+    //          ^---^
+    if (isInlineItem(child) && previous && parent.items[index + 1]) {
+      offset.columns -= 2;
+    }
+
+    getExit(root).delete(previous!);
+  }
+
+  const offsets = getExit(root);
+  offsets.set(child, offset);
+}
+
+function insertOnNewLine(
+  parent: Document | Table | TableArray,
+  child: Block,
+  index: number
+): { shift: Span; offset: Span } {
+  if (!isBlock(child)) {
+    throw new Error(`Incompatible child type "${(child as Node).type}"`);
+  }
+
+  const previous = parent.items[index - 1];
+  const use_first_line = isDocument(parent) && !parent.items.length;
+
+  parent.items.splice(index, 0, child);
+
+  // Set start location from previous item or start of array
+  // (previous is undefined for empty array or inserting at first item)
+  const start = previous
+    ? {
+        line: previous.loc.end.line,
+        column: !isComment(previous) ? previous.loc.start.column : parent.loc.start.column
+      }
+    : clonePosition(parent.loc.start);
+
+  const is_block = isTable(child) || isTableArray(child);
+  let leading_lines = 0;
+  if (use_first_line) {
+    // 0 leading lines
+  } else if (is_block) {
+    leading_lines = 2;
+  } else {
+    leading_lines = 1;
+  }
+  start.line += leading_lines;
+
+  const shift = {
+    lines: start.line - child.loc.start.line,
+    columns: start.column - child.loc.start.column
+  };
+
+  // Apply offsets after child node
+  const child_span = getSpan(child.loc);
+  const offset = {
+    lines: child_span.lines + (leading_lines - 1),
+    columns: child_span.columns
+  };
+
+  return { shift, offset };
+}
+
+function insertInline(
+  parent: InlineArray | InlineTable,
+  child: InlineItem,
+  index: number
+): { shift: Span; offset: Span } {
+  if (!isInlineItem(child)) {
+    throw new Error(`Incompatible child type "${(child as Node).type}"`);
   }
 
   // Store preceding node and insert
   const previous = index != null ? parent.items[index - 1] : last(parent.items);
-  const is_first = !previous;
   const is_last = index == null || index === parent.items.length;
 
-  if (index != null) {
-    parent.items.splice(index, 0, child);
-  } else {
-    parent.items.push(child);
-  }
+  parent.items.splice(index, 0, child);
 
   // Add commas as-needed
-  const leading_comma = is_inline && previous;
-  const has_trailing_items = index != null && parent.items.length >= index + 1;
-  const trailing_comma = is_inline && has_trailing_items;
+  const leading_comma = !!previous;
+  const trailing_comma = !is_last;
+  const last_comma = is_last && child.comma === true;
   if (leading_comma) {
-    (previous as InlineArrayItem | InlineTableItem).comma = true;
+    previous!.comma = true;
   }
   if (trailing_comma) {
-    (child as InlineArrayItem | InlineTableItem).comma = true;
+    child.comma = true;
   }
 
   // Use a new line for documents, children of Table/TableArray,
   // and if an inline table is using new lines
-  const use_new_line =
-    isDocument(parent) ||
-    isTable(parent) ||
-    isTableArray(parent) ||
-    (isInlineArray(parent) && perLine(parent));
+  const use_new_line = isInlineArray(parent) && perLine(parent);
 
   // Set start location from previous item or start of array
   // (previous is undefined for empty array or inserting at first item)
@@ -150,16 +232,13 @@ export function insert(root: Root, parent: Node, child: Node, index?: number) {
       }
     : clonePosition(parent.loc.start);
 
-  const is_block = isTable(child) || isTableArray(child);
   let leading_lines = 0;
-  if (is_block) {
-    leading_lines = 2;
-  } else if (use_new_line) {
+  if (use_new_line) {
     leading_lines = 1;
-  } else if (is_inline) {
+  } else {
     const skip_comma = 2;
     const skip_bracket = 1;
-    start.column += leading_comma ? skip_comma : skip_bracket + bracket_spacing;
+    start.column += leading_comma ? skip_comma : skip_bracket;
   }
   start.line += leading_lines;
 
@@ -168,34 +247,17 @@ export function insert(root: Root, parent: Node, child: Node, index?: number) {
     columns: start.column - child.loc.start.column
   };
 
-  shiftNode(child, shift);
-
   // Apply offsets after child node
   const child_span = getSpan(child.loc);
   const offset = {
     lines: child_span.lines + (leading_lines - 1),
-    columns:
-      child_span.columns +
-      (leading_comma || trailing_comma ? 2 : 0) +
-      (is_first || is_last ? bracket_spacing : 0)
+    columns: child_span.columns + (leading_comma || trailing_comma ? 2 : 0) + (last_comma ? 1 : 0)
   };
 
-  // The child element is placed relative to the previous element,
-  // if the previous element has an offset, need to position relative to that
-  // -> Move previous offset to child's offset
-  const previous_offset = previous && getExit(root).get(previous);
-  if (previous_offset) {
-    offset.lines += previous_offset.lines;
-    offset.columns += previous_offset.columns;
-
-    getExit(root).delete(previous!);
-  }
-
-  const offsets = getExit(root);
-  offsets.set(child, offset);
+  return { shift, offset };
 }
 
-export function remove(root: Node, parent: Node, node: Node) {
+export function remove(root: Root, parent: Node, node: Node) {
   // Remove an element from the parent's items
   // (supports Document, Table, TableArray, InlineTable, and InlineArray
   //
@@ -253,7 +315,7 @@ export function remove(root: Node, parent: Node, node: Node) {
   }
 
   // For inline tables and arrays, check whether the line should be kept
-  const is_inline = isInlineArrayItem(previous) || isInlineTableItem(previous);
+  const is_inline = isInlineItem(previous);
   const previous_on_same_line = previous && previous.loc.end.line === node.loc.start.line;
   const next_on_sameLine = next && next.loc.start.line === node.loc.end.line;
   const keep_line = is_inline && (previous_on_same_line || next_on_sameLine);
@@ -286,6 +348,38 @@ export function remove(root: Node, parent: Node, node: Node) {
   }
 
   offsets.set(target, offset);
+}
+
+export function applyBracketSpacing(
+  root: Root,
+  node: InlineArray | InlineTable,
+  bracket_spacing: boolean = true
+) {
+  // Can only add bracket spacing currently
+  if (!bracket_spacing) return;
+  if (!node.items.length) return;
+
+  // Apply enter to node so that items are affected
+  addOffset({ lines: 0, columns: 1 }, getEnter(root), node);
+
+  // Apply exit to last node in items
+  const last_item = last(node.items as Node[])!;
+  addOffset({ lines: 0, columns: 1 }, getExit(root), last_item);
+}
+
+export function applyTrailingComma(
+  root: Root,
+  node: InlineArray | InlineTable,
+  trailing_commas: boolean = false
+) {
+  // Can only add trailing comma currently
+  if (!trailing_commas) return;
+  if (!node.items.length) return;
+
+  const last_item = last(node.items)!;
+  last_item.comma = true;
+
+  addOffset({ lines: 0, columns: 1 }, getExit(root), last_item);
 }
 
 export function applyWrites(root: Node) {
@@ -331,8 +425,7 @@ export function applyWrites(root: Node) {
     [NodeType.InlineTable]: shiftLocation,
     [NodeType.InlineArray]: shiftLocation,
 
-    [NodeType.InlineArrayItem]: shiftLocation,
-    [NodeType.InlineTableItem]: shiftLocation,
+    [NodeType.InlineItem]: shiftLocation,
     [NodeType.TableKey]: shiftLocation,
     [NodeType.TableArrayKey]: shiftLocation,
 
@@ -355,13 +448,24 @@ export function applyWrites(root: Node) {
     [NodeType.DateTime]: shiftLocation,
     [NodeType.Comment]: shiftLocation
   });
+
+  enter_offsets.delete(root);
+  exit_offsets.delete(root);
 }
 
-export function shiftNode(node: Node, span: Span): Node {
+export function shiftNode(
+  node: Node,
+  span: Span,
+  options: { first_line_only?: boolean } = {}
+): Node {
+  const { first_line_only = false } = options;
+  const start_line = node.loc.start.line;
   const { lines, columns } = span;
   const move = (node: Node) => {
-    node.loc.start.column += columns;
-    node.loc.end.column += columns;
+    if (!first_line_only || node.loc.start.line === start_line) {
+      node.loc.start.column += columns;
+      node.loc.end.column += columns;
+    }
     node.loc.start.line += lines;
     node.loc.end.line += lines;
   };
@@ -382,9 +486,8 @@ export function shiftNode(node: Node, span: Span): Node {
     [NodeType.Boolean]: move,
     [NodeType.DateTime]: move,
     [NodeType.InlineArray]: move,
-    [NodeType.InlineArrayItem]: move,
+    [NodeType.InlineItem]: move,
     [NodeType.InlineTable]: move,
-    [NodeType.InlineTableItem]: move,
     [NodeType.Comment]: move
   });
 
@@ -396,4 +499,14 @@ function perLine(array: InlineArray): boolean {
 
   const span = getSpan(array.loc);
   return span.lines > array.items.length;
+}
+
+function addOffset(offset: Span, offsets: Offsets, node: Node, from?: Node) {
+  const previous_offset = offsets.get(from || node);
+  if (previous_offset) {
+    offset.lines += previous_offset.lines;
+    offset.columns += previous_offset.columns;
+  }
+
+  offsets.set(node, offset);
 }

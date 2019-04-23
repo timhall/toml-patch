@@ -4,9 +4,6 @@ import toJS from './to-js';
 import toTOML from './to-toml';
 import { Format } from './format';
 import {
-  AST,
-  isTableArray,
-  isInlineArray,
   isKeyValue,
   WithItems,
   KeyValue,
@@ -15,7 +12,11 @@ import {
   Document,
   isDocument,
   Block,
-  NodeType
+  NodeType,
+  isTableArray,
+  isInlineArray,
+  hasItem,
+  InlineItem
 } from './ast';
 import diff, { Change, isAdd, isEdit, isRemove, isMove, isRename } from './diff';
 import findByPath, { tryFindByPath, findParent } from './find-by-path';
@@ -118,6 +119,7 @@ function applyChanges(original: Document, updated: Document, changes: Change[]):
       remove(original, parent, node);
     } else if (isMove(change)) {
       let parent = findByPath(original, change.path);
+      if (hasItem(parent)) parent = parent.item;
       if (isKeyValue(parent)) parent = parent.value;
 
       const node = (parent as WithItems).items[change.from];
@@ -125,8 +127,15 @@ function applyChanges(original: Document, updated: Document, changes: Change[]):
       remove(original, parent, node);
       insert(original, parent, node, change.to);
     } else if (isRename(change)) {
-      const parent = findByPath(original, change.path.concat(change.from)) as KeyValue;
-      const replacement = findByPath(updated, change.path.concat(change.to)) as KeyValue;
+      let parent = findByPath(original, change.path.concat(change.from)) as
+        | KeyValue
+        | InlineItem<KeyValue>;
+      let replacement = findByPath(updated, change.path.concat(change.to)) as
+        | KeyValue
+        | InlineItem<KeyValue>;
+
+      if (hasItem(parent)) parent = parent.item;
+      if (hasItem(replacement)) replacement = replacement.item;
 
       replace(original, parent, parent.key, replacement.key);
     }

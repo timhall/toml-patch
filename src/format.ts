@@ -1,18 +1,15 @@
 import {
-  NodeType,
   KeyValue,
   Table,
   InlineTable,
-  TableKey,
   TableArray,
-  TableArrayKey,
   InlineArray,
   isInlineTable,
   isInlineArray,
   isKeyValue,
   Document
 } from './ast';
-import { clonePosition, getSpan } from './location';
+import { generateTable, generateDocument, generateTableArray } from './generate';
 import { insert, remove, applyWrites } from './writer';
 
 export interface Format {
@@ -53,92 +50,33 @@ export function formatTopLevel(document: Document): Document {
 }
 
 function formatTable(key_value: KeyValue): Table {
-  const { columns: key_width } = getSpan(key_value.key.loc);
-  const key: TableKey = {
-    type: NodeType.TableKey,
-    loc: {
-      start: { line: 1, column: 0 },
-      end: { line: 1, column: key_width + 2 }
-    },
-    item: {
-      type: NodeType.Key,
-      loc: {
-        start: { line: 1, column: 1 },
-        end: { line: 1, column: key_width + 1 }
-      },
-      raw: key_value.key.raw,
-      value: key_value.key.value
-    }
-  };
+  const table = generateTable(key_value.key.value);
 
-  const table: Table = {
-    type: NodeType.Table,
-    loc: {
-      start: { line: 1, column: 0 },
-      end: { line: 1, column: key_width + 2 }
-    },
-    key,
-    items: []
-  };
-
-  (key_value.value as InlineTable).items.forEach(item => {
+  for (const item of (key_value.value as InlineTable).items) {
     insert(table, table, item.item);
-  });
+  }
 
   applyWrites(table);
   return table;
 }
 
 function formatTableArray(key_value: KeyValue): TableArray[] {
-  const { columns: key_width } = getSpan(key_value.key.loc);
-  const root = placeholder();
+  const root = generateDocument();
 
-  (key_value.value as InlineArray).items.forEach(item => {
-    const key: TableArrayKey = {
-      type: NodeType.TableArrayKey,
-      loc: {
-        start: { line: 1, column: 0 },
-        end: { line: 1, column: key_width + 4 }
-      },
-      item: {
-        type: NodeType.Key,
-        loc: {
-          start: { line: 1, column: 2 },
-          end: { line: 1, column: key_width + 2 }
-        },
-        raw: key_value.key.raw,
-        value: key_value.key.value
-      }
-    };
-
-    const table_array: TableArray = {
-      type: NodeType.TableArray,
-      loc: {
-        start: { line: 1, column: 0 },
-        end: clonePosition(key.loc.end)
-      },
-      key,
-      items: []
-    };
+  for (const inline_array_item of (key_value.value as InlineArray).items) {
+    const table_array = generateTableArray(key_value.key.value);
     insert(root, root, table_array);
 
-    (item.item as InlineTable).items.forEach(item => {
-      insert(root, table_array, item.item);
-    });
-  });
+    for (const inline_table_item of (inline_array_item.item as InlineTable).items) {
+      insert(root, table_array, inline_table_item.item);
+    }
+  }
 
   applyWrites(root);
   return root.items as TableArray[];
 }
 
 export function formatPrintWidth(document: Document, format: Format): Document {
+  // TODO
   return document;
-}
-
-function placeholder(): Document {
-  return {
-    type: NodeType.Document,
-    loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } },
-    items: []
-  };
 }

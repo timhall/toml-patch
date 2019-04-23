@@ -16,9 +16,8 @@ import {
   DateTime,
   Comment,
   InlineArray,
-  InlineArrayItem,
   InlineTable,
-  InlineTableItem
+  InlineItem
 } from './ast';
 import { isIterable } from './utils';
 
@@ -39,9 +38,8 @@ export type Visitor = {
   Boolean?: Visit<Boolean> | EnterExit<Boolean>;
   DateTime?: Visit<DateTime> | EnterExit<DateTime>;
   InlineArray?: Visit<InlineArray> | EnterExit<InlineArray>;
-  InlineArrayItem?: Visit<InlineArrayItem> | EnterExit<InlineArrayItem>;
+  InlineItem?: Visit<InlineItem> | EnterExit<InlineItem>;
   InlineTable?: Visit<InlineTable> | EnterExit<InlineTable>;
-  InlineTableItem?: Visit<InlineTableItem> | EnterExit<InlineTableItem>;
   Comment?: Visit<Comment> | EnterExit<Comment>;
 };
 
@@ -97,15 +95,12 @@ export default function traverse(ast: AST | Node, visitor: Visitor) {
       case NodeType.InlineArray:
         traverseArray((node as InlineArray).items, node);
         break;
-      case NodeType.InlineArrayItem:
-        traverseNode((node as InlineArrayItem).item, node);
+      case NodeType.InlineItem:
+        traverseNode((node as InlineItem).item, node);
         break;
 
       case NodeType.InlineTable:
         traverseArray((node as InlineTable).items, node);
-        break;
-      case NodeType.InlineTableItem:
-        traverseNode((node as InlineTableItem).item, node);
         break;
 
       case NodeType.Key:

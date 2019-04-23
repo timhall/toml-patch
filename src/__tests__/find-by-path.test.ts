@@ -14,6 +14,6 @@ it('should find node by path', () => {
   expect(findByPath(document, []).type).toEqual('Document');
   expect((findByPath(document, ['title']) as any).value.value).toEqual('TOML Example');
   expect((findByPath(document, ['owner', 'organization']) as any).value.value).toEqual('GitHub');
-  expect((findByPath(document, ['database', 'ports', 2]) as any).value).toEqual(8002);
+  expect((findByPath(document, ['database', 'ports', 2]) as any).item.value).toEqual(8002);
   expect((findByPath(document, ['products', 1, 'name']) as any).value.value).toEqual('Nail');
 });

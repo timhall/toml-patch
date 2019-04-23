@@ -13,9 +13,8 @@ import {
   Boolean,
   DateTime,
   InlineTable,
-  InlineTableItem,
   InlineArray,
-  InlineArrayItem,
+  InlineItem,
   Comment,
   AST,
   Block
@@ -495,8 +494,8 @@ function inlineTable(cursor: Cursor<Token>, input: string): InlineTable {
       );
     }
 
-    const inline_item: InlineTableItem = {
-      type: NodeType.InlineTableItem,
+    const inline_item: InlineItem<KeyValue> = {
+      type: NodeType.InlineItem,
       loc: cloneLocation(item.loc),
       item,
       comma: false
@@ -562,8 +561,8 @@ function inlineArray(cursor: Cursor<Token>, input: string): [InlineArray, Commen
       comments.push(comment(cursor));
     } else {
       const [item, ...additional_comments] = walkValue(cursor, input);
-      const inline_item: InlineArrayItem = {
-        type: NodeType.InlineArrayItem,
+      const inline_item: InlineItem = {
+        type: NodeType.InlineItem,
         loc: cloneLocation(item.loc),
         item,
         comma: false

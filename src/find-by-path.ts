@@ -1,25 +1,11 @@
-import {
-  Node,
-  isKeyValue,
-  isTable,
-  isTableArray,
-  hasItems,
-  isInlineTableItem,
-  isInlineArrayItem,
-  hasItem
-} from './ast';
+import { Node, isKeyValue, isTable, isTableArray, hasItems, isInlineItem, hasItem } from './ast';
 import { arraysEqual, stableStringify } from './utils';
 
 export type Path = Array<string | number>;
 
 export default function findByPath(node: Node, path: Path): Node {
-  if (!path.length) {
-    if (hasItem(node)) {
-      return node.item;
-    } else {
-      return node;
-    }
-  }
+  if (!path.length) return node;
+
   if (isKeyValue(node)) {
     return findByPath(node.value, path);
   }
@@ -44,9 +30,9 @@ export default function findByPath(node: Node, path: Path): Node {
           const array_index = indexes[key_string]++;
 
           key = key.concat(array_index);
-        } else if (isInlineTableItem(item)) {
+        } else if (isInlineItem(item) && isKeyValue(item.item)) {
           key = item.item.key.value;
-        } else if (isInlineArrayItem(item)) {
+        } else if (isInlineItem(item)) {
           key = [index];
         }
 

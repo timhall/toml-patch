@@ -193,12 +193,12 @@ export function generateInlineArray(): InlineArray {
   };
 }
 
-export function generateInlineItem(item: KeyValue | Value, comma: boolean = true): InlineItem {
+export function generateInlineItem(item: KeyValue | Value): InlineItem {
   return {
     type: NodeType.InlineItem,
     loc: cloneLocation(item.loc),
     item,
-    comma
+    comma: false
   };
 }
 
