@@ -12,9 +12,8 @@ import {
   generateInlineTable
 } from './generate';
 import { Format, formatTopLevel, formatPrintWidth } from './format';
-import { isString, isInteger, isFloat, isBoolean, isDate, pipe } from './utils';
+import { isObject, isString, isInteger, isFloat, isBoolean, isDate, pipe } from './utils';
 import { insert, applyWrites, applyBracketSpacing, applyTrailingComma } from './writer';
-import { isObject } from 'util';
 
 const default_format = {
   printWidth: 80,
