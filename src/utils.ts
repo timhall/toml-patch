@@ -71,3 +71,10 @@ export function stableStringify(object: any): string {
     return JSON.stringify(object);
   }
 }
+
+export function* matchAll(value: string, regexp: RegExp): Iterable<RegExpExecArray> {
+  let match: RegExpExecArray | null;
+  while ((match = regexp.exec(value)) !== null) {
+    yield match;
+  }
+}

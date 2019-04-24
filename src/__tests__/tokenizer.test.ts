@@ -21,8 +21,12 @@ test('should tokenize multiline strings', () => {
   ]).toMatchSnapshot();
 });
 
+test('should tokenize dotted key', () => {
+  expect([...tokenize(`[a.b.c]`)]).toMatchSnapshot();
+});
+
 test('should tokenize dotted key with spaces', () => {
-  expect([...tokenize(`[[ a . "b" . 'c' ]]`)]).toMatchSnapshot();
+  expect([...tokenize(`[[ a  .  "b.c" . 'd' ]]`)]).toMatchSnapshot();
 });
 
 test('should tokenize complex input', () => {

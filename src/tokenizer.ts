@@ -1,13 +1,13 @@
 import Cursor, { iterator } from './cursor';
 import { Location, Locator, createLocate, findPosition } from './location';
 import ParseError from './parse-error';
+import { matchAll } from './utils';
 
 export enum TokenType {
   Bracket = 'Bracket',
   Curly = 'Curly',
   Equal = 'Equal',
   Comma = 'Comma',
-  Dot = 'Dot',
   Comment = 'Comment',
   String = 'String'
 }
@@ -17,6 +17,18 @@ export interface Token {
   raw: string;
   loc: Location;
 }
+export interface StringToken extends Token {
+  type: TokenType.String;
+  parts?: string[];
+}
+
+type Dots = Map<number, number>;
+
+interface State {
+  locate: Locator;
+  dots: Dots;
+  input: string;
+}
 
 export const IS_WHITESPACE = /\s/;
 export const IS_NEW_LINE = /(\r\n|\n)/;
@@ -24,6 +36,7 @@ export const DOUBLE_QUOTE = `"`;
 export const SINGLE_QUOTE = `'`;
 export const SPACE = ' ';
 export const ESCAPE = '\\';
+export const DOT = '.';
 
 const IS_VALID_LEADING_CHARACTER = /[\w,\d,\",\',\+,\-,\_]/;
 
@@ -33,23 +46,30 @@ export function* tokenize(input: string): IterableIterator<Token> {
 
   const locate = createLocate(input);
 
+  // Pre-find all dots since whitespace can make it difficult to do by cursor
+  const dots: Dots = new Map();
+  for (const match of matchAll(input, /\s*\.\s*/g)) {
+    const length = match[0].length;
+    dots.set(match.index, length);
+  }
+
+  const state = { locate, dots, input };
+
   while (!cursor.done) {
     if (IS_WHITESPACE.test(cursor.value!)) {
       // (skip whitespace)
     } else if (cursor.value === '[' || cursor.value === ']') {
       // Handle special characters: [, ], {, }, =, comma
-      yield specialCharacter(cursor, locate, TokenType.Bracket);
+      yield specialCharacter(cursor, TokenType.Bracket, state);
     } else if (cursor.value === '{' || cursor.value === '}') {
-      yield specialCharacter(cursor, locate, TokenType.Curly);
+      yield specialCharacter(cursor, TokenType.Curly, state);
     } else if (cursor.value === '=') {
-      yield specialCharacter(cursor, locate, TokenType.Equal);
+      yield specialCharacter(cursor, TokenType.Equal, state);
     } else if (cursor.value === ',') {
-      yield specialCharacter(cursor, locate, TokenType.Comma);
-    } else if (cursor.value === '.') {
-      yield specialCharacter(cursor, locate, TokenType.Dot);
+      yield specialCharacter(cursor, TokenType.Comma, state);
     } else if (cursor.value === '#') {
       // Handle comments = # -> EOL
-      yield comment(cursor, locate);
+      yield comment(cursor, state);
     } else {
       const multiline_char =
         checkThree(input, cursor.index, SINGLE_QUOTE) ||
@@ -57,9 +77,9 @@ export function* tokenize(input: string): IterableIterator<Token> {
 
       if (multiline_char) {
         // Multi-line literals or strings = no escaping
-        yield multiline(cursor, locate, multiline_char, input);
+        yield multiline(cursor, multiline_char, state);
       } else {
-        yield string(cursor, locate, input);
+        yield string(cursor, state);
       }
     }
 
@@ -67,11 +87,11 @@ export function* tokenize(input: string): IterableIterator<Token> {
   }
 }
 
-function specialCharacter(cursor: Cursor<string>, locate: Locator, type: TokenType): Token {
-  return { type, raw: cursor.value!, loc: locate(cursor.index, cursor.index + 1) };
+function specialCharacter(cursor: Cursor<string>, type: TokenType, state: State): Token {
+  return { type, raw: cursor.value!, loc: state.locate(cursor.index, cursor.index + 1) };
 }
 
-function comment(cursor: Cursor<string>, locate: Locator): Token {
+function comment(cursor: Cursor<string>, state: State): Token {
   const start = cursor.index;
   let raw = cursor.value!;
   while (!cursor.peek().done && !IS_NEW_LINE.test(cursor.peek().value!)) {
@@ -84,16 +104,11 @@ function comment(cursor: Cursor<string>, locate: Locator): Token {
   return {
     type: TokenType.Comment,
     raw,
-    loc: locate(start, cursor.index + 1)
+    loc: state.locate(start, cursor.index + 1)
   };
 }
 
-function multiline(
-  cursor: Cursor<string>,
-  locate: Locator,
-  multiline_char: string,
-  input: string
-): Token {
+function multiline(cursor: Cursor<string>, multiline_char: string, state: State): Token {
   const start = cursor.index;
   let quotes = multiline_char + multiline_char + multiline_char;
   let raw = quotes;
@@ -103,15 +118,15 @@ function multiline(
   cursor.next();
   cursor.next();
 
-  while (!cursor.done && !checkThree(input, cursor.index, multiline_char)) {
+  while (!cursor.done && !checkThree(state.input, cursor.index, multiline_char)) {
     raw += cursor.value;
     cursor.next();
   }
 
   if (cursor.done) {
     throw new ParseError(
-      input,
-      findPosition(input, cursor.index),
+      state.input,
+      findPosition(state.input, cursor.index),
       `Expected close of multiline string with ${quotes}, reached end of file`
     );
   }
@@ -124,36 +139,18 @@ function multiline(
   return {
     type: TokenType.String,
     raw,
-    loc: locate(start, cursor.index + 1)
+    loc: state.locate(start, cursor.index + 1)
   };
 }
 
-function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
+function string(cursor: Cursor<string>, state: State): StringToken {
   // Remaining possibilities: keys, strings, literals, integer, float, boolean
-  //
-  // Special cases:
-  // "..." -> quoted
-  // '...' -> quoted
-  // "...".'...' -> bare
-  // 0000-00-00 00:00:00 -> bare
-  //
-  // See https://github.com/toml-lang/toml#offset-date-time
-  //
-  // | For the sake of readability, you may replace the T delimiter between date and time with a space (as permitted by RFC 3339 section 5.6).
-  // | `odt4 = 1979-05-27 07:32:00Z`
-  //
-  // From RFC 3339:
-  //
-  // | NOTE: ISO 8601 defines date and time separated by "T".
-  // | Applications using this syntax may choose, for the sake of
-  // | readability, to specify a full-date and full-time separated by
-  // | (say) a space character.
 
   // First, check for invalid characters
   if (!IS_VALID_LEADING_CHARACTER.test(cursor.value!)) {
     throw new ParseError(
-      input,
-      findPosition(input, cursor.index),
+      state.input,
+      findPosition(state.input, cursor.index),
       `Unsupported character "${cursor.value}". Expected ALPHANUMERIC, ", ', +, -, or _`
     );
   }
@@ -162,16 +159,20 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
   let raw = cursor.value!;
   let double_quoted = cursor.value === DOUBLE_QUOTE;
   let single_quoted = cursor.value === SINGLE_QUOTE;
+  let dotted = 0;
+  let part_range = [0, 1];
+  let parts: string[] | undefined;
 
   const isFinished = (cursor: Cursor<string>) => {
     if (cursor.peek().done) return true;
+
     const next_item = cursor.peek().value!;
+    const next_dotted = state.dots.has(cursor.index + 1);
 
     return (
-      !(double_quoted || single_quoted) &&
+      !(double_quoted || single_quoted || dotted || next_dotted) &&
       (IS_WHITESPACE.test(next_item) ||
         next_item === ',' ||
-        next_item === '.' ||
         next_item === ']' ||
         next_item === '}' ||
         next_item === '=')
@@ -183,6 +184,25 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
 
     if (cursor.value === DOUBLE_QUOTE) double_quoted = !double_quoted;
     if (cursor.value === SINGLE_QUOTE && !double_quoted) single_quoted = !single_quoted;
+
+    if (!double_quoted && !single_quoted && state.dots.has(cursor.index)) {
+      dotted = state.dots.get(cursor.index)!;
+    }
+    if (dotted) {
+      dotted -= 1;
+
+      if (dotted === 0) {
+        if (!parts) parts = [];
+
+        const part = raw.substring(part_range[0], part_range[1]);
+        parts.push(part);
+
+        part_range[0] = raw.length + 1;
+        part_range[1] = raw.length + 1;
+      }
+    } else {
+      part_range[1] += 1;
+    }
 
     raw += cursor.value!;
 
@@ -204,16 +224,21 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
 
   if (double_quoted || single_quoted) {
     throw new ParseError(
-      input,
-      findPosition(input, start),
+      state.input,
+      findPosition(state.input, start),
       `Expected close of string with ${double_quoted ? DOUBLE_QUOTE : SINGLE_QUOTE}`
     );
+  }
+
+  if (parts) {
+    parts.push(raw.substring(part_range[0], part_range[1]));
   }
 
   return {
     type: TokenType.String,
     raw,
-    loc: locate(start, cursor.index + 1)
+    loc: state.locate(start, cursor.index + 1),
+    parts
   };
 }
 

@@ -19,7 +19,7 @@ import {
   AST,
   Block
 } from './ast';
-import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE } from './tokenizer';
+import { Token, TokenType, tokenize, DOUBLE_QUOTE, SINGLE_QUOTE, StringToken } from './tokenizer';
 import { parseString } from './parse-string';
 import Cursor from './cursor';
 import { clonePosition, cloneLocation } from './location';
@@ -27,6 +27,7 @@ import ParseError from './parse-error';
 
 const TRUE = 'true';
 const FALSE = 'false';
+const IS_DOTTED = /\./;
 const HAS_E = /e/i;
 const IS_DIVIDER = /\_/g;
 const IS_INF = /inf/;
@@ -71,12 +72,12 @@ function* walkValue(cursor: Cursor<Token>, input: string): IterableIterator<Valu
     } else if (IS_FULL_DATE.test(cursor.value!.raw) || IS_FULL_TIME.test(cursor.value!.raw)) {
       yield datetime(cursor, input);
     } else if (
-      (!cursor.peek().done && cursor.peek().value!.type === TokenType.Dot) ||
+      IS_DOTTED.test(cursor.value!.raw) ||
       IS_INF.test(cursor.value!.raw) ||
       IS_NAN.test(cursor.value!.raw) ||
       (HAS_E.test(cursor.value!.raw) && !IS_HEX.test(cursor.value!.raw))
     ) {
-      yield float(cursor, input);
+      yield float(cursor);
     } else {
       yield integer(cursor);
     }
@@ -162,25 +163,13 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
     throw new ParseError(input, key.loc!.start, `Expected table key, reached end of file`);
   }
 
+  const parts = (cursor.value! as StringToken).parts;
   key.item = {
     type: NodeType.Key,
     loc: cloneLocation(cursor.value!.loc),
     raw: cursor.value!.raw,
-    value: [parseString(cursor.value!.raw)]
+    value: parts ? parts.map(parseString) : [parseString(cursor.value!.raw)]
   };
-
-  while (!cursor.peek().done && cursor.peek().value!.type === TokenType.Dot) {
-    cursor.next();
-    const dot = cursor.value!;
-
-    cursor.next();
-    const before = ' '.repeat(dot.loc.start.column - key.item.loc.end.column);
-    const after = ' '.repeat(cursor.value!.loc.start.column - dot.loc.end.column);
-
-    key.item.loc.end = cursor.value!.loc.end;
-    key.item.raw += `${before}.${after}${cursor.value!.raw}`;
-    key.item.value.push(parseString(cursor.value!.raw));
-  }
 
   cursor.next();
 
@@ -240,21 +229,13 @@ function keyValue(cursor: Cursor<Token>, input: string): Array<KeyValue | Commen
   // ^-^          key
   //     ^        equals
   //       ^---^  value
+  const parts = (cursor.value! as StringToken).parts;
   const key: Key = {
     type: NodeType.Key,
     loc: cloneLocation(cursor.value!.loc),
     raw: cursor.value!.raw,
-    value: [parseString(cursor.value!.raw)]
+    value: parts ? parts.map(parseString) : [parseString(cursor.value!.raw)]
   };
-
-  while (!cursor.peek().done && cursor.peek().value!.type === TokenType.Dot) {
-    cursor.next();
-    cursor.next();
-
-    key.loc.end = cursor.value!.loc.end;
-    key.raw += `.${cursor.value!.raw}`;
-    key.value.push(parseString(cursor.value!.raw));
-  }
 
   cursor.next();
 
@@ -327,6 +308,18 @@ function datetime(cursor: Cursor<Token>, input: string): DateTime {
   // Local Time
   // | lt1 = 07:32:00
   // | lt2 = 00:32:00.999999
+  //
+  // See https://github.com/toml-lang/toml#offset-date-time
+  //
+  // | For the sake of readability, you may replace the T delimiter between date and time with a space (as permitted by RFC 3339 section 5.6).
+  // | `odt4 = 1979-05-27 07:32:00Z`
+  //
+  // From RFC 3339:
+  //
+  // | NOTE: ISO 8601 defines date and time separated by "T".
+  // | Applications using this syntax may choose, for the sake of
+  // | readability, to specify a full-date and full-time separated by
+  // | (say) a space character.
   let loc = cursor.value!.loc;
   let raw = cursor.value!.raw;
   let value: Date;
@@ -346,20 +339,6 @@ function datetime(cursor: Cursor<Token>, input: string): DateTime {
     raw += ` ${cursor.value!.raw}`;
   }
 
-  if (!cursor.peek().done && cursor.peek().value!.type === TokenType.Dot) {
-    const start = loc.start;
-
-    cursor.next();
-
-    if (cursor.peek().done || cursor.peek().value!.type !== TokenType.String) {
-      throw new ParseError(input, cursor.value!.loc.end, `Expected fractional value for DateTime`);
-    }
-    cursor.next();
-
-    loc = { start, end: cursor.value!.loc.end };
-    raw += `.${cursor.value!.raw}`;
-  }
-
   if (!IS_FULL_DATE.test(raw)) {
     // For local time, use local ISO date
     const [local_date] = new Date().toISOString().split('T');
@@ -376,7 +355,7 @@ function datetime(cursor: Cursor<Token>, input: string): DateTime {
   };
 }
 
-function float(cursor: Cursor<Token>, input: string): Float {
+function float(cursor: Cursor<Token>): Float {
   let loc = cursor.value!.loc;
   let raw = cursor.value!.raw;
   let value;
@@ -385,24 +364,6 @@ function float(cursor: Cursor<Token>, input: string): Float {
     value = raw === '-inf' ? -Infinity : Infinity;
   } else if (IS_NAN.test(raw)) {
     value = raw === '-nan' ? -NaN : NaN;
-  } else if (!cursor.peek().done && cursor.peek().value!.type === TokenType.Dot) {
-    const start = loc.start;
-
-    // From spec:
-    // | A fractional part is a decimal point followed by one or more digits.
-    //
-    // -> Don't have to handle "4." (i.e. nothing behind decimal place)
-
-    cursor.next();
-
-    if (cursor.peek().done || cursor.peek().value!.type !== TokenType.String) {
-      throw new ParseError(input, cursor.value!.loc.end, `Expected fraction value for Float`);
-    }
-    cursor.next();
-
-    raw += `.${cursor.value!.raw}`;
-    loc = { start, end: cursor.value!.loc.end };
-    value = Number(raw.replace(IS_DIVIDER, ''));
   } else {
     value = Number(raw.replace(IS_DIVIDER, ''));
   }
