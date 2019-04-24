@@ -4,3 +4,6 @@
 [submodule "submodules/toml-test"]
 	path = submodules/toml-test
 	url = https://github.com/BurntSushi/toml-test.git
+[submodule "submodules/iarna-toml"]
+	path = submodules/iarna-toml
+	url = https://github.com/iarna/iarna-toml.git
