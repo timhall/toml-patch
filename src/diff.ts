@@ -12,7 +12,6 @@ export enum ChangeType {
 export interface Add {
   type: ChangeType.Add;
   path: Path;
-  item: any;
 }
 export function isAdd(change: Change): change is Add {
   return change.type === ChangeType.Add;
@@ -21,8 +20,6 @@ export function isAdd(change: Change): change is Add {
 export interface Edit {
   type: ChangeType.Edit;
   path: Path;
-  before: any;
-  after: any;
 }
 export function isEdit(change: Change): change is Edit {
   return change.type === ChangeType.Edit;
@@ -71,9 +68,7 @@ export default function diff(before: any, after: any, path: Path = []): Change[]
     return [
       {
         type: ChangeType.Edit,
-        path,
-        before,
-        after
+        path
       }
     ];
   }
@@ -124,8 +119,7 @@ function compareObjects(before: any, after: any, path: Path = []): Change[] {
     if (!before_keys.includes(key) && !isRename(after_stable[index], before_stable)) {
       changes.push({
         type: ChangeType.Add,
-        path: path.concat(key),
-        item: after[key]
+        path: path.concat(key)
       });
     }
   });
@@ -177,8 +171,7 @@ function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
     // Add as new item and shift existing
     changes.push({
       type: ChangeType.Add,
-      path: path.concat(index),
-      item: after[index]
+      path: path.concat(index)
     });
     before_stable.splice(index, 0, value);
   });

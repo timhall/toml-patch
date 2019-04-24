@@ -9,7 +9,6 @@ Array [
     "type": "Move",
   },
   Object {
-    "item": 3,
     "path": Array [
       2,
     ],
@@ -27,8 +26,6 @@ Array [
 exports[`it should attempt to find moved array items 1`] = `
 Array [
   Object {
-    "after": 4,
-    "before": 1,
     "path": Array [
       0,
       "value",
@@ -42,9 +39,6 @@ Array [
     "type": "Move",
   },
   Object {
-    "item": Object {
-      "value": 5,
-    },
     "path": Array [
       3,
     ],
@@ -56,39 +50,30 @@ Array [
 exports[`it should diff objects 1`] = `
 Array [
   Object {
-    "after": 2,
-    "before": 1,
     "path": Array [
       "a",
     ],
     "type": "Edit",
   },
   Object {
-    "after": 3.141,
-    "before": 3.14,
     "path": Array [
       "b",
     ],
     "type": "Edit",
   },
   Object {
-    "after": "dd",
-    "before": "d",
     "path": Array [
       "c",
     ],
     "type": "Edit",
   },
   Object {
-    "after": false,
-    "before": true,
     "path": Array [
       "e",
     ],
     "type": "Edit",
   },
   Object {
-    "item": 4,
     "path": Array [
       "f",
       3,
@@ -96,7 +81,6 @@ Array [
     "type": "Add",
   },
   Object {
-    "item": "k",
     "path": Array [
       "g",
       "j",
