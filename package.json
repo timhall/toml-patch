@@ -14,7 +14,7 @@
     "encoder",
     "decoder"
   ],
-  "main": "dist/toml-patch.cjs.js",
+  "main": "dist/toml-patch.cjs.min.js",
   "module": "dist/toml-patch.es.js",
   "browser": "dist/toml-patch.umd.min.js",
   "types": "dist/toml-patch.d.ts",

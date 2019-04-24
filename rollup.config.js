@@ -14,24 +14,27 @@ export default [
         file: 'dist/toml-patch.es.js',
         format: 'es',
         banner
-      },
-      {
-        file: 'dist/toml-patch.cjs.js',
-        format: 'cjs',
-        banner
       }
     ],
     plugins: [typescript(), filesize()]
   },
   {
     input: 'src/index.ts',
-    output: {
-      file: 'dist/toml-patch.umd.min.js',
-      format: 'umd',
-      name: 'TOML',
-      sourcemap: true,
-      banner
-    },
+    output: [
+      {
+        file: 'dist/toml-patch.cjs.min.js',
+        format: 'cjs',
+        sourcemap: true,
+        banner
+      },
+      {
+        file: 'dist/toml-patch.umd.min.js',
+        format: 'umd',
+        name: 'TOML',
+        sourcemap: true,
+        banner
+      }
+    ],
     plugins: [typescript(), terser(), filesize()]
   },
   {
