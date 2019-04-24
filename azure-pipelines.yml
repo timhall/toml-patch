@@ -26,8 +26,8 @@ steps:
 - script: npm run specs
   displayName: 'Validate'
 
-- script: npm run benchmark -- --example
-  displayName: 'Benchmark'
-
 - script: npm run build
   displayName: 'Build'
+
+- script: npm run benchmark -- --example
+  displayName: 'Benchmark'
