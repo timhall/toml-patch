@@ -315,7 +315,7 @@ export function remove(root: Root, parent: Node, node: Node) {
   }
 
   // For inline tables and arrays, check whether the line should be kept
-  const is_inline = isInlineItem(previous);
+  const is_inline = previous && isInlineItem(previous);
   const previous_on_same_line = previous && previous.loc.end.line === node.loc.start.line;
   const next_on_sameLine = next && next.loc.start.line === node.loc.end.line;
   const keep_line = is_inline && (previous_on_same_line || next_on_sameLine);
