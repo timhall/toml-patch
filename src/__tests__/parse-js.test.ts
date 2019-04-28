@@ -30,3 +30,7 @@ test('it should be properly formatted', () => {
     toTOML(parseJS(value, { bracketSpacing: false, trailingComma: true }).items)
   ).toMatchSnapshot();
 });
+
+test('it should remove leading empty lines', () => {
+  expect(toTOML(parseJS({ a: { b: 2 }, c: { d: 4 }, e: { f: 6 } }).items)).toMatchSnapshot();
+});

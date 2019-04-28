@@ -43,3 +43,15 @@ w = \\"x\\"
 y = \\"z\\"
 "
 `;
+
+exports[`it should remove leading empty lines 1`] = `
+"[a]
+b = 2
+
+[c]
+d = 4
+
+[e]
+f = 6
+"
+`;

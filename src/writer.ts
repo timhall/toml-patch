@@ -335,19 +335,20 @@ export function remove(root: Root, parent: Node, node: Node) {
 
   // Apply offsets after preceding node or before children of parent node
   const target = previous || parent;
-  const offsets = getExit(root);
-  const previous_offset = offsets.get(target);
+  const target_offsets = previous ? getExit(root) : getEnter(root);
+  const node_offsets = getExit(root);
+  const previous_offset = target_offsets.get(target);
   if (previous_offset) {
     offset.lines += previous_offset.lines;
     offset.columns += previous_offset.columns;
   }
-  const removed_offset = offsets.get(node);
+  const removed_offset = node_offsets.get(node);
   if (removed_offset) {
     offset.lines += removed_offset.lines;
     offset.columns += removed_offset.columns;
   }
 
-  offsets.set(target, offset);
+  target_offsets.set(target, offset);
 }
 
 export function applyBracketSpacing(

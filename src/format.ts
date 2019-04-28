@@ -10,7 +10,7 @@ import {
   Document
 } from './ast';
 import { generateTable, generateDocument, generateTableArray } from './generate';
-import { insert, remove, applyWrites } from './writer';
+import { insert, remove, applyWrites, shiftNode } from './writer';
 
 export interface Format {
   printWidth?: number;
@@ -78,5 +78,26 @@ function formatTableArray(key_value: KeyValue): TableArray[] {
 
 export function formatPrintWidth(document: Document, format: Format): Document {
   // TODO
+  return document;
+}
+
+export function formatEmptyLines(document: Document): Document {
+  let shift = 0;
+  let previous = 0;
+  for (const item of document.items) {
+    if (previous === 0 && item.loc.start.line > 1) {
+      // Remove leading newlines
+      shift = 1 - item.loc.start.line;
+    } else if (item.loc.start.line + shift > previous + 2) {
+      shift += previous + 2 - (item.loc.start.line + shift);
+    }
+
+    shiftNode(item, {
+      lines: shift,
+      columns: 0
+    });
+    previous = item.loc.end.line;
+  }
+
   return document;
 }

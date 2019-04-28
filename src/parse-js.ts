@@ -11,7 +11,7 @@ import {
   generateInlineArray,
   generateInlineTable
 } from './generate';
-import { Format, formatTopLevel, formatPrintWidth } from './format';
+import { Format, formatTopLevel, formatPrintWidth, formatEmptyLines } from './format';
 import { isObject, isString, isInteger, isFloat, isBoolean, isDate, pipe } from './utils';
 import { insert, applyWrites, applyBracketSpacing, applyTrailingComma } from './writer';
 
@@ -37,7 +37,8 @@ export default function parseJS(value: any, format: Format = {}): Document {
   const formatted = pipe(
     document,
     formatTopLevel,
-    document => formatPrintWidth(document, format)
+    document => formatPrintWidth(document, format),
+    formatEmptyLines
   );
 
   return formatted;
