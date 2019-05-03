@@ -1,4 +1,4 @@
-import { isObject, datesEqual, stableStringify } from './utils';
+import { isObject, datesEqual, stableStringify, merge } from './utils';
 import { Path } from './find-by-path';
 
 export enum ChangeType {
@@ -97,7 +97,7 @@ function compareObjects(before: any, after: any, path: Path = []): Change[] {
   before_keys.forEach((key, index) => {
     const sub_path = path.concat(key);
     if (after_keys.includes(key)) {
-      changes = changes.concat(diff(before[key], after[key], sub_path));
+      merge(changes, diff(before[key], after[key], sub_path));
     } else if (isRename(before_stable[index], after_stable)) {
       const to = after_keys[after_stable.indexOf(before_stable[index])];
       changes.push({
@@ -162,7 +162,7 @@ function compareArrays(before: any[], after: any[], path: Path = []): Change[] {
     // Check if item is removed -> assume it's been edited and replace
     const removed = !after_stable.includes(before_stable[index]);
     if (!overflow && removed) {
-      changes = changes.concat(diff(before[index], after[index], path.concat(index)));
+      merge(changes, diff(before[index], after[index], path.concat(index)));
       before_stable[index] = value;
 
       return;

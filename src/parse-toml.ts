@@ -24,6 +24,7 @@ import { parseString } from './parse-string';
 import Cursor from './cursor';
 import { clonePosition, cloneLocation } from './location';
 import ParseError from './parse-error';
+import { merge } from './utils';
 
 const TRUE = 'true';
 const FALSE = 'false';
@@ -217,7 +218,7 @@ function table(cursor: Cursor<Token>, input: string): Table | TableArray {
   let items: Array<KeyValue | Comment> = [];
   while (!cursor.peek().done && cursor.peek().value!.type !== TokenType.Bracket) {
     cursor.next();
-    items = items.concat([...walkBlock(cursor, input)] as Array<KeyValue | Comment>);
+    merge(items, [...walkBlock(cursor, input)] as Array<KeyValue | Comment>);
   }
 
   return {
@@ -569,7 +570,7 @@ function inlineArray(cursor: Cursor<Token>, input: string): [InlineArray, Commen
       };
 
       value.items.push(inline_item);
-      comments = comments.concat(additional_comments as Comment[]);
+      merge(comments, additional_comments as Comment[]);
     }
 
     cursor.next();
