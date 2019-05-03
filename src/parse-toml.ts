@@ -52,7 +52,7 @@ function* walkBlock(cursor: Cursor<Token>, input: string): IterableIterator<Bloc
     yield comment(cursor);
   } else if (cursor.value!.type === TokenType.Bracket) {
     yield table(cursor, input);
-  } else if (cursor.value!.type === TokenType.String) {
+  } else if (cursor.value!.type === TokenType.Literal) {
     yield* keyValue(cursor, input);
   } else {
     throw new ParseError(
@@ -64,7 +64,7 @@ function* walkBlock(cursor: Cursor<Token>, input: string): IterableIterator<Bloc
 }
 
 function* walkValue(cursor: Cursor<Token>, input: string): IterableIterator<Value | Comment> {
-  if (cursor.value!.type === TokenType.String) {
+  if (cursor.value!.type === TokenType.Literal) {
     if (cursor.value!.raw[0] === DOUBLE_QUOTE || cursor.value!.raw[0] === SINGLE_QUOTE) {
       yield string(cursor);
     } else if (cursor.value!.raw === TRUE || cursor.value!.raw === FALSE) {
@@ -336,7 +336,7 @@ function datetime(cursor: Cursor<Token>, input: string): DateTime {
   // check if raw is full date and following is full time
   if (
     !cursor.peek().done &&
-    cursor.peek().value!.type === TokenType.String &&
+    cursor.peek().value!.type === TokenType.Literal &&
     IS_FULL_DATE.test(raw) &&
     IS_FULL_TIME.test(cursor.peek().value!.raw)
   ) {
@@ -352,7 +352,7 @@ function datetime(cursor: Cursor<Token>, input: string): DateTime {
 
     cursor.next();
 
-    if (cursor.peek().done || cursor.peek().value!.type !== TokenType.String) {
+    if (cursor.peek().done || cursor.peek().value!.type !== TokenType.Literal) {
       throw new ParseError(input, cursor.value!.loc.end, `Expected fractional value for DateTime`);
     }
     cursor.next();
@@ -396,7 +396,7 @@ function float(cursor: Cursor<Token>, input: string): Float {
 
     cursor.next();
 
-    if (cursor.peek().done || cursor.peek().value!.type !== TokenType.String) {
+    if (cursor.peek().done || cursor.peek().value!.type !== TokenType.Literal) {
       throw new ParseError(input, cursor.value!.loc.end, `Expected fraction value for Float`);
     }
     cursor.next();
