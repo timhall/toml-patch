@@ -71,3 +71,15 @@ export function stableStringify(object: any): string {
     return JSON.stringify(object);
   }
 }
+
+export function merge<TValue>(target: TValue[], values: TValue[]) {
+  // __mutating__: merge values into target
+  // Reference: https://dev.to/uilicious/javascript-array-push-is-945x-faster-than-array-concat-1oki
+  const original_length = target.length;
+  const added_length = values.length;
+  target.length = original_length + added_length;
+
+  for (let i = 0; i < added_length; i++) {
+    target[original_length + i] = values[i];
+  }
+}

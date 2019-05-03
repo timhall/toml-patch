@@ -70,8 +70,9 @@ export function findLines(input: string): number[] {
   while ((match = BY_NEW_LINE.exec(input)) != null) {
     indexes.push(match.index);
   }
+  indexes.push(input.length + 1);
 
-  return indexes.concat([input.length + 1]);
+  return indexes;
 }
 
 export function clonePosition(position: Position): Position {
