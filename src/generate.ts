@@ -8,7 +8,7 @@ import {
   Value,
   KeyValue,
   Key,
-  String as StringNode,
+  String,
   Integer,
   Float,
   Boolean,
@@ -133,7 +133,7 @@ export function generateKey(value: string[]): Key {
   };
 }
 
-export function generateString(value: string): StringNode {
+export function generateString(value: string): String {
   const raw = JSON.stringify(value);
 
   return {
@@ -145,7 +145,7 @@ export function generateString(value: string): StringNode {
 }
 
 export function generateInteger(value: number): Integer {
-  const raw = String(value);
+  const raw = value.toString();
 
   return {
     type: NodeType.Integer,
@@ -156,7 +156,7 @@ export function generateInteger(value: number): Integer {
 }
 
 export function generateFloat(value: number): Float {
-  const raw = String(value);
+  const raw = value.toString();
 
   return {
     type: NodeType.Float,

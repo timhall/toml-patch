@@ -14,7 +14,7 @@ Array [
       },
     },
     "raw": "a",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -42,7 +42,7 @@ Array [
       },
     },
     "raw": "\\"\\\\\\\\\\"",
-    "type": "String",
+    "type": "Literal",
   },
 ]
 `;
@@ -75,7 +75,7 @@ Array [
       },
     },
     "raw": "title",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -103,7 +103,7 @@ Array [
       },
     },
     "raw": "\\"TOML Example\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -131,7 +131,7 @@ Array [
       },
     },
     "raw": "owner",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -159,7 +159,7 @@ Array [
       },
     },
     "raw": "name",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -187,7 +187,7 @@ Array [
       },
     },
     "raw": "\\"Tom Preston-Werner\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -201,7 +201,7 @@ Array [
       },
     },
     "raw": "organization",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -229,7 +229,7 @@ Array [
       },
     },
     "raw": "\\"GitHub\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -243,7 +243,7 @@ Array [
       },
     },
     "raw": "bio",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -271,7 +271,7 @@ Array [
       },
     },
     "raw": "\\"GitHub Cofounder & CEO\\\\nLikes tater tots and beer.\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -285,7 +285,7 @@ Array [
       },
     },
     "raw": "dob",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -313,7 +313,7 @@ Array [
       },
     },
     "raw": "1979-05-27T07:32:00Z",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -355,7 +355,7 @@ Array [
       },
     },
     "raw": "database",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -383,7 +383,7 @@ Array [
       },
     },
     "raw": "server",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -411,7 +411,7 @@ Array [
       },
     },
     "raw": "\\"192.168.1.1\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -425,7 +425,7 @@ Array [
       },
     },
     "raw": "ports",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -467,7 +467,7 @@ Array [
       },
     },
     "raw": "8001",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -495,7 +495,7 @@ Array [
       },
     },
     "raw": "8001",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -523,7 +523,7 @@ Array [
       },
     },
     "raw": "8002",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -551,7 +551,7 @@ Array [
       },
     },
     "raw": "connection_max",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -579,7 +579,7 @@ Array [
       },
     },
     "raw": "5000",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -593,7 +593,7 @@ Array [
       },
     },
     "raw": "enabled",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -621,7 +621,7 @@ Array [
       },
     },
     "raw": "true",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -649,7 +649,7 @@ Array [
       },
     },
     "raw": "servers",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -705,7 +705,7 @@ Array [
       },
     },
     "raw": "servers",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -733,7 +733,7 @@ Array [
       },
     },
     "raw": "alpha",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -761,7 +761,7 @@ Array [
       },
     },
     "raw": "ip",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -789,7 +789,7 @@ Array [
       },
     },
     "raw": "\\"10.0.0.1\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -803,7 +803,7 @@ Array [
       },
     },
     "raw": "dc",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -831,7 +831,7 @@ Array [
       },
     },
     "raw": "\\"eqdc10\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -859,7 +859,7 @@ Array [
       },
     },
     "raw": "servers",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -887,7 +887,7 @@ Array [
       },
     },
     "raw": "beta",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -915,7 +915,7 @@ Array [
       },
     },
     "raw": "ip",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -943,7 +943,7 @@ Array [
       },
     },
     "raw": "\\"10.0.0.2\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -957,7 +957,7 @@ Array [
       },
     },
     "raw": "dc",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -985,7 +985,7 @@ Array [
       },
     },
     "raw": "\\"eqdc10\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -999,7 +999,7 @@ Array [
       },
     },
     "raw": "country",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1027,7 +1027,7 @@ Array [
       },
     },
     "raw": "\\"中国\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1069,7 +1069,7 @@ Array [
       },
     },
     "raw": "clients",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1097,7 +1097,7 @@ Array [
       },
     },
     "raw": "data",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1153,7 +1153,7 @@ Array [
       },
     },
     "raw": "\\"gamma\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1181,7 +1181,7 @@ Array [
       },
     },
     "raw": "\\"delta\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1237,7 +1237,7 @@ Array [
       },
     },
     "raw": "1",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1265,7 +1265,7 @@ Array [
       },
     },
     "raw": "2",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1335,7 +1335,7 @@ Array [
       },
     },
     "raw": "hosts",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1377,7 +1377,7 @@ Array [
       },
     },
     "raw": "\\"alpha\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1405,7 +1405,7 @@ Array [
       },
     },
     "raw": "\\"omega\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1433,7 +1433,7 @@ Array [
       },
     },
     "raw": "count",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1475,7 +1475,7 @@ Array [
       },
     },
     "raw": "a",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1503,7 +1503,7 @@ Array [
       },
     },
     "raw": "1",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1531,7 +1531,7 @@ Array [
       },
     },
     "raw": "b",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1559,7 +1559,7 @@ Array [
       },
     },
     "raw": "2",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1587,7 +1587,7 @@ Array [
       },
     },
     "raw": "c",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1615,7 +1615,7 @@ Array [
       },
     },
     "raw": "3",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1685,7 +1685,7 @@ Array [
       },
     },
     "raw": "products",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1727,7 +1727,7 @@ Array [
       },
     },
     "raw": "name",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1755,7 +1755,7 @@ Array [
       },
     },
     "raw": "\\"Hammer\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1769,7 +1769,7 @@ Array [
       },
     },
     "raw": "sku",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1797,7 +1797,7 @@ Array [
       },
     },
     "raw": "738594937",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1839,7 +1839,7 @@ Array [
       },
     },
     "raw": "products",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1881,7 +1881,7 @@ Array [
       },
     },
     "raw": "name",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1909,7 +1909,7 @@ Array [
       },
     },
     "raw": "\\"Nail\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1923,7 +1923,7 @@ Array [
       },
     },
     "raw": "sku",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1951,7 +1951,7 @@ Array [
       },
     },
     "raw": "284758393",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1965,7 +1965,7 @@ Array [
       },
     },
     "raw": "color",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -1993,7 +1993,7 @@ Array [
       },
     },
     "raw": "\\"gray\\"",
-    "type": "String",
+    "type": "Literal",
   },
 ]
 `;
@@ -2040,7 +2040,7 @@ Array [
       },
     },
     "raw": "a",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2068,7 +2068,7 @@ Array [
       },
     },
     "raw": "\\"b\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2096,7 +2096,7 @@ Array [
       },
     },
     "raw": "'c'",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2143,7 +2143,7 @@ Array [
       },
     },
     "raw": "a",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2171,7 +2171,7 @@ Array [
       },
     },
     "raw": "\\"b\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2185,7 +2185,7 @@ Array [
       },
     },
     "raw": "c",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2213,7 +2213,7 @@ Array [
       },
     },
     "raw": "'d'",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2227,7 +2227,7 @@ Array [
       },
     },
     "raw": "e",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2257,7 +2257,7 @@ Array [
     "raw": "\\"\\"\\"
       f
     \\"\\"\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2271,7 +2271,7 @@ Array [
       },
     },
     "raw": "g",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2301,7 +2301,7 @@ Array [
     "raw": "'''
       h
     '''",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2315,7 +2315,7 @@ Array [
       },
     },
     "raw": "\\"i\\"",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2343,7 +2343,7 @@ Array [
       },
     },
     "raw": "'j'",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2371,7 +2371,7 @@ Array [
       },
     },
     "raw": "k",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2399,7 +2399,7 @@ Array [
       },
     },
     "raw": "\\"l\\"",
-    "type": "String",
+    "type": "Literal",
   },
 ]
 `;
@@ -2418,7 +2418,7 @@ Array [
       },
     },
     "raw": "a",
-    "type": "String",
+    "type": "Literal",
   },
   Object {
     "loc": Object {
@@ -2446,7 +2446,7 @@ Array [
       },
     },
     "raw": "\\"b\\"",
-    "type": "String",
+    "type": "Literal",
   },
 ]
 `;

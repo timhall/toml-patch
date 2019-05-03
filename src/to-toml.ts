@@ -46,7 +46,7 @@ export default function toTOML(ast: AST, newline: string = '\n'): string {
       write(lines, node.loc, node.raw);
     },
     [NodeType.Boolean](node) {
-      write(lines, node.loc, String(node.value));
+      write(lines, node.loc, node.value.toString());
     },
     [NodeType.DateTime](node) {
       write(lines, node.loc, node.raw);

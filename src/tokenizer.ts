@@ -9,7 +9,7 @@ export enum TokenType {
   Comma = 'Comma',
   Dot = 'Dot',
   Comment = 'Comment',
-  String = 'String'
+  Literal = 'Literal'
 }
 
 export interface Token {
@@ -122,7 +122,7 @@ function multiline(
   cursor.next();
 
   return {
-    type: TokenType.String,
+    type: TokenType.Literal,
     raw,
     loc: locate(start, cursor.index + 1)
   };
@@ -211,7 +211,7 @@ function string(cursor: Cursor<string>, locate: Locator, input: string): Token {
   }
 
   return {
-    type: TokenType.String,
+    type: TokenType.Literal,
     raw,
     loc: locate(start, cursor.index + 1)
   };
