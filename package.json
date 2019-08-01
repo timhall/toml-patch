@@ -1,6 +1,6 @@
 {
   "name": "toml-patch",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Tim Hall <tim.hall.engr@gmail.com>",
   "license": "MIT",
   "description": "Patch, parse, and stringify TOML",
