@@ -1,6 +1,6 @@
 # toml-patch
 
-Patch, parse, and stringify TOML. 
+Patch, parse, and stringify TOML.
 
 ## Installation
 
@@ -31,7 +31,7 @@ const existing = `
 
 title = "TOML example"
 owner.name = "Bob"
-`
+`;
 const patched = TOML.patch(existing, {
   title: 'TOML example',
   owner: {
@@ -39,12 +39,15 @@ const patched = TOML.patch(existing, {
   }
 });
 
-assert.strictEqual(patched, `
+assert.strictEqual(
+  patched,
+  `
 # This is a TOML document
 
 title = "TOML example"
 owner.name = "Tim"
-`);
+`
+);
 ```
 
 <a href="#parse" name="parse">#</a> <b>parse</b>(<i>value</i>)
@@ -92,13 +95,20 @@ const toml = TOML.stringify({
   }
 });
 
-assert.strictEqual(toml, 
-`title = "TOML Example"
+assert.strictEqual(
+  toml,
+  `title = "TOML Example"
 
 [owner]
-name = "Tim"`);
+name = "Tim"`
+);
 ```
 
 ## Development
 
-[![Build Status](https://dev.azure.com/timhallengr/toml-patch/_apis/build/status/timhall.toml-patch?branchName=master)](https://dev.azure.com/timhallengr/toml-patch/_build/latest?definitionId=1&branchName=master)
+1. Update submodules: `git submodule update --remote`
+2. Typecheck: `npm run typecheck`
+3. Build: `npm run build`
+4. Test: `npm test`
+5. Specs compliance: `npm run specs`
+6. Benchmark: `npm run benchmark [<filter>] [--help] [--example] [--reference]`
